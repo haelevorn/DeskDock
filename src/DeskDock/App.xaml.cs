@@ -10,9 +10,14 @@ public partial class App : Application
     private Mutex? _instance;
     private bool _ownsMutex;
 
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        if (Array.Exists(e.Args, arg => arg == "--layout-test"))
+        {
+            Shutdown(await LayoutSelfTests.RunAsync());
+            return;
+        }
         if (Array.Exists(e.Args, arg => arg == "--self-test"))
         {
             Shutdown(SelfTests.Run());

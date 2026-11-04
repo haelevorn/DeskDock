@@ -2,8 +2,11 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
@@ -21,6 +24,27 @@ public partial class MainWindow : Window
     private bool _refreshing, _sending, _syncingVolume, _closing, _webStarting;
     private string? _artKey;
     private int _notifications;
+    private int? _unreadCount;
+    private DateTimeOffset _lastNotice = DateTimeOffset.MinValue;
+    private CoreWebView2Notification? _pendingNotification;
+    private bool _layoutBusy;
+    private string _layoutMode = "";
+
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmSetWindowAttribute(IntPtr window, int attribute, ref int value, int size);
+
+    private void WindowSourceInitialized(object? sender, EventArgs e)
+    {
+        if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000))
+        {
+            int roundedCorners = 2;
+            _ = DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 33, ref roundedCorners, sizeof(int));
+        }
+    }
+
+    private void MinimizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+    private void MaximizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    private void CloseClick(object sender, RoutedEventArgs e) => Close();
 
     public MainWindow()
     {
@@ -52,6 +76,18 @@ public partial class MainWindow : Window
                 ContextMenuStrip = menu, Visible = true
             };
             _tray.DoubleClick += (_, _) => Dispatcher.Invoke(Restore);
+            _tray.BalloonTipShown += (_, _) => Dispatcher.Invoke(() =>
+            {
+                ReportNotification(n => n.ReportShown());
+                NotificationStatus.Text = "Windows notificó que presentó el aviso. Comprueba si fue visible en tu pantalla.";
+            });
+            _tray.BalloonTipClicked += (_, _) => Dispatcher.Invoke(() =>
+            {
+                ReportNotification(n => n.ReportClicked());
+                Restore();
+                MainTabs.SelectedIndex = 0;
+            });
+            _tray.BalloonTipClosed += (_, _) => Dispatcher.Invoke(ClosePendingNotification);
         }
         catch (Exception ex)
         {
@@ -102,14 +138,14 @@ public partial class MainWindow : Window
             if (_closing) return;
             await Web.EnsureCoreWebView2Async(environment);
             if (_closing) return;
-            var core = Web.CoreWebView2;
+            var core = Web.CoreWebView2 ?? throw new InvalidOperationException("WebView2 no está inicializado");
             core.Profile.PreferredColorScheme = CoreWebView2PreferredColorScheme.Dark;
             core.Settings.IsWebMessageEnabled = false;
             core.Settings.AreHostObjectsAllowed = false;
             core.PermissionRequested += WebPermission;
             core.NavigationStarting += (_, args) =>
             {
-                if (NavigationPolicy.IsWhatsApp(args.Uri)) return;
+                if (NavigationPolicy.IsWhatsApp(args.Uri)) { _unreadCount = null; return; }
                 args.Cancel = true;
                 OpenExternal(args.Uri);
             };
@@ -127,11 +163,14 @@ public partial class MainWindow : Window
             };
             core.NotificationReceived += (_, args) =>
             {
-                // Conservar la UI predeterminada de WebView2. No leer el contenido privado.
-                args.Handled = false;
+                if (!NavigationPolicy.IsWhatsApp(args.SenderOrigin)) return;
+                // WPF sin registro de toasts: presentar un aviso propio mediante la bandeja.
+                args.Handled = true;
                 _notifications++;
-                NotificationStatus.Text = $"WebView2 ha recibido {_notifications} notificación(es). Comprueba si Windows muestra el aviso.";
+                ShowNotice("Nuevo aviso de WhatsApp. Abre DeskDock para verlo.", args.Notification);
             };
+            core.DocumentTitleChanged += (_, _) => CheckUnreadTitle();
+            core.DOMContentLoaded += async (_, _) => await UpdateWebLayoutAsync();
             core.ProcessFailed += (_, _) =>
             {
                 if (!_closing) WebStatus.Text = "Un proceso de WebView2 falló. Cierra DeskDock y vuelve a abrirlo.";
@@ -204,7 +243,117 @@ public partial class MainWindow : Window
         catch (Exception ex) { Diagnostics.Record("Explorer", ex); }
     }
 
-    private async void TimerTick(object? sender, EventArgs e) => await RefreshAsync();
+    private async void TimerTick(object? sender, EventArgs e)
+    {
+        await RefreshAsync();
+        await UpdateWebLayoutAsync();
+    }
+
+    private async void EnableNotificationsClick(object sender, RoutedEventArgs e)
+    {
+        if (Web.CoreWebView2 is not { } core) { WebStatus.Text = "Espera a que WhatsApp termine de cargar."; return; }
+        try
+        {
+            await core.Profile.SetPermissionStateAsync(CoreWebView2PermissionKind.Notifications,
+                "https://web.whatsapp.com", CoreWebView2PermissionState.Allow);
+            NotificationStatus.Text = "Permiso de avisos activado. Activa también las notificaciones en los ajustes de WhatsApp y recibe un mensaje de prueba.";
+            WebStatus.Text = "Permiso activado. Revisa Ajustes → Notificaciones dentro de WhatsApp. Usa Probar aviso para comprobar Windows.";
+        }
+        catch (Exception ex) { Diagnostics.Record("NotificationPermission", ex); WebStatus.Text = "No se pudo activar el permiso. Prueba recargar WhatsApp."; }
+    }
+
+    private void TestNotificationClick(object sender, RoutedEventArgs e) =>
+        ShowNotice("Este es un aviso de prueba de DeskDock. No procede de un mensaje de WhatsApp.", test: true);
+
+    private void CheckUnreadTitle()
+    {
+        if (_closing || Web.CoreWebView2 is not { } core || !NavigationPolicy.IsWhatsApp(core.Source)) return;
+        int? next = NotificationPolicy.UnreadCount(core.DocumentTitle);
+        if (!next.HasValue) return;
+        int? previous = _unreadCount;
+        _unreadCount = next;
+        // No anunciar el contador inicial al cargar el perfil.
+        if (previous.HasValue && next > previous && (!IsVisible || !IsActive || MainTabs.SelectedIndex != 0))
+            ShowNotice("Ha aumentado el contador de mensajes sin leer de WhatsApp. Abre DeskDock para revisarlo.");
+    }
+
+    private void ShowNotice(string text, CoreWebView2Notification? notification = null, bool test = false)
+    {
+        if (_closing) return;
+        // Evitar duplicar un aviso web y el cambio de título del mismo mensaje.
+        if (!test && DateTimeOffset.UtcNow - _lastNotice < TimeSpan.FromSeconds(8))
+        {
+            try { notification?.ReportClosed(); } catch (Exception ex) { Diagnostics.Record("NotificationClose", ex); }
+            return;
+        }
+        if (_tray is null)
+        {
+            NotificationStatus.Text = "No está disponible el icono de bandeja; no se pueden presentar avisos.";
+            return;
+        }
+        ClosePendingNotification();
+        _pendingNotification = notification;
+        _lastNotice = DateTimeOffset.UtcNow;
+        try
+        {
+            _tray.ShowBalloonTip(6000, test ? "DeskDock · prueba de aviso" : "WhatsApp · DeskDock", text, Forms.ToolTipIcon.Info);
+            NotificationStatus.Text = $"Aviso enviado a Windows. Eventos web recibidos: {_notifications}. Si no aparece, revisa notificaciones y No molestar en Windows.";
+        }
+        catch (Exception ex) { Diagnostics.Record("NotificationShow", ex); ClosePendingNotification(); }
+    }
+
+    private void ReportNotification(Action<CoreWebView2Notification> action)
+    {
+        try { if (_pendingNotification is not null) action(_pendingNotification); }
+        catch (Exception ex) { Diagnostics.Record("NotificationLifecycle", ex); }
+    }
+
+    private void ClosePendingNotification()
+    {
+        ReportNotification(n => n.ReportClosed());
+        _pendingNotification = null;
+    }
+
+    private async void WebSizeChanged(object sender, SizeChangedEventArgs e) => await UpdateWebLayoutAsync();
+    private async void CompactClick(object sender, RoutedEventArgs e) => await UpdateWebLayoutAsync();
+    private async void ChatListClick(object sender, RoutedEventArgs e) { _layoutMode = "list"; await UpdateWebLayoutAsync(); }
+    private async void ConversationClick(object sender, RoutedEventArgs e) { _layoutMode = "auto"; await UpdateWebLayoutAsync(); }
+
+    private async Task UpdateWebLayoutAsync()
+    {
+        if (_closing || _layoutBusy || Web?.CoreWebView2 is not { } core || !NavigationPolicy.IsWhatsApp(core.Source) || Web.ActualWidth < 1) return;
+        _layoutBusy = true;
+        try
+        {
+            await core.ExecuteScriptAsync(WhatsAppLayout.InstallScript);
+            bool enabled = CompactWhatsApp.IsChecked == true;
+            string width = Web.ActualWidth.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string result = await core.ExecuteScriptAsync($"window.__deskDockLayout.configure({(enabled ? "true" : "false")}, '{_layoutMode}', {width})");
+            _layoutMode = "";
+            if (_closing) return;
+            using var document = JsonDocument.Parse(result);
+            string? state = document.RootElement.GetProperty("state").GetString();
+            if (enabled && state == "unsupported")
+            {
+                // QR, carga o estructura desconocida: mostrar toda la web reducida como alternativa.
+                Web.ZoomFactor = System.Math.Clamp(Web.ActualWidth / 1100.0, 0.25, 1);
+                LayoutStatus.Text = "Ajuste al ancho. Al abrir una conversación se intentará la vista de chat completo.";
+            }
+            else
+            {
+                if (Web.ZoomFactor != 1) Web.ZoomFactor = 1;
+                LayoutStatus.Text = state switch
+                {
+                    "chat" => "Conversación a todo el ancho · Chats vuelve a la lista.",
+                    "list" => "Lista a todo el ancho · Selecciona una conversación y pulsa Chat si no cambia sola.",
+                    "wide" => "Vista amplia de WhatsApp.",
+                    _ => "Vista original. Activa Vista adaptable para ventanas pequeñas."
+                };
+            }
+        }
+        catch (Exception ex) { Diagnostics.Record("WebLayout", ex); if (!_closing) LayoutStatus.Text = "No se pudo adaptar esta vista. Puedes desactivar Vista adaptable."; }
+        finally { _layoutBusy = false; }
+    }
 
     private async Task RefreshAsync()
     {
@@ -255,7 +404,7 @@ public partial class MainWindow : Window
                                 var bitmap = new BitmapImage();
                                 bitmap.BeginInit();
                                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                bitmap.DecodePixelWidth = 128;
+                                bitmap.DecodePixelWidth = 512;
                                 bitmap.StreamSource = memory;
                                 bitmap.EndInit();
                                 bitmap.Freeze();
@@ -358,6 +507,7 @@ public partial class MainWindow : Window
         new Settings(Topmost, TrayOption.IsChecked == true).Save();
         if (_tray is not null)
         {
+            ClosePendingNotification();
             _tray.Visible = false;
             _tray.ContextMenuStrip?.Dispose();
             _tray.Dispose();

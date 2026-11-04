@@ -1,5 +1,22 @@
 # Pruebas del MVP en Windows
 
+## Casos añadidos en 0.2 — pendientes de prueba en el equipo del usuario
+
+| Caso | Resultado esperado | Resultado |
+| --- | --- | --- |
+| Barra propia | No aparece la barra estándar; minimizar, maximizar/restaurar, doble clic y cerrar funcionan; bordes permiten redimensionar | PENDIENTE |
+| Esquinas | En Windows 11 la ventana normal muestra esquinas redondeadas | PENDIENTE |
+| Chat estrecho | Abrir un chat a 390/490/650 de ancho de ventana; cabecera, mensajes y caja de escritura dentro del ancho, sin desplazamiento lateral | PENDIENTE |
+| Volver a lista | Chats muestra lista completa; seleccionar conversación vuelve al chat o permite pulsar Chat | PENDIENTE |
+| Ventana amplia | Ampliar, volver a reducir y alternar Vista adaptable; se restaura diseño original sin paneles ocultos persistentes | PENDIENTE |
+| Spotify completo | Portada, título y artista coinciden con mini; ambos juegos de botones controlan la misma sesión y se desactivan al cerrar Spotify | PENDIENTE |
+| Aviso de prueba | Probar aviso muestra aviso nativo; pulsarlo restaura WhatsApp | PENDIENTE |
+| Aviso web | Activar avisos, activar ajustes WhatsApp y recibir mensaje con otra ventana activa; comprobar evento y aviso | PENDIENTE |
+| Aviso por título | Sin evento web, un aumento del contador del título en segundo plano solicita un aviso genérico; no promete uno por cada mensaje | PENDIENTE |
+| Sin duplicados | Una notificación web y un cambio del contador próximos no producen dos avisos; no hay avisos de no leídos al cargar | PENDIENTE |
+
+La prueba automatizada de WebView2 usa HTML sintético: no debe marcar estos casos reales como superados.
+
 Estado inicial de todos los casos: **PENDIENTE**. No marcar «probado» sin ejecutar el caso. Un workflow verde solo prueba las comprobaciones descritas en su informe.
 
 Fecha: ______  Versión Windows: ______  Escala de pantalla: ______

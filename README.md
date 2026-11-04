@@ -1,6 +1,15 @@
-# DeskDock 0.1
+# DeskDock 0.2
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.2
+
+- Barra de ventana propia con arrastre, minimizar, maximizar/restaurar, cerrar y bandeja; esquinas exteriores redondeadas mediante DWM en Windows 11.
+- Pestaña Spotify con portada grande, título, artista y controles sincronizados con el mini reproductor. Abrir Spotify es ahora una acción secundaria.
+- WhatsApp adaptable: en ventanas estrechas intenta mostrar la conversación a todo el ancho con texto de tamaño normal; «Chats» vuelve a la lista y «Chat» a la conversación. Es una adaptación experimental de los contenedores del sitio, no una interfaz oficial de WhatsApp. Si la estructura no se reconoce se usa zoom para ajustar la web al ancho.
+- Avisos propios mediante la bandeja de Windows en lugar de depender de la UI de WebView2. «Probar aviso» permite comprobar la presentación local y «Activar avisos» restablece el permiso del sitio.
+- Alternativa de aviso por incremento del contador del título de WhatsApp, con deduplicación de ocho segundos. No lee mensajes ni contactos. No equivale a detectar cada mensaje y puede no avisar si no cambia el número de chats sin leer.
+- Prueba adicional con WebView2 real y HTML sintético para comprobar el ancho del chat, caja de escritura, lista, cambio de tamaño y restauración. La compatibilidad con la web real y la visibilidad de avisos siguen requiriendo prueba manual.
 
 **Estado:** primera implementación. La compilación y la autoprueba se verifican mediante GitHub Actions. Ningún resultado de CI demuestra compatibilidad real con WhatsApp, una cuenta de Spotify, notificaciones ni dispositivos de audio. Consulta el resultado de la ejecución en Actions y completa las pruebas manuales.
 
@@ -15,7 +24,7 @@ El artefacto `DeskDock-win-x64` contiene `DeskDock.exe`, .NET y las bibliotecas 
 - Ventana redimensionable, tema oscuro, opción siempre encima persistente.
 - Pestañas WhatsApp y Spotify; mini reproductor visible en ambas.
 - Perfil WebView2 persistente en `%LOCALAPPDATA%\DeskDock\WebView2`.
-- Solicitud de permiso de notificaciones solo para `https://web.whatsapp.com`; UI predeterminada de WebView2. Compatibilidad real pendiente de prueba.
+- Solicitud de permiso de notificaciones solo para `https://web.whatsapp.com`; presentación propia por bandeja. Compatibilidad real pendiente de prueba.
 - Búsqueda exclusiva de sesiones con ID de Spotify Win32 o Microsoft Store; sin fallback hacia otras aplicaciones.
 - Título, artista y portada que Spotify exponga a Windows; anterior, reproducir, pausar y siguiente según capacidades anunciadas. Se comprueba el resultado booleano de cada comando.
 - Volumen y silencio del dispositivo de salida predeterminado de Windows mediante Core Audio, usando NAudio como adaptador.

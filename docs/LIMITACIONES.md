@@ -1,5 +1,19 @@
 # Compatibilidad, límites y evidencia
 
+## Actualización 0.2
+
+El usuario informó que WhatsApp carga pero queda recortado en ventanas pequeñas, que la información de Spotify sí aparece en el mini reproductor y que no recibe notificaciones. Esto es evidencia de esos comportamientos reportados, no una validación completa de las integraciones.
+
+Se añade una vista adaptable que identifica `#main` y `#side`/`#pane-side`, ajusta sus contenedores y muestra solo una columna por debajo de 720 unidades disponibles. No usa clases ofuscadas ni lee el texto de conversaciones. Esta adaptación depende de IDs y estructura privados del sitio y puede romperse. Es reversible desde «Vista adaptable»; cuando no reconoce los paneles, usa zoom. No garantiza que todos los paneles auxiliares, diálogos, llamadas, adjuntos o futuros diseños encajen. La prueba automática usa un documento sintético, no la cuenta del usuario.
+
+La presentación de notificaciones ya no usa la UI predeterminada de WebView2. DeskDock maneja el evento y solicita un aviso nativo de `NotifyIcon`, notificando al objeto WebView2 cuando Windows comunica presentación, clic o cierre. El texto del aviso es genérico, sin remitente ni mensaje. `Probar aviso` usa la misma presentación sin necesitar mensajes entrantes. Windows puede suprimir avisos por sus preferencias, No molestar o políticas.
+
+Como alternativa, se observa el contador del título del documento: si aumenta mientras WhatsApp no está en primer plano, se solicita un aviso genérico. No se anuncian los no leídos iniciales; los eventos próximos se agrupan durante ocho segundos. El título no es una API oficial, puede cambiar y suele reflejar chats sin leer, no cada mensaje. No se garantiza detectar mensajes adicionales de un chat que ya estaba sin leer. El permiso del sitio y las preferencias internas de WhatsApp influyen en los eventos web; la alternativa por título no depende de que el sitio cree una notificación.
+
+La pestaña Spotify enlaza su portada, título, artista y capacidades con el mini reproductor. Ambas vistas usan la misma sesión; no se añade Spotify Web API. La barra propia conserva la interacción de ventana con `WindowChrome`; DWM redondea las esquinas exteriores en Windows 11. No se usa transparencia por píxel para conservar compatibilidad con WebView2.
+
+Las secciones siguientes describen la base del MVP; para notificaciones y adaptación visual prevalece esta actualización.
+
 Revisión documental: 4 de noviembre de 2026. Consultar los resultados concretos de Actions para saber si una versión compiló. El código implementado y una revisión documental no equivalen a una integración probada.
 
 | Área | Implementación | Qué debe probarse en el equipo del usuario |
@@ -18,7 +32,7 @@ La documentación de WhatsApp sobre navegadores no establece aquí una garantía
 
 WebView2 guarda cookies, permisos y almacenamiento en su carpeta de datos. DeskDock usa `%LOCALAPPDATA%\DeskDock\WebView2`, fuera del directorio de descarga; cambiar el EXE no borra el perfil. Esto permite intentar persistencia, pero no impide que WhatsApp cierre sesión. No se importa la sesión de Edge/Chrome.
 
-Microsoft describe `NotificationReceived` para notificaciones **no persistentes**. DeskDock mantiene `Handled=false` y deja que el runtime presente su UI predeterminada. El contador indica que se recibió el evento, no que Windows haya mostrado el aviso. Permisos, configuración del sitio, «No molestar», visibilidad, versión del runtime y comportamiento de WhatsApp influyen en el resultado.
+Microsoft describe `NotificationReceived` para notificaciones **no persistentes**. DeskDock 0.2 usa `Handled=true` y presenta avisos propios por bandeja. El contador indica que se recibió el evento, no que el usuario haya visto un aviso. Permisos, configuración del sitio, «No molestar», visibilidad, versión del runtime y comportamiento de WhatsApp influyen en el resultado.
 
 No se implementa push con la aplicación cerrada ni se garantiza recepción en segundo plano. Se mantiene WebView2 vivo mientras DeskDock está en bandeja; esto no demuestra que WhatsApp siga notificando. No hay bridge de JavaScript para leer chats ni scraping de elementos privados. Cámara y micrófono se deniegan en este MVP: llamadas y mensajes de voz grabados no forman parte de la validación. Descargas y adjuntos dependen de las funciones predeterminadas de WebView2 y no están certificados.
 

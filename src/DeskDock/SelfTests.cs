@@ -27,6 +27,10 @@ internal static class SelfTests
                 Check(!NavigationPolicy.IsExternalWeb(uri), "Rechazar protocolo/credencial: " + uri, results);
             var settings = new Settings(true, false);
             Check(JsonSerializer.Deserialize<Settings>(JsonSerializer.Serialize(settings)) == settings, "Persistencia de opciones", results);
+            Check(NotificationPolicy.UnreadCount("(3) WhatsApp") == 3, "Contador de no leídos", results);
+            Check(NotificationPolicy.UnreadCount("WhatsApp") == 0, "Contador reiniciado", results);
+            foreach (string title in new[] { "(3) Otro sitio", "WhatsApp - contacto", "(texto) WhatsApp", "(999999999999999) WhatsApp" })
+                Check(NotificationPolicy.UnreadCount(title) is null, "Ignorar título no reconocido", results);
 
             // Carga el XAML real con sus controles sin iniciar servicios ni mostrar la ventana.
             var window = new MainWindow();
@@ -34,6 +38,23 @@ internal static class SelfTests
             Check(window.FindName("Web") is Microsoft.Web.WebView2.Wpf.WebView2, "WebView2 WPF en XAML", results);
             Check(window.FindName("MasterVolume") is System.Windows.Controls.Slider, "Control de volumen en XAML", results);
             Check(window.FindName("Play") is System.Windows.Controls.Button, "Control de reproducción en XAML", results);
+            Check(window.WindowStyle == WindowStyle.None, "Sin barra de título estándar", results);
+            Check(System.Windows.Shell.WindowChrome.GetWindowChrome(window) is not null, "Arrastre y bordes con WindowChrome", results);
+            // Las dos vistas deben compartir datos y disponibilidad, sin otra consulta a Spotify.
+            ((System.Windows.Controls.TabControl)window.FindName("MainTabs")).SelectedIndex = 1;
+            window.Measure(new Size(490, 740));
+            window.Arrange(new Rect(0, 0, 490, 740));
+            window.UpdateLayout();
+            var titleSource = (System.Windows.Controls.TextBlock)window.FindName("TrackTitle");
+            var titleTarget = (System.Windows.Controls.TextBlock)window.FindName("FullTrackTitle");
+            titleSource.Text = "Canción de prueba";
+            System.Windows.Data.BindingOperations.GetBindingExpression(titleTarget, System.Windows.Controls.TextBlock.TextProperty)!.UpdateTarget();
+            Check(titleTarget.Text == titleSource.Text, "Título sincronizado en Spotify y mini reproductor", results);
+            var fullPlay = (System.Windows.Controls.Button)window.FindName("FullPlay");
+            var miniPlay = (System.Windows.Controls.Button)window.FindName("Play");
+            miniPlay.IsEnabled = true;
+            System.Windows.Data.BindingOperations.GetBindingExpression(fullPlay, System.Windows.Controls.Button.IsEnabledProperty)!.UpdateTarget();
+            Check(fullPlay.IsEnabled, "Disponibilidad sincronizada de reproducir", results);
             results.Add("PASS: carga de XAML. NO verifica UI interactiva, WhatsApp, notificaciones, Spotify ni audio.");
             File.WriteAllLines(Path.Combine(AppContext.BaseDirectory, "self-test-results.txt"), results);
             return 0;

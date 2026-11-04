@@ -1,5 +1,18 @@
 # Usar DeskDock sin instalar herramientas de programación
 
+## Actualizar a la versión 0.2
+
+1. Cierra la versión anterior con la X o desde la bandeja → Salir.
+2. Descarga el artefacto de la ejecución más reciente que haya terminado en verde, no el ZIP anterior.
+3. Extrae todos los archivos en una carpeta nueva y abre su `DeskDock.exe`. La cabecera debe mostrar **0.2**. El perfil WhatsApp sigue en la misma carpeta local, por lo que no se borra al actualizar.
+4. En WhatsApp deja activada **Vista adaptable**. En una ventana estrecha, abre una conversación; **Chats** muestra la lista y **Chat** vuelve a la conversación. Si seleccionar la conversación no cambia la vista automáticamente, pulsa **Chat**. A partir de 720 unidades de ancho disponible vuelve a la vista amplia. En QR/carga o estructuras no reconocidas se usa reducción por zoom.
+5. Pulsa **Probar aviso**. Debería aparecer un aviso de DeskDock junto al reloj. Si no aparece, revisa Configuración de Windows → Sistema → Notificaciones, la configuración de notificaciones de DeskDock si figura, y **No molestar**. La aplicación no modifica esas opciones automáticamente.
+6. Pulsa **Activar avisos** y activa también notificaciones dentro de los ajustes de WhatsApp. Recibe un mensaje con otra ventana activa y repite con DeskDock en bandeja. La pestaña Spotify indica si llegaron eventos web o si se solicitó mostrar un aviso. El aviso de prueba no comprueba la recepción desde WhatsApp.
+7. Los avisos alternativos por contador solo se generan si aumenta el número del título; mensajes sucesivos de un chat ya no leído pueden no generar un nuevo aviso. No hay avisos con DeskDock cerrado.
+8. La pestaña Spotify ahora muestra portada, canción, artista y controles; **Abrir aplicación Spotify** sigue abriendo la aplicación instalada solo cuando lo pulsas.
+
+La barra superior es propia de DeskDock. Arrastra la zona del nombre para mover, haz doble clic para maximizar/restaurar y arrastra los bordes para cambiar de tamaño. Las esquinas exteriores redondeadas requieren Windows 11; Windows 10 puede conservar el contorno cuadrado.
+
 No necesitas escribir comandos, instalar Git, Node.js, Visual Studio ni SDKs. El proyecto se compila en una máquina Windows de GitHub Actions.
 
 ## 1. Repositorio

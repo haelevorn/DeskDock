@@ -77,6 +77,26 @@ jobs:
               "{0}  {1}" -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash, $relative
             } | Set-Content -LiteralPath publish/DeskDock/SHA256SUMS.txt -Encoding utf8
 
+      - name: Probar adaptación de chat en WebView2 con documento sintético
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $executable = Join-Path $PWD 'publish/DeskDock/DeskDock.exe'
+          $process = Start-Process -FilePath $executable -ArgumentList '--layout-test' -PassThru -WindowStyle Hidden
+          if (!$process.WaitForExit(60000)) {
+            $process.Kill()
+            throw 'La prueba de WebView2 superó 60 segundos'
+          }
+          $report = Join-Path $PWD 'publish/DeskDock/layout-test-results.txt'
+          if (Test-Path -LiteralPath $report) { Get-Content -LiteralPath $report }
+          if ($process.ExitCode -ne 0 -or !(Test-Path -LiteralPath $report)) { throw 'Falló la prueba de adaptación WebView2' }
+          Get-ChildItem -LiteralPath publish/DeskDock -File -Recurse |
+            Where-Object { $_.Name -ne 'SHA256SUMS.txt' } |
+            Sort-Object FullName |
+            ForEach-Object {
+              $relative = [IO.Path]::GetRelativePath((Join-Path $PWD 'publish/DeskDock'), $_.FullName)
+              "{0}  {1}" -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash, $relative
+            } | Set-Content -LiteralPath publish/DeskDock/SHA256SUMS.txt -Encoding utf8
+
       - name: Subir aplicación para descargar
         uses: actions/upload-artifact@v7.0.2
         with:
@@ -90,6 +110,8 @@ jobs:
         uses: actions/upload-artifact@v7.0.2
         with:
           name: DeskDock-diagnostico
-          path: publish/DeskDock/self-test-results.txt
+          path: |
+            publish/DeskDock/self-test-results.txt
+            publish/DeskDock/layout-test-results.txt
           if-no-files-found: ignore
           retention-days: 7
