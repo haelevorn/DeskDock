@@ -57,7 +57,7 @@ public partial class MainWindow
         RenderPomodoro();
     }
 
-    private void RenderPomodoro()
+    internal void RenderPomodoro()
     {
         PomoStage.Text = PomodoroTimer.StageName(Pomodoro.Stage);
         int total = (int)Math.Ceiling(Pomodoro.Remaining.TotalSeconds);
@@ -65,7 +65,11 @@ public partial class MainWindow
         PomoSessions.Text = $"Sesiones: {Pomodoro.CompletedFocusSessions} · descanso largo cada {Pomodoro.Options.SessionsBeforeLongBreak}";
         PomoProgress.Value = Math.Clamp(100 * (1 - Pomodoro.Remaining.TotalSeconds / Pomodoro.Duration.TotalSeconds), 0, 100);
         PomoStart.Content = Pomodoro.IsRunning ? "Pausar" : "Iniciar";
+        PomoBadge.Visibility = Pomodoro.IsRunning ? Visibility.Visible : Visibility.Collapsed;
+        PomoBadgeText.Text = $"◷ {PomoTime.Text} · {PomoStage.Text}";
     }
+
+    private void PomoBadgeClick(object sender, RoutedEventArgs e) => MainTabs.SelectedIndex = 2;
 
     private void PomoStartClick(object sender, RoutedEventArgs e)
     {
@@ -84,16 +88,24 @@ public partial class MainWindow
 
     private void ApplyPomodoroClick(object sender, RoutedEventArgs e)
     {
+        if (!TryReadPomodoro(out var options)) return;
+        Pomodoro.Configure(options);
+        SaveSettings();
+        PomoMessage.Text = "Etapas guardadas. Pulsa Iniciar para comenzar.";
+        RenderPomodoro();
+    }
+
+    private bool TryReadPomodoro(out PomodoroOptions options)
+    {
+        options = new();
         if (!ReadMinutes(FocusMinutes.Text, 1, 240, out int focus) || !ReadMinutes(ShortMinutes.Text, 1, 60, out int shortBreak) ||
             !ReadMinutes(LongMinutes.Text, 1, 120, out int longBreak) || !ReadMinutes(RoundCount.Text, 2, 12, out int rounds))
         {
             PomoMessage.Text = "Usa números enteros: concentración 1–240 min, corto 1–60, largo 1–120 y sesiones 2–12.";
-            return;
+            return false;
         }
-        Pomodoro.Configure(new(focus, shortBreak, longBreak, rounds, AutoStages.IsChecked == true));
-        SaveSettings();
-        PomoMessage.Text = "Etapas guardadas. Pulsa Iniciar para comenzar.";
-        RenderPomodoro();
+        options = new(focus, shortBreak, longBreak, rounds, AutoStages.IsChecked == true);
+        return true;
     }
 
     internal static bool ReadMinutes(string value, int min, int max, out int number) =>

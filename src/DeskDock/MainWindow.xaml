@@ -13,13 +13,13 @@
  <Grid>
  <Border x:Name="SkinFrame" CornerRadius="16" BorderThickness="1" BorderBrush="{DynamicResource FrameBrush}" Background="{DynamicResource AmbientBackdrop}" IsHitTestVisible="False"/>
  <Grid Margin="10,6,10,10">
-  <Grid.RowDefinitions><RowDefinition Height="36"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Grid.RowDefinitions><RowDefinition Height="36"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
   <Grid>
    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
     <Ellipse Fill="{DynamicResource AccentBrush}" Width="7" Height="7" Margin="0,0,9,0"/>
     <TextBlock Text="DeskDock" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-    <TextBlock Text="0.5" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
+    <TextBlock Text="0.6" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
    </StackPanel>
    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
     <TextBlock x:Name="ClockText" FontSize="11" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,7,0" AutomationProperties.Name="Hora actual de Windows"/>
@@ -27,6 +27,8 @@
      <Button.ContextMenu>
       <ContextMenu>
        <MenuItem Header="Recargar WhatsApp" Click="ReloadClick"/>
+       <MenuItem Header="Ver lista de chats" Click="ChatListClick"/>
+       <MenuItem Header="Ver conversación" Click="ConversationClick"/>
        <MenuItem Header="Abrir WhatsApp en navegador" Click="BrowserClick"/>
        <MenuItem Header="Abrir aplicación Spotify" Click="SpotifyClick"/>
        <Separator/>
@@ -35,6 +37,7 @@
        <MenuItem x:Name="TrayOption" Header="Minimizar a bandeja" IsCheckable="True" IsChecked="True" Click="SettingsClick"/>
        <MenuItem Header="Ocultar en bandeja" Click="HideClick"/>
        <MenuItem Header="Tamaño compacto" Click="CompactWindowClick"/>
+       <MenuItem x:Name="GlassOption" Header="Glass translúcido (Windows 11)" IsCheckable="True" Click="GlassClick"/>
        <Separator/>
        <MenuItem Header="SKINS" IsEnabled="False"/>
        <MenuItem x:Name="MinimalSkin" Header="Minimal · original" Tag="minimal" IsCheckable="True" Click="SkinClick"/>
@@ -85,7 +88,7 @@
    </TabItem>
    <TabItem Header="Pomodoro">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-     <StackPanel Margin="14,10">
+     <StackPanel Margin="14,10" TextElement.Foreground="{DynamicResource TextPrimary}">
       <TextBlock x:Name="PomoStage" Text="Concentración" FontSize="12" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center"/>
       <TextBlock x:Name="PomoTime" Text="25:00" FontSize="46" FontWeight="Light" HorizontalAlignment="Center" Margin="0,3,0,0" AutomationProperties.Name="Tiempo restante del pomodoro"/>
       <TextBlock x:Name="PomoSessions" Foreground="{DynamicResource TextSecondary}" FontSize="10" HorizontalAlignment="Center"/>
@@ -95,7 +98,7 @@
        <Button Content="&#xE777;" Style="{StaticResource IconButton}" Click="PomoResetClick" ToolTip="Reiniciar el ciclo" AutomationProperties.Name="Reiniciar ciclo pomodoro"/>
       </StackPanel>
       <TextBlock x:Name="PomoMessage" Text="Configura tus etapas y pulsa Iniciar." TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,10,0,8"/>
-      <Expander Header="Configurar etapas" Foreground="{DynamicResource TextPrimary}" FontSize="12">
+      <Expander x:Name="PomoConfigExpander" Header="Configurar etapas" Foreground="{DynamicResource TextPrimary}" FontSize="12">
        <StackPanel Margin="0,9,0,4">
         <Grid>
          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="56"/></Grid.ColumnDefinitions>
@@ -113,16 +116,51 @@
         <Button Content="Aplicar y reiniciar" Click="ApplyPomodoroClick" HorizontalAlignment="Left" Padding="10,6"/>
        </StackPanel>
       </Expander>
+      <Expander x:Name="ProfilesExpander" Header="Mis pomodoros" Margin="0,10,0,0">
+       <StackPanel Margin="0,8,0,4">
+        <ComboBox x:Name="ProfilePicker" DisplayMemberPath="Name" MinHeight="30" SelectionChanged="ProfileSelectionChanged" AutomationProperties.Name="Perfiles de Pomodoro guardados"/>
+        <TextBox x:Name="ProfileName" MaxLength="40" Margin="0,8,0,4" ToolTip="Nombre personalizado, hasta 40 caracteres" AutomationProperties.Name="Nombre del perfil de Pomodoro"/>
+        <WrapPanel>
+         <Button Content="Guardar" Click="SaveProfileClick" Padding="9,6"/>
+         <Button Content="Cargar y reiniciar" Click="LoadProfileClick" Padding="9,6"/>
+         <Button Content="Eliminar" Click="DeleteProfileClick" Padding="9,6"/>
+        </WrapPanel>
+        <TextBlock Text="Guardar usa los valores de Configurar etapas. Un mismo nombre actualiza ese perfil." TextWrapping="Wrap" FontSize="10" Foreground="{DynamicResource TextSecondary}" Margin="0,6,0,0"/>
+       </StackPanel>
+      </Expander>
      </StackPanel>
     </ScrollViewer>
    </TabItem>
+   <TabItem Header="Referencia">
+    <Grid AllowDrop="True" Drop="ReferenceDrop" DragOver="ReferenceDragOver">
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+     <DockPanel Margin="3,3,3,5">
+      <TextBlock Text="Referencia" Foreground="{DynamicResource TextSecondary}" FontSize="11" VerticalAlignment="Center"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+       <Button Style="{StaticResource IconButton}" Content="&#xE8E5;" Click="OpenReferenceClick" ToolTip="Abrir imagen" AutomationProperties.Name="Abrir imagen de referencia"/>
+       <Button Style="{StaticResource IconButton}" Content="&#xE9A6;" Click="FitReferenceClick" ToolTip="Ajustar imagen" AutomationProperties.Name="Ajustar imagen"/>
+       <Button Style="{StaticResource IconButton}" Content="&#xE8A3;" Click="ZoomOutReferenceClick" ToolTip="Alejar" AutomationProperties.Name="Alejar imagen"/>
+       <Button Style="{StaticResource IconButton}" Content="&#xE8A4;" Click="ZoomInReferenceClick" ToolTip="Acercar" AutomationProperties.Name="Acercar imagen"/>
+       <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" Click="ClearReferenceClick" ToolTip="Quitar referencia" AutomationProperties.Name="Quitar referencia"/>
+      </StackPanel>
+     </DockPanel>
+     <Border Grid.Row="1" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" ClipToBounds="True">
+      <Grid>
+       <Canvas x:Name="ReferenceCanvas" Background="Transparent" ClipToBounds="True" SizeChanged="ReferenceSizeChanged"
+        MouseWheel="ReferenceWheel" MouseLeftButtonDown="ReferenceDown" MouseMove="ReferenceMove" MouseLeftButtonUp="ReferenceUp" LostMouseCapture="ReferenceLostCapture">
+        <Image x:Name="ReferencePhoto" Stretch="Fill" RenderOptions.BitmapScalingMode="HighQuality"/>
+       </Canvas>
+       <TextBlock x:Name="ReferenceHint" Text="Abre o arrastra una imagen.&#10;Rueda para zoom; arrastra para mover." TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" Margin="20" IsHitTestVisible="False"/>
+      </Grid>
+     </Border>
+     <TextBlock x:Name="ReferenceStatus" Grid.Row="2" Text="PNG, JPG, BMP, GIF o TIFF · imagen local" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" Margin="5,5"/>
+    </Grid>
+   </TabItem>
   </TabControl>
-  <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Height="30" Margin="0,0,2,0">
-   <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabs}" Value="0"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></StackPanel.Style>
-   <Button Style="{StaticResource IconButton}" Content="&#xE8A5;" Click="ChatListClick" ToolTip="Ver lista de chats" AutomationProperties.Name="Ver lista de chats"/>
-   <Button Style="{StaticResource IconButton}" Content="&#xE8F2;" Click="ConversationClick" ToolTip="Ver conversación" AutomationProperties.Name="Ver conversación"/>
-  </StackPanel>
-  <Border x:Name="MiniPlayer" Grid.Row="2" Height="54" CornerRadius="12" Background="{DynamicResource PlayerBackground}" Margin="0,7,0,0" Padding="8,0">
+  <Button x:Name="PomoBadge" Grid.Row="2" Visibility="Collapsed" Height="24" Padding="8,2" Margin="0,4,0,0" Click="PomoBadgeClick" Background="{DynamicResource SelectedBackground}" ToolTip="Volver al Pomodoro activo" AutomationProperties.Name="Ver Pomodoro activo">
+   <TextBlock x:Name="PomoBadgeText" Foreground="{DynamicResource AccentBrush}" FontSize="10"/>
+  </Button>
+  <Border x:Name="MiniPlayer" Grid.Row="3" Height="54" CornerRadius="12" Background="{DynamicResource PlayerBackground}" Margin="0,7,0,0" Padding="8,0">
    <Grid>
     <Grid.ColumnDefinitions><ColumnDefinition x:Name="MiniArtColumn" Width="38"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
     <Border x:Name="MiniArtworkFrame" Width="30" Height="30" Background="{DynamicResource ArtworkBackground}" CornerRadius="7" VerticalAlignment="Center">

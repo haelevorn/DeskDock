@@ -58,8 +58,20 @@ internal static class SelfTests
             Check(window.MinWidth == 300 && window.MinHeight == 340, "Ventana mínima de 300 por 340", results);
             Check(((System.Windows.Controls.TextBlock)window.FindName("ClockText")).Text.Length == 5,
                 "Reloj de Windows visible desde el inicio", results);
-            Check(((System.Windows.Controls.TabControl)window.FindName("MainTabs")).Items.Count == 3,
-                "Tres pestañas incluida Pomodoro", results);
+            Check(((System.Windows.Controls.TabControl)window.FindName("MainTabs")).Items.Count == 4,
+                "Cuatro pestañas incluida Referencia", results);
+            Check(((FrameworkElement)window.FindName("PomoBadge")).Visibility == Visibility.Collapsed,
+                "Indicador Pomodoro oculto al estar inactivo", results);
+            window.Pomodoro.Start();
+            window.RenderPomodoro();
+            Check(((FrameworkElement)window.FindName("PomoBadge")).Visibility == Visibility.Visible,
+                "Indicador Pomodoro visible aunque esté en WhatsApp", results);
+            window.Pomodoro.Pause();
+            window.RenderPomodoro();
+            Check(((FrameworkElement)window.FindName("PomoBadge")).Visibility == Visibility.Collapsed,
+                "Pausar retira el indicador activo", results);
+            window.Pomodoro.Reset();
+            window.RenderPomodoro();
             Check(window.FindName("Web") is Microsoft.Web.WebView2.Wpf.WebView2, "WebView2 WPF en XAML", results);
             Check(window.FindName("MasterVolume") is System.Windows.Controls.Slider, "Control de volumen en XAML", results);
             Check(window.FindName("Play") is System.Windows.Controls.Button, "Control de reproducción en XAML", results);
@@ -106,6 +118,37 @@ internal static class SelfTests
             var start = (System.Windows.Controls.Button)window.FindName("PomoStart");
             Check(start.ActualWidth > 0 && ((System.Windows.Controls.TextBlock)window.FindName("PomoTime")).Text == "25:00",
                 "Contador y botón Pomodoro presentes en ventana pequeña", results);
+            ((System.Windows.Controls.Expander)window.FindName("PomoConfigExpander")).IsExpanded = true;
+            ((System.Windows.Controls.Expander)window.FindName("ProfilesExpander")).IsExpanded = true;
+            window.UpdateLayout();
+            Check(((System.Windows.Controls.ComboBox)window.FindName("ProfilePicker")).Template is not null,
+                "Controles de perfiles y configuración cargan con el skin", results);
+            tabs.SelectedIndex = 3;
+            window.UpdateLayout();
+            string imagePath = Path.Combine(Path.GetTempPath(), "DeskDock-reference-" + Guid.NewGuid().ToString("N") + ".png");
+            try
+            {
+                var sample = BitmapSource.Create(2, 2, 96, 96, PixelFormats.Bgra32, null,
+                    new byte[] { 0, 0, 255, 255, 0, 255, 0, 255, 255, 0, 0, 255, 255, 255, 255, 255 }, 8);
+                var imageEncoder = new PngBitmapEncoder();
+                imageEncoder.Frames.Add(BitmapFrame.Create(sample));
+                using (var imageFile = File.Create(imagePath)) imageEncoder.Save(imageFile);
+                Check(window.LoadReference(imagePath, save: false), "Abrir imagen local de referencia", results);
+                window.UpdateLayout();
+                window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+                var photo = (System.Windows.Controls.Image)window.FindName("ReferencePhoto");
+                var canvas = (FrameworkElement)window.FindName("ReferenceCanvas");
+                var bounds = photo.TransformToAncestor(canvas).TransformBounds(new Rect(0, 0, photo.ActualWidth, photo.ActualHeight));
+                Check(bounds.Width > 0 && bounds.Right <= canvas.ActualWidth + 1 && bounds.Bottom <= canvas.ActualHeight + 1,
+                    "Referencia se ajusta completa dentro del panel pequeño", results);
+                File.Delete(imagePath);
+                Check(((BitmapSource)photo.Source).PixelWidth == 2, "Imagen queda en memoria sin bloquear el archivo original", results);
+            }
+            finally { if (File.Exists(imagePath)) File.Delete(imagePath); }
+            Check(window.AllowsTransparency == false, "Glass no activa transparencia por píxel incompatible con WebView2", results);
+            if (!MainWindow.GlassSupported)
+                Check(!((System.Windows.Controls.MenuItem)window.FindName("GlassOption")).IsEnabled,
+                    "Glass deshabilitado en Windows no compatible", results);
             tabs.SelectedIndex = 1;
             window.Width = 360;
             window.Height = 520;

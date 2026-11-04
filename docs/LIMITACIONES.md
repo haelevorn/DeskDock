@@ -1,5 +1,13 @@
 # Compatibilidad, límites y evidencia
 
+## Actualización 0.6
+
+El indicador de Pomodoro representa únicamente un temporizador en ejecución: se oculta estando pausado, reiniciado o esperando inicio manual. Los perfiles conservan duraciones y opciones, no sesiones en curso. Guardar no inicia ni cambia el temporizador; cargar reinicia. Todo se conserva en el archivo local de preferencias.
+
+Glass utiliza `DWMWA_SYSTEMBACKDROP_TYPE = DWMSBT_TRANSIENTWINDOW` (Desktop Acrylic) y extensión de marco DWM en Windows 11 build 22621 o posterior. Las superficies de DeskDock se tintan con alfa; no se usa transparencia por píxel ni se sustituye el WebView2 existente. WhatsApp permanece opaco. Las políticas, efectos de transparencia, composición, acceso remoto y energía pueden limitar el resultado. La autoprueba de Windows Server solo comprueba el comportamiento de alternativa opaca; no demuestra transparencia visual en el equipo del usuario. Fuentes: [materiales DWM](https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwm_systembackdrop_type), [extensión del marco](https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea).
+
+Referencia carga un archivo elegido por el usuario y conserva únicamente su ruta en preferencias. El contenido se decodifica y queda en memoria, liberando el archivo original. No se incorpora al repositorio, no se copia al paquete y no se sincroniza entre equipos. Límites: 50 MB/100 megapíxeles, lado mayor decodificado hasta 4096; PNG/JPG/BMP/GIF/TIFF, primer fotograma. No admite PSD/HEIC/WebP, documentos multipágina completos, dibujos ni edición. Zoom y desplazamiento son de visualización; al volver a abrir se ajusta de nuevo al panel.
+
 ## Actualización 0.5: tamaño, reloj y Pomodoro
 
 El tamaño mínimo es 300 × 340 unidades WPF, no píxeles físicos invariables: escala de Windows y DPI influyen. La interfaz nativa ajusta portada, pestañas y mini reproductor; la configuración de Pomodoro permite desplazamiento vertical. El ajuste de WhatsApp sigue dependiendo de su estructura web. El tamaño se conserva al cerrar; no se conserva posición de ventana.

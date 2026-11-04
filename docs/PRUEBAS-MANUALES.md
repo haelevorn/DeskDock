@@ -1,5 +1,16 @@
 # Pruebas del MVP en Windows
 
+## Cambios 0.6 — comprobaciones manuales pendientes
+
+- Iniciar Pomodoro y pasar por las cuatro pestañas: indicador con tiempo/etapa siempre presente. Clic vuelve a Pomodoro. Pausar/reiniciar lo oculta.
+- Cambiar cada skin con configuración expandida: campos, casillas, lista y progreso con contraste legible, sin controles blancos o azules del tema de Windows.
+- Guardar «Dibujo» y «Lectura» con tiempos diferentes; cargar cada uno, cerrar/reabrir, actualizar mismo nombre y eliminar otro. La configuración en marcha solo se reinicia al Aplicar o Cargar y reiniciar.
+- Windows 11 compatible: activar/desactivar Glass sobre otra ventana y con cada pestaña/skin. Texto y WebView2 utilizables. Windows no compatible: opción deshabilitada. Probar también con efectos de transparencia de Windows desactivados, si esa es ya la configuración del equipo.
+- Referencia: abrir/arrastrar PNG y JPG, ajustar, zoom, desplazar y recuperar ajuste. Cambiar tamaño hasta 300 × 340. Imagen dentro de límites, sin superponer controles.
+- Cerrar/reabrir conservando la ruta de referencia; mover el archivo y reabrir: aviso claro, posibilidad de elegir otra imagen. Quitar referencia no debe borrar el original.
+- Archivo inválido o demasiado grande: no cerrar la aplicación ni reemplazar la referencia válida actual.
+- Glass y avisos reales no se verifican en el Windows Server del CI. Las pruebas de imagen usan una imagen sintética, no una foto del usuario.
+
 ## Ventana y concentración 0.5 — prueba manual pendiente
 
 - Reducir a 300 × 340 y ampliar; reloj, tres pestañas y controles básicos sin superposición. Comprobar en WhatsApp que caben cabecera y caja de escritura; probar con 125%/150% de escala.

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 
 namespace DeskDock;
 
@@ -43,6 +45,23 @@ internal static class FocusSelfTests
               MainWindow.ReadMinutes("90", 1, 240, out _), "Validación de minutos enteros sin valores inválidos", results);
         Check(MainWindow.SafeDimension(double.NaN, 360, 300, 1920) == 360 && MainWindow.SafeDimension(10, 360, 300, 1920) == 300 &&
               MainWindow.SafeDimension(5000, 360, 300, 1920) == 1920, "Tamaño guardado válido y dentro de pantalla", results);
+        var profiles = new PomodoroProfiles();
+        var original = profiles.Upsert("Dibujo", new(45, 8, 20, 3, false));
+        var updated = profiles.Upsert(" dibujo ", new(50, 10, 25, 3, true));
+        Check(profiles.Items.Count == 1 && original.Id == updated.Id && updated.Options.FocusMinutes == 50,
+            "Guardar mismo nombre actualiza perfil sin duplicarlo", results);
+        profiles.Upsert("Lectura", new(20, 5, 10, 4, false));
+        var stored = new Settings(Profiles: profiles.Items.ToList(), GlassEnabled: true, ReferenceImagePath: "C:\\imagenes\\referencia.png");
+        var restored = JsonSerializer.Deserialize<Settings>(JsonSerializer.Serialize(stored))!;
+        var restoredProfiles = new PomodoroProfiles(restored.Profiles);
+        Check(restoredProfiles.Items.Count == 2 && restoredProfiles.Items[0].Id == updated.Id &&
+              restoredProfiles.Items[0].Options.FocusMinutes == 50 && restored.GlassEnabled,
+            "Perfiles y preferencias nuevas sobreviven serialización", results);
+        profiles.Remove(updated.Id);
+        Check(profiles.Items.Count == 1 && profiles.Items[0].Name == "Lectura", "Eliminar solo el perfil seleccionado", results);
+        bool rejected = false;
+        try { profiles.Upsert("  ", new()); } catch (ArgumentException) { rejected = true; }
+        Check(rejected, "No guardar perfiles sin nombre", results);
     }
 
     private static void Check(bool condition, string description, List<string> results)

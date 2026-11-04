@@ -1,5 +1,35 @@
 # Usar DeskDock sin instalar herramientas de programación
 
+## Pomodoro visible, perfiles, Glass y Referencia — versión 0.6
+
+Actualiza cerrando la aplicación anterior, extrayendo el nuevo ZIP completo en otra carpeta y abriendo su EXE. La cabecera debe mostrar **0.6**.
+
+### Pomodoro activo y perfiles
+
+Cuando el temporizador corre, aparece una franja pequeña sobre el reproductor con tiempo y etapa, incluso al ver WhatsApp, Spotify o Referencia. Pulsa esa franja para ir a Pomodoro. Al pausar o reiniciar se oculta.
+
+Para guardar distintas configuraciones:
+
+1. En Pomodoro, despliega **Configurar etapas** y escribe los minutos, sesiones y avance automático que quieras guardar.
+2. Despliega **Mis pomodoros**, escribe un nombre (por ejemplo «Dibujo» o «Lectura») y pulsa **Guardar**. No cambia el temporizador que ya corre. Guardar el mismo nombre, aunque cambien mayúsculas, actualiza sus valores.
+3. Para usar una configuración, selecciónala en la lista y pulsa **Cargar y reiniciar**; después pulsa **Iniciar**. Esto reinicia el ciclo actual.
+4. **Eliminar** retira el perfil seleccionado, sin modificar el temporizador actual. Los perfiles se guardan localmente y siguen disponibles al reabrir.
+
+### Glass opcional
+
+Abre **⋯ → Glass translúcido (Windows 11)**. En Windows 11 22H2 o posterior se solicita el fondo acrílico de Windows para el marco y paneles nativos de DeskDock. Texto, foto de referencia y contenido web siguen siendo legibles; WhatsApp conserva su fondo. Desmarca la opción para recuperar el skin opaco. En sistemas no compatibles la opción aparece deshabilitada. Su apariencia depende también de la configuración de transparencia, composición, energía y sesión remota de Windows; no se modifica ninguna de esas preferencias automáticamente.
+
+### Referencia de dibujo
+
+1. Abre la pestaña **Referencia** y pulsa el icono de carpeta, o arrastra una imagen desde el Explorador al panel.
+2. Usa **Ajustar** para verla completa. Al cambiar el tamaño de la ventana se mantiene ajustada hasta que hagas zoom o la muevas manualmente.
+3. La rueda y los iconos +/− cambian el zoom. Arrastra con el botón izquierdo para desplazar la imagen. **Ajustar** vuelve al encuadre completo.
+4. El icono X quita la referencia de DeskDock; no elimina el archivo original.
+5. La imagen es local: no se envía a GitHub ni a un servicio. Se recuerda su ruta. Si cambias de carpeta, eliminas el archivo o envías el programa a otra computadora, habrá que abrirla de nuevo allí.
+6. Admite PNG, JPG, BMP, GIF y TIFF. GIF/TIFF muestran solo el primer fotograma/página. Límite 50 MB y 100 megapíxeles; imágenes grandes se reducen en memoria a 4096 píxeles en el lado mayor. No hay edición, pintura, exportación ni gestión de varias referencias simultáneas.
+
+Para usarla como referencia flotante, activa **⋯ → Siempre encima** y ajusta el tamaño. **Ver lista de chats** y **Ver conversación** de WhatsApp están ahora en el menú «⋯».
+
 ## Ventana pequeña, reloj y Pomodoro — versión 0.5
 
 1. Cierra DeskDock, descarga el nuevo artefacto y extrae todos sus archivos en otra carpeta. Abre el EXE; la cabecera debe mostrar **0.5**.

@@ -53,7 +53,7 @@
     </ControlTemplate.Triggers>
    </ControlTemplate></Setter.Value></Setter>
   </Style>
-  <Style TargetType="CheckBox"><Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/><Setter Property="Margin" Value="6"/></Style>
+
   <Style TargetType="TabItem">
    <Setter Property="FontSize" Value="11"/>
    <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
@@ -72,6 +72,59 @@
    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
    <Setter Property="Padding" Value="5,4"/><Setter Property="Margin" Value="0,3,0,3"/>
    <Setter Property="VerticalContentAlignment" Value="Center"/>
+  </Style>
+  <Style TargetType="CheckBox">
+   <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CheckBox">
+    <Grid Background="Transparent"><Grid.ColumnDefinitions><ColumnDefinition Width="20"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+     <Border Width="14" Height="14" CornerRadius="4" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource MenuBackground}" VerticalAlignment="Center">
+      <TextBlock x:Name="Mark" Text="✓" FontSize="10" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+     </Border>
+     <ContentPresenter Grid.Column="1" VerticalAlignment="Center"/>
+    </Grid>
+    <ControlTemplate.Triggers><Trigger Property="IsChecked" Value="True"><Setter TargetName="Mark" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="Expander">
+   <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Expander">
+    <StackPanel>
+     <ToggleButton IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Foreground="{DynamicResource TextPrimary}" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch">
+      <ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border Background="{DynamicResource MenuBackground}" CornerRadius="7" Padding="8,7"><DockPanel><TextBlock Text="⌄" Foreground="{DynamicResource AccentBrush}" Margin="0,0,7,0"/><ContentPresenter/></DockPanel></Border></ControlTemplate></ToggleButton.Template>
+      <ContentPresenter Content="{TemplateBinding Header}"/>
+     </ToggleButton>
+     <ContentPresenter x:Name="ExpandedContent" Visibility="Collapsed"/>
+    </StackPanel>
+    <ControlTemplate.Triggers><Trigger Property="IsExpanded" Value="True"><Setter TargetName="ExpandedContent" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ComboBox">
+   <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBox">
+    <Grid>
+     <ToggleButton IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Focusable="False" ClickMode="Press">
+      <ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border Background="{DynamicResource MenuBackground}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="7"><DockPanel><TextBlock Text="⌄" DockPanel.Dock="Right" Foreground="{DynamicResource AccentBrush}"/><ContentPresenter/></DockPanel></Border></ControlTemplate></ToggleButton.Template>
+     </ToggleButton>
+     <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Margin="9,5,24,5" IsHitTestVisible="False" VerticalAlignment="Center"/>
+     <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True" Focusable="False">
+      <Border Background="{DynamicResource MenuBackground}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="7" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" Padding="4">
+       <ScrollViewer MaxHeight="200"><ItemsPresenter/></ScrollViewer>
+      </Border>
+     </Popup>
+    </Grid>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ComboBoxItem">
+   <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBoxItem">
+    <Border x:Name="Choice" Background="Transparent" CornerRadius="5" Padding="6"><ContentPresenter/></Border>
+    <ControlTemplate.Triggers><Trigger Property="IsHighlighted" Value="True"><Setter TargetName="Choice" Property="Background" Value="{DynamicResource SelectedBackground}"/></Trigger></ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ProgressBar">
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ProgressBar">
+    <Grid x:Name="PART_Track" ClipToBounds="True" Background="{TemplateBinding Background}"><Border x:Name="PART_Indicator" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}" CornerRadius="2"/></Grid>
+   </ControlTemplate></Setter.Value></Setter>
   </Style>
  </ResourceDictionary>
  </Application.Resources>

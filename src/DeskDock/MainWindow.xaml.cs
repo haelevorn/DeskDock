@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ public partial class MainWindow : Window
             int roundedCorners = 2;
             _ = DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 33, ref roundedCorners, sizeof(int));
         }
+        ApplyGlass();
     }
 
     private void MinimizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
@@ -77,6 +79,11 @@ public partial class MainWindow : Window
         SoundOption.IsChecked = settings.NotificationSound;
         ApplySkin(settings.Skin);
         InitializeFocusTools(settings);
+        _profiles = new(settings.Profiles);
+        RefreshProfiles();
+        GlassOption.IsChecked = settings.GlassEnabled;
+        ApplyGlass();
+        if (!_testMode && !string.IsNullOrWhiteSpace(settings.ReferenceImagePath)) LoadReference(settings.ReferenceImagePath, save: false);
     }
 
     private async void WindowLoaded(object sender, RoutedEventArgs e)
@@ -164,7 +171,8 @@ public partial class MainWindow : Window
             var bounds = WindowState == WindowState.Normal ? new Rect(0, 0, Width, Height) : RestoreBounds;
             new Settings(Topmost, TrayOption.IsChecked, SkinManager.Current, SoundOption.IsChecked,
                 SafeDimension(bounds.Width, 360, 300, SystemParameters.WorkArea.Width),
-                SafeDimension(bounds.Height, 520, 340, SystemParameters.WorkArea.Height), Pomodoro.Options).Save();
+                SafeDimension(bounds.Height, 520, 340, SystemParameters.WorkArea.Height), Pomodoro.Options,
+                _profiles.Items.ToList(), GlassOption.IsChecked, _referencePath).Save();
         }
     }
 
@@ -174,6 +182,7 @@ public partial class MainWindow : Window
         MinimalSkin.IsChecked = SkinManager.Current == "minimal";
         AuroraSkin.IsChecked = SkinManager.Current == "aurora";
         EclipseSkin.IsChecked = SkinManager.Current == "eclipse";
+        ApplyGlass();
     }
 
     private void SkinClick(object sender, RoutedEventArgs e)

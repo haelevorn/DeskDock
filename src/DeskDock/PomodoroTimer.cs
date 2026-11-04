@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace DeskDock;
 
 internal enum PomodoroStage { Focus, ShortBreak, LongBreak }
-internal sealed record PomodoroOptions(int FocusMinutes = 25, int ShortBreakMinutes = 5,
+public sealed record PomodoroOptions(int FocusMinutes = 25, int ShortBreakMinutes = 5,
     int LongBreakMinutes = 15, int SessionsBeforeLongBreak = 4, bool AutoAdvance = true)
 {
     public PomodoroOptions Normalize() => new(Math.Clamp(FocusMinutes, 1, 240), Math.Clamp(ShortBreakMinutes, 1, 60),

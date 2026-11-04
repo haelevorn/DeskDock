@@ -1,11 +1,13 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace DeskDock;
 
 internal sealed record Settings(bool AlwaysOnTop = false, bool MinimizeToTray = true, string Skin = "minimal", bool NotificationSound = true,
-    double WindowWidth = 360, double WindowHeight = 520, PomodoroOptions? Pomodoro = null)
+    double WindowWidth = 360, double WindowHeight = 520, PomodoroOptions? Pomodoro = null,
+    List<PomodoroProfile>? Profiles = null, bool GlassEnabled = false, string? ReferenceImagePath = null)
 {
     private static string FilePath => Path.Combine(Diagnostics.Root, "settings.json");
     public static Settings Load()

@@ -1,6 +1,14 @@
-# DeskDock 0.5
+# DeskDock 0.6
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.6
+
+- Indicador compacto de tiempo y etapa cuando Pomodoro está corriendo, visible en todas las pestañas. Al pausarlo o reiniciar se oculta. Clic en el indicador vuelve a Pomodoro.
+- Pomodoro con casillas, desplegables, progreso y secciones del mismo skin. «Mis pomodoros» guarda hasta 50 configuraciones con nombres de 1–40 caracteres; guardar el mismo nombre actualiza el perfil. Cargar un perfil reinicia el ciclo y espera Iniciar.
+- Glass opcional con Desktop Acrylic de DWM en Windows 11 22H2 o posterior, desactivado inicialmente. Afecta el marco y superficies nativas; no hace transparente WhatsApp. Windows controla la disponibilidad y apariencia del material. No se habilita `AllowsTransparency`, para conservar compatibilidad con el WebView2 actual.
+- Cuarta pestaña Referencia: imagen local, abrir/arrastrar, ajustar al panel, zoom con rueda o botones y desplazamiento por arrastre. Se recuerda la ruta del archivo, sin copiar ni subir la imagen. Formatos PNG/JPG/BMP/GIF/TIFF, primer fotograma, hasta 50 MB y 100 megapíxeles, decodificados a un máximo de 4096 píxeles en el lado mayor.
+- Las acciones Lista de chats y Conversación pasan al menú «⋯» para que las cuatro pestañas quepan en ventanas pequeñas.
 
 ## Cambios de la versión 0.5
 
