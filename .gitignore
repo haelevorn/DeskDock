@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+publish/
+.vs/
+*.user
+*.suo
+*.log
+**/WebView2/
+**/self-test-results.txt

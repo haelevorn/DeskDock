@@ -1,0 +1,95 @@
+name: Build DeskDock Windows x64
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deskdock-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - name: Obtener fuentes
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Preparar .NET en el servidor de GitHub
+        uses: actions/setup-dotnet@v6.1.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restaurar dependencias
+        run: dotnet restore src/DeskDock/DeskDock.csproj --runtime win-x64
+
+      - name: Publicar Windows x64 con .NET incluido
+        run: >-
+          dotnet publish src/DeskDock/DeskDock.csproj
+          --configuration Release --runtime win-x64 --self-contained true
+          --no-restore --output publish/DeskDock
+          -p:PublishSingleFile=false -p:PublishTrimmed=false
+
+      - name: Verificar ejecutable publicado y cargar XAML
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $executable = Join-Path $PWD 'publish/DeskDock/DeskDock.exe'
+          if (!(Test-Path -LiteralPath $executable)) { throw 'No se generó DeskDock.exe' }
+          $process = Start-Process -FilePath $executable -ArgumentList '--self-test' -PassThru -WindowStyle Hidden
+          if (!$process.WaitForExit(60000)) {
+            $process.Kill()
+            throw 'La autoprueba superó 60 segundos'
+          }
+          $report = Join-Path $PWD 'publish/DeskDock/self-test-results.txt'
+          if (Test-Path -LiteralPath $report) { Get-Content -LiteralPath $report }
+          if ($process.ExitCode -ne 0) { throw "Falló la autoprueba: $($process.ExitCode)" }
+          if (!(Test-Path -LiteralPath $report)) { throw 'Falta el informe de pruebas' }
+          if (!(Test-Path -LiteralPath 'publish/DeskDock/coreclr.dll')) { throw 'Falta el runtime .NET self-contained' }
+          $loader = Get-ChildItem -LiteralPath 'publish/DeskDock' -Filter WebView2Loader.dll -Recurse
+          if (!$loader) { throw 'Falta el cargador nativo de WebView2' }
+          Copy-Item -LiteralPath INICIO-RAPIDO.md, docs/LIMITACIONES.md, docs/PRUEBAS-MANUALES.md -Destination publish/DeskDock
+          @{
+            commit = '${{ github.sha }}'
+            run = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+            sdk = (dotnet --version)
+            target = 'win-x64; self-contained; .NET 10'
+            integrationTests = 'Pendientes de prueba manual en Windows con cuenta WhatsApp y Spotify'
+          } | ConvertTo-Json | Set-Content -LiteralPath publish/DeskDock/build-info.json -Encoding utf8
+          Get-ChildItem -LiteralPath publish/DeskDock -File -Recurse |
+            Where-Object { $_.Name -ne 'SHA256SUMS.txt' } |
+            Sort-Object FullName |
+            ForEach-Object {
+              $relative = [IO.Path]::GetRelativePath((Join-Path $PWD 'publish/DeskDock'), $_.FullName)
+              "{0}  {1}" -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash, $relative
+            } | Set-Content -LiteralPath publish/DeskDock/SHA256SUMS.txt -Encoding utf8
+
+      - name: Subir aplicación para descargar
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: DeskDock-win-x64
+          path: publish/DeskDock/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Conservar diagnóstico de autoprueba si falla
+        if: failure()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: DeskDock-diagnostico
+          path: publish/DeskDock/self-test-results.txt
+          if-no-files-found: ignore
+          retention-days: 7
