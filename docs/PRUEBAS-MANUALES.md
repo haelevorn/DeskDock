@@ -1,5 +1,13 @@
 # Pruebas del MVP en Windows
 
+## Correcciones 0.7 — prueba real pendiente
+
+- Confirmar «Chats» y «Chat» visibles arriba de WhatsApp a 300 × 340 y en tamaño normal; cambiar a lista/conversación sin abrir menú.
+- Activar avisos; comprobar permiso en Ver estado. Recibir mensajes de dos conversaciones nuevas con otra ventana activa y con app en bandeja. Registrar permiso, eventos web y contador si no aparece el aviso. La prueba de aviso ya funcionó según el usuario; queda por validar la recepción real tras el cambio.
+- Dos eventos web consecutivos no deben descartarse por el antiguo filtro de ocho segundos; no duplicar el par evento/contador del mismo aviso. El contador no garantiza un aviso por cada mensaje.
+- Abrir preferencias de 0.6 que tenían Glass activado: ventana opaca, opción ausente, perfiles/skin/tamaño/referencia conservados.
+- Iconos Referencia: carpeta abre selector, ajustar centra imagen completa, lupa + aumenta, lupa − reduce y X quita sin borrar archivo. Probar también una imagen pequeña para verificar la corrección del límite de zoom.
+
 ## Cambios 0.6 — comprobaciones manuales pendientes
 
 - Iniciar Pomodoro y pasar por las cuatro pestañas: indicador con tiempo/etapa siempre presente. Clic vuelve a Pomodoro. Pausar/reiniciar lo oculta.

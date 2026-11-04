@@ -30,7 +30,8 @@ public partial class MainWindow : Window
     private string? _artKey;
     private int _notifications;
     private int? _unreadCount;
-    private DateTimeOffset _lastNotice = DateTimeOffset.MinValue;
+    private readonly NotificationDeduplicator _notificationGate = new();
+    private string _webNotificationPermission = "sin consultar";
     private CoreWebView2Notification? _pendingNotification;
     private bool _layoutBusy;
     private string _layoutMode = "";
@@ -46,7 +47,6 @@ public partial class MainWindow : Window
             int roundedCorners = 2;
             _ = DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 33, ref roundedCorners, sizeof(int));
         }
-        ApplyGlass();
     }
 
     private void MinimizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
@@ -63,7 +63,7 @@ public partial class MainWindow : Window
     }
 
     private void StatusClick(object sender, RoutedEventArgs e) => MessageBox.Show(this,
-        $"WhatsApp\n{WebStatus.Text}\n{LayoutStatus.Text}\n\nSpotify\n{MediaStatus.Text}\n\nAvisos\n{NotificationStatus.Text}\n\nAudio\n{AudioStatus.Text}",
+        $"WhatsApp\n{WebStatus.Text}\n{LayoutStatus.Text}\n\nSpotify\n{MediaStatus.Text}\n\nAvisos\nPermiso del sitio: {_webNotificationPermission}\nEventos web recibidos: {_notifications}\nContador detectado: {_unreadCount?.ToString() ?? "sin contador"}\n{NotificationStatus.Text}\n\nAudio\n{AudioStatus.Text}",
         "Estado de DeskDock");
 
     public MainWindow() : this(false) { }
@@ -81,8 +81,6 @@ public partial class MainWindow : Window
         InitializeFocusTools(settings);
         _profiles = new(settings.Profiles);
         RefreshProfiles();
-        GlassOption.IsChecked = settings.GlassEnabled;
-        ApplyGlass();
         if (!_testMode && !string.IsNullOrWhiteSpace(settings.ReferenceImagePath)) LoadReference(settings.ReferenceImagePath, save: false);
     }
 
@@ -172,7 +170,7 @@ public partial class MainWindow : Window
             new Settings(Topmost, TrayOption.IsChecked, SkinManager.Current, SoundOption.IsChecked,
                 SafeDimension(bounds.Width, 360, 300, SystemParameters.WorkArea.Width),
                 SafeDimension(bounds.Height, 520, 340, SystemParameters.WorkArea.Height), Pomodoro.Options,
-                _profiles.Items.ToList(), GlassOption.IsChecked, _referencePath).Save();
+                _profiles.Items.ToList(), _referencePath).Save();
         }
     }
 
@@ -182,7 +180,6 @@ public partial class MainWindow : Window
         MinimalSkin.IsChecked = SkinManager.Current == "minimal";
         AuroraSkin.IsChecked = SkinManager.Current == "aurora";
         EclipseSkin.IsChecked = SkinManager.Current == "eclipse";
-        ApplyGlass();
     }
 
     private void SkinClick(object sender, RoutedEventArgs e)
@@ -243,7 +240,11 @@ public partial class MainWindow : Window
                 ShowNotice("Nuevo aviso de WhatsApp. Abre DeskDock para verlo.", args.Notification);
             };
             core.DocumentTitleChanged += (_, _) => CheckUnreadTitle();
-            core.DOMContentLoaded += async (_, _) => await UpdateWebLayoutAsync();
+            core.DOMContentLoaded += async (_, _) =>
+            {
+                await UpdateWebLayoutAsync();
+                await ReadNotificationPermissionAsync();
+            };
             core.ProcessFailed += (_, _) =>
             {
                 if (!_closing) WebStatus.Text = "Un proceso de WebView2 falló. Cierra DeskDock y vuelve a abrirlo.";
@@ -274,6 +275,8 @@ public partial class MainWindow : Window
         if (!NavigationPolicy.IsWhatsApp(e.Uri) || e.PermissionKind != CoreWebView2PermissionKind.Notifications) return;
         var answer = MessageBox.Show(this, "¿Permitir que WhatsApp Web muestre notificaciones mientras DeskDock está abierto?", "DeskDock", MessageBoxButton.YesNo);
         e.State = answer == MessageBoxResult.Yes ? CoreWebView2PermissionState.Allow : CoreWebView2PermissionState.Deny;
+        _webNotificationPermission = answer == MessageBoxResult.Yes ? "granted" : "denied";
+        WebNoticeState.Text = answer == MessageBoxResult.Yes ? "Avisos ✓" : "Activar avisos";
         NotificationStatus.Text = answer == MessageBoxResult.Yes
             ? "Permiso concedido. Falta comprobar la recepción real de un mensaje."
             : "Notificaciones denegadas. Puedes solicitarlas de nuevo desde WhatsApp.";
@@ -329,6 +332,8 @@ public partial class MainWindow : Window
         {
             await core.Profile.SetPermissionStateAsync(CoreWebView2PermissionKind.Notifications,
                 "https://web.whatsapp.com", CoreWebView2PermissionState.Allow);
+            _webNotificationPermission = "granted";
+            WebNoticeState.Text = "Avisos ✓";
             NotificationStatus.Text = "Permiso de avisos activado. Activa también las notificaciones en los ajustes de WhatsApp y recibe un mensaje de prueba.";
             WebStatus.Text = "Permiso activado. Revisa Ajustes → Notificaciones dentro de WhatsApp. Usa Probar aviso para comprobar Windows.";
         }
@@ -337,6 +342,22 @@ public partial class MainWindow : Window
 
     private void TestNotificationClick(object sender, RoutedEventArgs e) =>
         ShowNotice("Este es un aviso de prueba de DeskDock. No procede de un mensaje de WhatsApp.", test: true);
+
+    private async Task ReadNotificationPermissionAsync()
+    {
+        if (_closing || Web.CoreWebView2 is not { } core || !NavigationPolicy.IsWhatsApp(core.Source)) return;
+        try
+        {
+            string json = await core.ExecuteScriptAsync("typeof Notification !== 'undefined' ? Notification.permission : 'unsupported'");
+            if (_closing) return;
+            _webNotificationPermission = JsonSerializer.Deserialize<string>(json) ?? "desconocido";
+            WebNoticeState.Text = _webNotificationPermission == "granted" ? "Avisos ✓" : "Activar avisos";
+            WebNoticeState.ToolTip = _webNotificationPermission == "granted"
+                ? "Permiso web concedido. Revisa también notificaciones dentro de WhatsApp."
+                : "Pulsa para permitir avisos de WhatsApp en este perfil.";
+        }
+        catch (Exception ex) { Diagnostics.Record("NotificationPermissionRead", ex); }
+    }
 
     private void CheckUnreadTitle()
     {
@@ -347,14 +368,15 @@ public partial class MainWindow : Window
         _unreadCount = next;
         // No anunciar el contador inicial al cargar el perfil.
         if (previous.HasValue && next > previous && (!IsVisible || !IsActive || MainTabs.SelectedIndex != 0))
-            ShowNotice("Ha aumentado el contador de mensajes sin leer de WhatsApp. Abre DeskDock para revisarlo.");
+            ShowNotice("Ha aumentado el contador de mensajes sin leer de WhatsApp. Abre DeskDock para revisarlo.", source: WhatsAppNoticeSource.UnreadCounter);
     }
 
-    private void ShowNotice(string text, CoreWebView2Notification? notification = null, bool test = false, string? title = null, int targetTab = 0)
+    private void ShowNotice(string text, CoreWebView2Notification? notification = null, bool test = false, string? title = null, int targetTab = 0,
+        WhatsAppNoticeSource source = WhatsAppNoticeSource.WebEvent)
     {
         if (_closing) return;
         // Evitar duplicar un aviso web y el cambio de título del mismo mensaje.
-        if (targetTab == 0 && !test && DateTimeOffset.UtcNow - _lastNotice < TimeSpan.FromSeconds(8))
+        if (targetTab == 0 && !test && !_notificationGate.ShouldPresent(source, TimeSpan.FromMilliseconds(Environment.TickCount64)))
         {
             try { notification?.ReportClosed(); } catch (Exception ex) { Diagnostics.Record("NotificationClose", ex); }
             return;
@@ -367,7 +389,6 @@ public partial class MainWindow : Window
         ClosePendingNotification();
         _pendingNotification = notification;
         _noticeTargetTab = targetTab;
-        if (targetTab == 0) _lastNotice = DateTimeOffset.UtcNow;
         try
         {
             _tray.ShowBalloonTip(6000, title ?? (test ? "DeskDock · prueba de aviso" : "WhatsApp · DeskDock"), text, Forms.ToolTipIcon.Info);
@@ -390,8 +411,8 @@ public partial class MainWindow : Window
 
     private async void WebSizeChanged(object sender, SizeChangedEventArgs e) => await UpdateWebLayoutAsync();
     private async void CompactClick(object sender, RoutedEventArgs e) => await UpdateWebLayoutAsync();
-    private async void ChatListClick(object sender, RoutedEventArgs e) { _layoutMode = "list"; await UpdateWebLayoutAsync(); }
-    private async void ConversationClick(object sender, RoutedEventArgs e) { _layoutMode = "auto"; await UpdateWebLayoutAsync(); }
+    private async void ChatListClick(object sender, RoutedEventArgs e) { MainTabs.SelectedIndex = 0; _layoutMode = "list"; await UpdateWebLayoutAsync(); }
+    private async void ConversationClick(object sender, RoutedEventArgs e) { MainTabs.SelectedIndex = 0; _layoutMode = "auto"; await UpdateWebLayoutAsync(); }
 
     private async Task UpdateWebLayoutAsync()
     {

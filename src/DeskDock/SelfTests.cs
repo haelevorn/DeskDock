@@ -44,6 +44,15 @@ internal static class SelfTests
             }
             Check(NotificationPolicy.UnreadCount("(3) WhatsApp") == 3, "Contador de no leídos", results);
             Check(NotificationPolicy.UnreadCount("WhatsApp") == 0, "Contador reiniciado", results);
+            Check(NotificationPolicy.UnreadCount("WhatsApp (4)") == 4 && NotificationPolicy.UnreadCount("\u200e(2) WhatsApp Web\u200f") == 2,
+                "Contador admite sufijo, formato web y marcas de dirección", results);
+            var gate = new NotificationDeduplicator();
+            Check(gate.ShouldPresent(WhatsAppNoticeSource.WebEvent, TimeSpan.Zero) &&
+                  gate.ShouldPresent(WhatsAppNoticeSource.WebEvent, TimeSpan.FromMilliseconds(400)),
+                "Dos eventos web consecutivos no se pierden por límite temporal", results);
+            Check(!gate.ShouldPresent(WhatsAppNoticeSource.UnreadCounter, TimeSpan.FromMilliseconds(600)) &&
+                   gate.ShouldPresent(WhatsAppNoticeSource.WebEvent, TimeSpan.FromMilliseconds(900)),
+                "Agrupar solo duplicado contador-evento sin bloquear el siguiente aviso", results);
             foreach (string title in new[] { "(3) Otro sitio", "WhatsApp - contacto", "(texto) WhatsApp", "(999999999999999) WhatsApp" })
                 Check(NotificationPolicy.UnreadCount(title) is null, "Ignorar título no reconocido", results);
 
@@ -53,8 +62,12 @@ internal static class SelfTests
             window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             Check(((System.Windows.FrameworkElement)window.FindName("MiniPlayer")).ActualHeight <= 60,
                 "Mini reproductor compacto sin filas extra", results);
-            Check(((System.Windows.FrameworkElement)window.FindName("Web")).ActualHeight > window.ActualHeight * 0.70,
-                "WhatsApp ocupa más del 70% del alto inicial de la ventana", results);
+            Check(((System.Windows.FrameworkElement)window.FindName("Web")).ActualHeight > window.ActualHeight * 0.62,
+                "WhatsApp conserva espacio con barra compacta de navegación", results);
+            Check(((System.Windows.Controls.Button)window.FindName("ChatListButton")).IsVisible &&
+                  ((System.Windows.Controls.Button)window.FindName("ConversationButton")).IsVisible &&
+                  ((FrameworkElement)window.FindName("WhatsAppToolbar")).ActualHeight <= 28,
+                "Chats y Chat visibles sin abrir menús", results);
             Check(window.MinWidth == 300 && window.MinHeight == 340, "Ventana mínima de 300 por 340", results);
             Check(((System.Windows.Controls.TextBlock)window.FindName("ClockText")).Text.Length == 5,
                 "Reloj de Windows visible desde el inicio", results);
@@ -141,14 +154,23 @@ internal static class SelfTests
                 var bounds = photo.TransformToAncestor(canvas).TransformBounds(new Rect(0, 0, photo.ActualWidth, photo.ActualHeight));
                 Check(bounds.Width > 0 && bounds.Right <= canvas.ActualWidth + 1 && bounds.Bottom <= canvas.ActualHeight + 1,
                     "Referencia se ajusta completa dentro del panel pequeño", results);
+                double beforeZoom = ((MatrixTransform)photo.RenderTransform).Matrix.M11;
+                var zoomIn = (System.Windows.Controls.Button)window.FindName("ReferenceZoomInButton");
+                var zoomOut = (System.Windows.Controls.Button)window.FindName("ReferenceZoomOutButton");
+                zoomIn.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                Check(((MatrixTransform)photo.RenderTransform).Matrix.M11 > beforeZoom, "Lupa más acerca incluso imágenes pequeñas", results);
+                zoomOut.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                Check(Math.Abs(((MatrixTransform)photo.RenderTransform).Matrix.M11 - beforeZoom) < 0.001,
+                    "Lupa menos reduce el zoom con la acción correcta", results);
+                Check(zoomIn.Content is System.Windows.Shapes.Path && zoomOut.Content is System.Windows.Shapes.Path,
+                    "Iconos de referencia vectoriales sin depender de glifos de fuente", results);
+                ((System.Windows.Controls.Button)window.FindName("ReferenceFitButton")).RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                 File.Delete(imagePath);
                 Check(((BitmapSource)photo.Source).PixelWidth == 2, "Imagen queda en memoria sin bloquear el archivo original", results);
             }
             finally { if (File.Exists(imagePath)) File.Delete(imagePath); }
-            Check(window.AllowsTransparency == false, "Glass no activa transparencia por píxel incompatible con WebView2", results);
-            if (!MainWindow.GlassSupported)
-                Check(!((System.Windows.Controls.MenuItem)window.FindName("GlassOption")).IsEnabled,
-                    "Glass deshabilitado en Windows no compatible", results);
+            Check(window.AllowsTransparency == false && window.FindName("GlassOption") is null,
+                "Ventana opaca sin opción Glass", results);
             tabs.SelectedIndex = 1;
             window.Width = 360;
             window.Height = 520;

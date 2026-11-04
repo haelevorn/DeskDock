@@ -1,5 +1,13 @@
 # Compatibilidad, límites y evidencia
 
+## Correcciones 0.7
+
+Glass se eliminó íntegramente de la aplicación; los apartados previos sobre acrílico describen solo la versión histórica 0.6. Se conserva únicamente el redondeo nativo de esquinas que ya existía antes de Glass.
+
+La prueba manual del usuario confirmó que «Probar aviso» aparece y suena. Esto separa la presentación de Windows de la recepción desde WhatsApp. La corrección amplía formatos reconocidos del título, comprueba el contador cada dos segundos con el temporizador de interfaz y reemplaza la supresión general de ocho segundos por deduplicación entre fuentes durante dos segundos. No demuestra que WhatsApp emita eventos en todas sus versiones/estados ni que el contador cambie con cada mensaje. Se añade lectura del permiso `Notification.permission` y diagnóstico de permiso/eventos/contador. No se leen mensajes, contactos ni remitentes y no se fuerza un permiso denegado sin pulsar Activar avisos.
+
+Los iconos de Referencia son geometrías vectoriales incluidas, no caracteres cuyo aspecto dependa de la fuente instalada. Las pruebas accionan los botones de zoom sobre una imagen sintética y comprueban el cambio real de escala. La apertura del selector y la recepción de mensajes reales requieren prueba manual.
+
 ## Actualización 0.6
 
 El indicador de Pomodoro representa únicamente un temporizador en ejecución: se oculta estando pausado, reiniciado o esperando inicio manual. Los perfiles conservan duraciones y opciones, no sesiones en curso. Guardar no inicia ni cambia el temporizador; cargar reinicia. Todo se conserva en el archivo local de preferencias.

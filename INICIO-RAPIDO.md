@@ -1,5 +1,15 @@
 # Usar DeskDock sin instalar herramientas de programación
 
+## Correcciones — versión 0.7
+
+1. Cierra la versión anterior, extrae el ZIP nuevo completo en otra carpeta y abre el EXE. Debe mostrar **0.7**.
+2. En WhatsApp, usa los botones pequeños **Chats** y **Chat**, otra vez visibles arriba del contenido, para alternar lista y conversación. También siguen en «⋯».
+3. Pulsa **Avisos / Activar avisos** en esa barra para conceder el permiso del sitio. Revisa también que las notificaciones estén activas dentro de WhatsApp.
+4. Recibe un mensaje con otra ventana activa y repite con DeskDock en bandeja. En **⋯ → Ver estado y avisos…** se muestran el permiso del sitio, eventos web recibidos y contador detectado. La prueba de aviso solo comprueba la presentación de Windows, no la recepción desde WhatsApp.
+5. Si la prueba funciona y el mensaje real no notifica, anota esos tres datos de estado después de recibirlo. La alternativa por título solo detecta aumentos del contador; puede no avisar de otro mensaje de un chat que ya estaba sin leer. No es una garantía de push con la app cerrada.
+6. Glass está eliminado. No necesitas borrar preferencias ni cambiar ninguna configuración de Windows. Las instrucciones de versiones antiguas que lo mencionan ya no se aplican.
+7. En Referencia, de izquierda a derecha: **carpeta = abrir**, **esquinas/rectángulo = ajustar**, **lupa − = alejar**, **lupa + = acercar**, **X = quitar la referencia sin borrar el archivo**. Cada botón incluye descripción al pasar el ratón.
+
 ## Pomodoro visible, perfiles, Glass y Referencia — versión 0.6
 
 Actualiza cerrando la aplicación anterior, extrayendo el nuevo ZIP completo en otra carpeta y abriendo su EXE. La cabecera debe mostrar **0.6**.

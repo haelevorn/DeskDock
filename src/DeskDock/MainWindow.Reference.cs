@@ -74,7 +74,9 @@ public partial class MainWindow
     {
         if (ReferencePhoto.Source is null) return;
         double current = _referenceMatrix.M11;
-        double next = Math.Clamp(current * factor, 0.01, 12);
+        var bitmap = (BitmapSource)ReferencePhoto.Source;
+        double fit = Math.Min(ReferenceCanvas.ActualWidth / bitmap.PixelWidth, ReferenceCanvas.ActualHeight / bitmap.PixelHeight);
+        double next = Math.Clamp(current * factor, Math.Min(0.01, Math.Max(0.0001, fit * 0.25)), Math.Max(12, fit * 8));
         double ratio = next / current;
         _referenceMatrix = new Matrix(next, 0, 0, next,
             anchor.X - (anchor.X - _referenceMatrix.OffsetX) * ratio,

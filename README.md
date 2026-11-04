@@ -1,6 +1,15 @@
-# DeskDock 0.6
+# DeskDock 0.7
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Correcciones de la versión 0.7
+
+- «Chats» y «Chat» vuelven a estar visibles en una barra de 28 unidades dentro de WhatsApp, junto al acceso para conceder permiso de avisos. Se conservan los accesos del menú.
+- Avisos: lectura del permiso real del sitio, contador más tolerante a formatos de título y comprobación independiente de consultas multimedia cada dos segundos. Se retira la supresión general de ocho segundos; solo se intenta agrupar el par evento web/contador próximo, sin descartar dos eventos web consecutivos. La prueba de aviso funcionó en el equipo del usuario; la recepción de un mensaje real debe volver a comprobarse.
+- Glass eliminado: sin opción, estado guardado, archivo de implementación ni llamadas de acrílico. Las preferencias antiguas se leen ignorando ese campo, conservando perfiles, skin, imagen y tamaño.
+- Referencia usa iconos vectoriales explícitos de carpeta, ajustar, lupa −, lupa + y quitar. También se corrige que acercar una imagen diminuta ya ampliada al ajustar pudiera reducirla debido al límite de zoom.
+
+Las secciones de versiones anteriores son históricas; la descripción de 0.7 prevalece donde difieren.
 
 ## Cambios de la versión 0.6
 

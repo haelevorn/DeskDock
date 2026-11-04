@@ -51,12 +51,13 @@ internal static class FocusSelfTests
         Check(profiles.Items.Count == 1 && original.Id == updated.Id && updated.Options.FocusMinutes == 50,
             "Guardar mismo nombre actualiza perfil sin duplicarlo", results);
         profiles.Upsert("Lectura", new(20, 5, 10, 4, false));
-        var stored = new Settings(Profiles: profiles.Items.ToList(), GlassEnabled: true, ReferenceImagePath: "C:\\imagenes\\referencia.png");
-        var restored = JsonSerializer.Deserialize<Settings>(JsonSerializer.Serialize(stored))!;
+        var stored = new Settings(Profiles: profiles.Items.ToList(), ReferenceImagePath: "C:\\imagenes\\referencia.png");
+        string legacy = JsonSerializer.Serialize(stored);
+        var restored = JsonSerializer.Deserialize<Settings>(legacy[..^1] + ",\"GlassEnabled\":true}")!;
         var restoredProfiles = new PomodoroProfiles(restored.Profiles);
         Check(restoredProfiles.Items.Count == 2 && restoredProfiles.Items[0].Id == updated.Id &&
-              restoredProfiles.Items[0].Options.FocusMinutes == 50 && restored.GlassEnabled,
-            "Perfiles y preferencias nuevas sobreviven serialización", results);
+              restoredProfiles.Items[0].Options.FocusMinutes == 50 && !JsonSerializer.Serialize(restored).Contains("GlassEnabled"),
+            "Preferencias antiguas conservan perfiles y descartan Glass", results);
         profiles.Remove(updated.Id);
         Check(profiles.Items.Count == 1 && profiles.Items[0].Name == "Lectura", "Eliminar solo el perfil seleccionado", results);
         bool rejected = false;

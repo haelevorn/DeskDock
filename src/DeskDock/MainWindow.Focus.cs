@@ -9,6 +9,7 @@ public partial class MainWindow
 {
     internal PomodoroTimer Pomodoro { get; } = new();
     private readonly DispatcherTimer _focusTimer = new() { Interval = TimeSpan.FromMilliseconds(250) };
+    private long _lastNotificationPoll;
 
     private void InitializeFocusTools(Settings settings)
     {
@@ -35,6 +36,12 @@ public partial class MainWindow
     {
         UpdateClock();
         UpdatePomodoro();
+        if (Environment.TickCount64 - _lastNotificationPoll >= 2000)
+        {
+            _lastNotificationPoll = Environment.TickCount64;
+            try { CheckUnreadTitle(); }
+            catch (Exception ex) { Diagnostics.Record("NotificationCounterPoll", ex); }
+        }
     }
 
     private void UpdateClock()

@@ -19,7 +19,7 @@
    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
     <Ellipse Fill="{DynamicResource AccentBrush}" Width="7" Height="7" Margin="0,0,9,0"/>
     <TextBlock Text="DeskDock" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-    <TextBlock Text="0.6" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
+    <TextBlock Text="0.7" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
    </StackPanel>
    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
     <TextBlock x:Name="ClockText" FontSize="11" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,7,0" AutomationProperties.Name="Hora actual de Windows"/>
@@ -37,7 +37,6 @@
        <MenuItem x:Name="TrayOption" Header="Minimizar a bandeja" IsCheckable="True" IsChecked="True" Click="SettingsClick"/>
        <MenuItem Header="Ocultar en bandeja" Click="HideClick"/>
        <MenuItem Header="Tamaño compacto" Click="CompactWindowClick"/>
-       <MenuItem x:Name="GlassOption" Header="Glass translúcido (Windows 11)" IsCheckable="True" Click="GlassClick"/>
        <Separator/>
        <MenuItem Header="SKINS" IsEnabled="False"/>
        <MenuItem x:Name="MinimalSkin" Header="Minimal · original" Tag="minimal" IsCheckable="True" Click="SkinClick"/>
@@ -59,9 +58,19 @@
   </Grid>
   <TabControl x:Name="MainTabs" Grid.Row="1" Background="{DynamicResource SurfaceBackground}" BorderThickness="0" Padding="0,4,0,0">
    <TabItem Header="WhatsApp">
-    <Border CornerRadius="12" Background="{DynamicResource SurfaceBackground}">
-     <wv:WebView2 x:Name="Web" DefaultBackgroundColor="#192228" SizeChanged="WebSizeChanged"/>
-    </Border>
+    <Grid>
+     <Grid.RowDefinitions><RowDefinition Height="28"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+     <StackPanel x:Name="WhatsAppToolbar" Orientation="Horizontal" Margin="1,0,0,2">
+      <Button x:Name="ChatListButton" Content="Chats" Click="ChatListClick" Padding="9,3" FontSize="11" Margin="2,0" ToolTip="Ver lista de chats" AutomationProperties.Name="Ver lista de chats"/>
+      <Button x:Name="ConversationButton" Content="Chat" Click="ConversationClick" Padding="9,3" FontSize="11" Margin="2,0" ToolTip="Ver conversación completa" AutomationProperties.Name="Ver conversación"/>
+      <Button Click="EnableNotificationsClick" Padding="9,3" Margin="2,0" ToolTip="Permitir notificaciones del sitio WhatsApp">
+       <TextBlock x:Name="WebNoticeState" Text="Avisos" FontSize="10" Foreground="{DynamicResource TextSecondary}"/>
+      </Button>
+     </StackPanel>
+     <Border Grid.Row="1" CornerRadius="12" Background="{DynamicResource SurfaceBackground}">
+      <wv:WebView2 x:Name="Web" DefaultBackgroundColor="#192228" SizeChanged="WebSizeChanged"/>
+     </Border>
+    </Grid>
    </TabItem>
    <TabItem Header="Spotify">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -137,11 +146,11 @@
      <DockPanel Margin="3,3,3,5">
       <TextBlock Text="Referencia" Foreground="{DynamicResource TextSecondary}" FontSize="11" VerticalAlignment="Center"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-       <Button Style="{StaticResource IconButton}" Content="&#xE8E5;" Click="OpenReferenceClick" ToolTip="Abrir imagen" AutomationProperties.Name="Abrir imagen de referencia"/>
-       <Button Style="{StaticResource IconButton}" Content="&#xE9A6;" Click="FitReferenceClick" ToolTip="Ajustar imagen" AutomationProperties.Name="Ajustar imagen"/>
-       <Button Style="{StaticResource IconButton}" Content="&#xE8A3;" Click="ZoomOutReferenceClick" ToolTip="Alejar" AutomationProperties.Name="Alejar imagen"/>
-       <Button Style="{StaticResource IconButton}" Content="&#xE8A4;" Click="ZoomInReferenceClick" ToolTip="Acercar" AutomationProperties.Name="Acercar imagen"/>
-       <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" Click="ClearReferenceClick" ToolTip="Quitar referencia" AutomationProperties.Name="Quitar referencia"/>
+       <Button x:Name="ReferenceOpenButton" Style="{StaticResource IconButton}" Click="OpenReferenceClick" ToolTip="Abrir imagen" AutomationProperties.Name="Abrir imagen de referencia"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceFolderGeometry}"/></Button>
+       <Button x:Name="ReferenceFitButton" Style="{StaticResource IconButton}" Click="FitReferenceClick" ToolTip="Ajustar imagen" AutomationProperties.Name="Ajustar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceFitGeometry}"/></Button>
+       <Button x:Name="ReferenceZoomOutButton" Style="{StaticResource IconButton}" Click="ZoomOutReferenceClick" ToolTip="Alejar" AutomationProperties.Name="Alejar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceZoomOutGeometry}"/></Button>
+       <Button x:Name="ReferenceZoomInButton" Style="{StaticResource IconButton}" Click="ZoomInReferenceClick" ToolTip="Acercar" AutomationProperties.Name="Acercar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceZoomInGeometry}"/></Button>
+       <Button x:Name="ReferenceRemoveButton" Style="{StaticResource IconButton}" Click="ClearReferenceClick" ToolTip="Quitar referencia (no borra el archivo)" AutomationProperties.Name="Quitar referencia"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceRemoveGeometry}"/></Button>
       </StackPanel>
      </DockPanel>
      <Border Grid.Row="1" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" ClipToBounds="True">
