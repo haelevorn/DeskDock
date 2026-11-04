@@ -1,6 +1,10 @@
-# DeskDock 0.2
+# DeskDock 0.3
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.3
+
+Interfaz compacta: cabecera de 36 unidades, pestañas pequeñas, dos iconos para lista/conversación y reproductor inferior de 54 unidades. Las acciones secundarias, preferencias y estado se encuentran en el menú «⋯». El altavoz abre volumen y silencio. Reproducir y pausar ocupan el mismo espacio y alternan según el estado publicado por Spotify. Los iconos tienen descripción al pasar el ratón y nombre accesible. La lógica de WhatsApp adaptable y avisos se conserva.
 
 ## Cambios de la versión 0.2
 

@@ -1,5 +1,14 @@
 # Pruebas del MVP en Windows
 
+## Interfaz 0.3 — comprobación manual pendiente
+
+- Abrir el menú «⋯» con ratón y teclado; comprobar recargar, preferencias marcables y acceso a estado/avisos.
+- Abrir altavoz, mover volumen, silenciar y cerrar el menú; comprobar que sigue el volumen de Windows.
+- Cambiar entre Spotify y WhatsApp: iconos de lista/chat solo en WhatsApp, mini reproductor conservado.
+- Reproducir/pausar desde ambas vistas y desde Spotify; comprobar que el icono alterna.
+- Probar ancho mínimo, ventana maximizada y escala de Windows 125%/150%; controles sin superposición y título largo truncado con descripción completa al pasar el ratón.
+- Repetir las pruebas de avisos desde el menú. La reducción visual no cambia los límites documentados de recepción.
+
 ## Casos añadidos en 0.2 — pendientes de prueba en el equipo del usuario
 
 | Caso | Resultado esperado | Resultado |

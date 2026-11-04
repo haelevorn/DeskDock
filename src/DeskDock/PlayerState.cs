@@ -11,6 +11,8 @@ public sealed class PlayerState : INotifyPropertyChanged
     private string _title = "Sin sesión de Spotify", _artist = "Abre Spotify y reproduce música";
     private ImageSource? _artwork;
     private bool _canPlay, _canPause, _canPrevious, _canNext;
+    private bool _isPlaying;
+    public bool IsPlaying { get => _isPlaying; set => Set(ref _isPlaying, value); }
     public string Title { get => _title; set => Set(ref _title, value); }
     public string Artist { get => _artist; set => Set(ref _artist, value); }
     public ImageSource? Artwork { get => _artwork; set => Set(ref _artwork, value); }

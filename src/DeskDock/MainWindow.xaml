@@ -4,112 +4,124 @@
  xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
  Title="DeskDock" Width="490" Height="740" MinWidth="390" MinHeight="500"
- Background="#11191F" Foreground="#EAF1F4" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
+ Background="#11191E" Foreground="#EAF1F4" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
  WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
  Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized">
  <shell:WindowChrome.WindowChrome>
-  <shell:WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="16" UseAeroCaptionButtons="False"/>
+  <shell:WindowChrome CaptionHeight="42" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="16" UseAeroCaptionButtons="False"/>
  </shell:WindowChrome.WindowChrome>
- <Grid Margin="12">
-  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-  <StackPanel Margin="0,0,0,10">
-   <Grid Height="44" Margin="2,0,0,8">
-    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-     <Border Background="#75E4B2" Width="30" Height="30" CornerRadius="10" Margin="0,0,10,0">
-      <TextBlock Text="D" FontWeight="Bold" Foreground="#10271F" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-     </Border>
-     <TextBlock Text="DeskDock" FontSize="21" FontWeight="SemiBold" VerticalAlignment="Center"/>
-     <TextBlock Text="0.2" Foreground="#7A979F" FontSize="11" Margin="7,0,0,0" VerticalAlignment="Center"/>
-    </StackPanel>
-    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
-     <Button Content="↘" Click="HideClick" ToolTip="Ocultar en bandeja" Padding="10,6" Background="Transparent" AutomationProperties.Name="Ocultar en bandeja"/>
-     <Button Content="—" Click="MinimizeClick" ToolTip="Minimizar" Padding="10,6" Background="Transparent" AutomationProperties.Name="Minimizar"/>
-     <Button Content="□" Click="MaximizeClick" ToolTip="Maximizar o restaurar" Padding="10,6" Background="Transparent" AutomationProperties.Name="Maximizar o restaurar"/>
-     <Button Content="✕" Click="CloseClick" ToolTip="Cerrar DeskDock" Padding="10,6" Background="#3C2833" AutomationProperties.Name="Cerrar DeskDock"/>
-    </StackPanel>
-   </Grid>
-   <WrapPanel>
-    <CheckBox x:Name="Pin" Content="Siempre encima" Click="SettingsClick"/>
-    <CheckBox x:Name="TrayOption" Content="Minimizar a bandeja" IsChecked="True" Click="SettingsClick"/>
-   </WrapPanel>
-  </StackPanel>
-  <TabControl x:Name="MainTabs" Grid.Row="1" Background="#17232A" BorderThickness="0" Padding="0,10,0,0">
+ <Grid Margin="10,6,10,10">
+  <Grid.RowDefinitions><RowDefinition Height="36"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Grid>
+   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+    <Ellipse Fill="#7AE2B1" Width="7" Height="7" Margin="0,0,9,0"/>
+    <TextBlock Text="DeskDock" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+    <TextBlock Text="0.3" Foreground="#637B85" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
+   </StackPanel>
+   <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+    <Button x:Name="MoreButton" Style="{StaticResource IconButton}" Content="&#xE712;" Click="MoreClick" ToolTip="Opciones y acciones" AutomationProperties.Name="Opciones y acciones">
+     <Button.ContextMenu>
+      <ContextMenu>
+       <MenuItem Header="Recargar WhatsApp" Click="ReloadClick"/>
+       <MenuItem Header="Abrir WhatsApp en navegador" Click="BrowserClick"/>
+       <MenuItem Header="Abrir aplicación Spotify" Click="SpotifyClick"/>
+       <Separator/>
+       <MenuItem x:Name="CompactWhatsApp" Header="Vista adaptable de WhatsApp" IsCheckable="True" IsChecked="True" Click="CompactClick"/>
+       <MenuItem x:Name="Pin" Header="Siempre encima" IsCheckable="True" Click="SettingsClick"/>
+       <MenuItem x:Name="TrayOption" Header="Minimizar a bandeja" IsCheckable="True" IsChecked="True" Click="SettingsClick"/>
+       <MenuItem Header="Ocultar en bandeja" Click="HideClick"/>
+       <Separator/>
+       <MenuItem Header="Activar avisos de WhatsApp" Click="EnableNotificationsClick"/>
+       <MenuItem Header="Probar aviso" Click="TestNotificationClick"/>
+       <MenuItem Header="Ver estado y avisos…" Click="StatusClick"/>
+       <MenuItem Header="Abrir carpeta de diagnóstico" Click="DiagnosticsClick"/>
+      </ContextMenu>
+     </Button.ContextMenu>
+    </Button>
+    <Button Style="{StaticResource IconButton}" Content="&#xE921;" Click="MinimizeClick" ToolTip="Minimizar" AutomationProperties.Name="Minimizar"/>
+    <Button Style="{StaticResource IconButton}" Content="&#xE922;" Click="MaximizeClick" ToolTip="Maximizar o restaurar" AutomationProperties.Name="Maximizar o restaurar"/>
+    <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" Click="CloseClick" ToolTip="Cerrar DeskDock" AutomationProperties.Name="Cerrar DeskDock"/>
+   </StackPanel>
+  </Grid>
+  <TabControl x:Name="MainTabs" Grid.Row="1" Background="#172127" BorderThickness="0" Padding="0,4,0,0">
    <TabItem Header="WhatsApp">
-    <Grid>
-     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-     <WrapPanel>
-      <Button Content="Recargar" Click="ReloadClick"/>
-      <Button Content="Abrir en navegador ↗" Click="BrowserClick"/>
-      <Button Content="Activar avisos" Click="EnableNotificationsClick"/>
-     </WrapPanel>
-     <WrapPanel Grid.Row="1">
-      <CheckBox x:Name="CompactWhatsApp" Content="Vista adaptable" IsChecked="True" Click="CompactClick" ToolTip="En ventanas estrechas muestra la lista o la conversación, una por vez"/>
-      <Button Content="Chats" Click="ChatListClick" Padding="9,5"/>
-      <Button Content="Chat" Click="ConversationClick" Padding="9,5"/>
-      <Button Content="Probar aviso" Click="TestNotificationClick" Padding="9,5"/>
-     </WrapPanel>
-     <StackPanel Grid.Row="2" Margin="6,4,6,8">
-      <TextBlock x:Name="WebStatus" Text="Preparando WhatsApp…" TextWrapping="Wrap" Foreground="#A8BABF" FontSize="11"/>
-      <TextBlock x:Name="LayoutStatus" TextWrapping="Wrap" Foreground="#8CF0C2" FontSize="11"/>
-     </StackPanel>
-     <wv:WebView2 x:Name="Web" Grid.Row="3" DefaultBackgroundColor="#192228" SizeChanged="WebSizeChanged"/>
-    </Grid>
+    <Border CornerRadius="12" Background="#192228">
+     <wv:WebView2 x:Name="Web" DefaultBackgroundColor="#192228" SizeChanged="WebSizeChanged"/>
+    </Border>
    </TabItem>
    <TabItem Header="Spotify">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-     <StackPanel Margin="18,16">
-      <TextBlock Text="SONANDO EN SPOTIFY" FontSize="11" Foreground="#8CF0C2" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-      <Border Background="#293940" CornerRadius="12" Margin="0,16,0,14" Width="160" Height="160" HorizontalAlignment="Center">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+     <StackPanel Margin="24,22">
+      <TextBlock Text="SONANDO AHORA" FontSize="10" Foreground="#76938C" HorizontalAlignment="Center"/>
+      <Border Background="#263A3D" CornerRadius="18" Margin="0,20,0,20" Width="180" Height="180" HorizontalAlignment="Center">
        <Grid>
-        <TextBlock Text="♪" FontSize="70" Foreground="#638078" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Text="♪" FontSize="65" Foreground="#55716C" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Image x:Name="FullArtwork" Source="{Binding Artwork}" Stretch="Uniform" AutomationProperties.Name="Portada de la canción en Spotify"/>
        </Grid>
       </Border>
-      <TextBlock x:Name="FullTrackTitle" Text="{Binding Title}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center"/>
-      <TextBlock x:Name="FullTrackArtist" Text="{Binding Artist}" FontSize="15" Foreground="#A8BABF" TextWrapping="Wrap" TextAlignment="Center" Margin="0,6,0,14"/>
+      <TextBlock x:Name="FullTrackTitle" Text="{Binding Title}" FontSize="21" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center"/>
+      <TextBlock x:Name="FullTrackArtist" Text="{Binding Artist}" FontSize="13" Foreground="#8FA5AD" TextWrapping="Wrap" TextAlignment="Center" Margin="0,6,0,22"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-       <Button x:Name="FullPrevious" Content="⏮" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" FontSize="20" AutomationProperties.Name="Canción anterior"/>
-       <Button x:Name="FullPlay" Content="▶" IsEnabled="{Binding CanPlay}" Click="PlayClick" Background="#235E48" FontSize="20" AutomationProperties.Name="Reproducir"/>
-       <Button x:Name="FullPause" Content="⏸" IsEnabled="{Binding CanPause}" Click="PauseClick" FontSize="20" AutomationProperties.Name="Pausar"/>
-       <Button x:Name="FullNext" Content="⏭" IsEnabled="{Binding CanNext}" Click="NextClick" FontSize="20" AutomationProperties.Name="Canción siguiente"/>
+       <Button x:Name="FullPrevious" Style="{StaticResource IconButton}" Content="&#xE892;" Width="38" Height="38" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Canción anterior"/>
+       <Grid Width="50" Height="44" Margin="12,0">
+        <Button x:Name="FullPlay" Style="{StaticResource PlayIconButton}" Content="&#xE768;" Width="44" Height="44" Background="#30654F" IsEnabled="{Binding CanPlay}" Click="PlayClick" ToolTip="Reproducir" AutomationProperties.Name="Reproducir"/>
+        <Button x:Name="FullPause" Style="{StaticResource PauseIconButton}" Content="&#xE769;" Width="44" Height="44" Background="#30654F" IsEnabled="{Binding CanPause}" Click="PauseClick" ToolTip="Pausar" AutomationProperties.Name="Pausar"/>
+       </Grid>
+       <Button x:Name="FullNext" Style="{StaticResource IconButton}" Content="&#xE893;" Width="38" Height="38" IsEnabled="{Binding CanNext}" Click="NextClick" ToolTip="Siguiente" AutomationProperties.Name="Canción siguiente"/>
       </StackPanel>
-      <TextBlock x:Name="MediaStatus" Margin="0,14,0,0" Foreground="#A8BABF" FontSize="11" TextWrapping="Wrap" Text="Buscando la sesión de Spotify…"/>
-      <Button Content="Abrir aplicación Spotify ↗" Click="SpotifyClick" HorizontalAlignment="Center" Margin="0,14,0,0"/>
-      <TextBlock x:Name="NotificationStatus" Margin="0,18,0,0" Foreground="#A8BABF" TextWrapping="Wrap" FontSize="11"
-       Text="Avisos de WhatsApp: sin comprobar. Usa Probar aviso para comprobar Windows."/>
-      <Button Content="Abrir carpeta de diagnóstico" Click="DiagnosticsClick" HorizontalAlignment="Left" Margin="0,18,0,0"/>
      </StackPanel>
     </ScrollViewer>
    </TabItem>
   </TabControl>
-  <Border Grid.Row="2" CornerRadius="18" Padding="14" Margin="0,12,0,0" BorderBrush="#344A4E" BorderThickness="1">
-   <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#263C3D" Offset="0"/><GradientStop Color="#1C2933" Offset="1"/></LinearGradientBrush></Border.Background>
-   <StackPanel>
-    <Grid>
-     <Grid.ColumnDefinitions><ColumnDefinition Width="52"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-     <Border Width="44" Height="44" Background="#35454B" CornerRadius="5" VerticalAlignment="Top">
-      <Image x:Name="Artwork" Source="{Binding Artwork}" Stretch="UniformToFill" AutomationProperties.Name="Portada de la canción"/>
-     </Border>
-     <StackPanel Grid.Column="1">
-      <TextBlock x:Name="TrackTitle" Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-      <TextBlock x:Name="TrackArtist" Text="{Binding Artist}" Foreground="#A8BABF" TextTrimming="CharacterEllipsis" Margin="0,5,0,0"/>
-     </StackPanel>
-    </Grid>
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,4">
-     <Button x:Name="Previous" Content="⏮" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Canción anterior"/>
-     <Button x:Name="Play" Content="▶" IsEnabled="{Binding CanPlay}" Click="PlayClick" ToolTip="Reproducir" AutomationProperties.Name="Reproducir"/>
-     <Button x:Name="Pause" Content="⏸" IsEnabled="{Binding CanPause}" Click="PauseClick" ToolTip="Pausar" AutomationProperties.Name="Pausar"/>
-     <Button x:Name="Next" Content="⏭" IsEnabled="{Binding CanNext}" Click="NextClick" ToolTip="Siguiente" AutomationProperties.Name="Canción siguiente"/>
+  <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Height="30" Margin="0,0,2,0">
+   <StackPanel.Style><Style TargetType="StackPanel"><Style.Triggers><DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabs}" Value="1"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></StackPanel.Style>
+   <Button Style="{StaticResource IconButton}" Content="&#xE8A5;" Click="ChatListClick" ToolTip="Ver lista de chats" AutomationProperties.Name="Ver lista de chats"/>
+   <Button Style="{StaticResource IconButton}" Content="&#xE8F2;" Click="ConversationClick" ToolTip="Ver conversación" AutomationProperties.Name="Ver conversación"/>
+  </StackPanel>
+  <Border x:Name="MiniPlayer" Grid.Row="2" Height="54" CornerRadius="12" Background="#1D2B30" Margin="0,7,0,0" Padding="8,0">
+   <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="38"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <Border Width="30" Height="30" Background="#30413F" CornerRadius="7" VerticalAlignment="Center">
+     <Image x:Name="Artwork" Source="{Binding Artwork}" Stretch="UniformToFill" AutomationProperties.Name="Portada de la canción"/>
+    </Border>
+    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="1,0,6,0">
+     <TextBlock x:Name="TrackTitle" Text="{Binding Title}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
+     <TextBlock x:Name="TrackArtist" Text="{Binding Artist}" FontSize="10" Foreground="#8FA5AD" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" ToolTip="{Binding Artist}"/>
     </StackPanel>
-    <Grid>
-     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="42"/></Grid.ColumnDefinitions>
-     <Button x:Name="Mute" Content="Silenciar" Click="MuteClick" IsEnabled="False" FontSize="11"/>
-     <Slider x:Name="MasterVolume" Grid.Column="1" Minimum="0" Maximum="100" VerticalAlignment="Center" Margin="10,0" IsEnabled="False" ValueChanged="VolumeChanged" AutomationProperties.Name="Volumen maestro de Windows"/>
-     <TextBlock x:Name="VolumeValue" Grid.Column="2" VerticalAlignment="Center" Text="—"/>
-    </Grid>
-    <TextBlock x:Name="AudioStatus" Text="Volumen maestro de Windows" FontSize="11" Foreground="#A8BABF" TextWrapping="Wrap" Margin="4,5,0,0"/>
-   </StackPanel>
+    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+     <Button x:Name="Previous" Style="{StaticResource IconButton}" Content="&#xE892;" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Canción anterior"/>
+     <Grid Width="30" Height="30">
+      <Button x:Name="Play" Style="{StaticResource PlayIconButton}" Content="&#xE768;" IsEnabled="{Binding CanPlay}" Click="PlayClick" ToolTip="Reproducir" AutomationProperties.Name="Reproducir"/>
+      <Button x:Name="Pause" Style="{StaticResource PauseIconButton}" Content="&#xE769;" IsEnabled="{Binding CanPause}" Click="PauseClick" ToolTip="Pausar" AutomationProperties.Name="Pausar"/>
+     </Grid>
+     <Button x:Name="Next" Style="{StaticResource IconButton}" Content="&#xE893;" IsEnabled="{Binding CanNext}" Click="NextClick" ToolTip="Siguiente" AutomationProperties.Name="Canción siguiente"/>
+     <Button Style="{StaticResource IconButton}" Content="&#xE767;" Click="MoreClick" ToolTip="Volumen maestro de Windows" AutomationProperties.Name="Abrir volumen maestro">
+      <Button.ContextMenu>
+       <ContextMenu>
+        <MenuItem StaysOpenOnClick="True" Focusable="False">
+         <MenuItem.Header>
+          <StackPanel Width="190" Margin="2,4">
+           <DockPanel Margin="0,0,0,8"><TextBlock Text="Volumen de Windows"/><TextBlock x:Name="VolumeValue" Text="—" HorizontalAlignment="Right"/></DockPanel>
+           <Slider x:Name="MasterVolume" Minimum="0" Maximum="100" IsEnabled="False" ValueChanged="VolumeChanged" AutomationProperties.Name="Volumen maestro de Windows"/>
+          </StackPanel>
+         </MenuItem.Header>
+        </MenuItem>
+        <MenuItem StaysOpenOnClick="True">
+         <MenuItem.Header><Button x:Name="Mute" Content="Silenciar" Click="MuteClick" IsEnabled="False" Padding="6,4" Margin="0" Background="Transparent"/></MenuItem.Header>
+        </MenuItem>
+       </ContextMenu>
+      </Button.ContextMenu>
+     </Button>
+    </StackPanel>
+   </Grid>
   </Border>
+  <StackPanel Visibility="Collapsed">
+   <TextBlock x:Name="WebStatus" Text="Preparando WhatsApp…"/>
+   <TextBlock x:Name="LayoutStatus"/>
+   <TextBlock x:Name="MediaStatus" Text="Buscando sesión de Spotify…"/>
+   <TextBlock x:Name="NotificationStatus" Text="Avisos sin comprobar. Usa Probar aviso en el menú."/>
+   <TextBlock x:Name="AudioStatus" Text="Volumen maestro de Windows"/>
+  </StackPanel>
  </Grid>
 </Window>

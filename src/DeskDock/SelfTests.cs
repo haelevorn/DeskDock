@@ -35,6 +35,11 @@ internal static class SelfTests
             // Carga el XAML real con sus controles sin iniciar servicios ni mostrar la ventana.
             var window = new MainWindow(testMode: true) { ShowInTaskbar = false, Opacity = 0 };
             window.Show();
+            window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            Check(((System.Windows.FrameworkElement)window.FindName("MiniPlayer")).ActualHeight <= 60,
+                "Mini reproductor compacto sin filas extra", results);
+            Check(((System.Windows.FrameworkElement)window.FindName("Web")).ActualHeight > window.ActualHeight * 0.70,
+                "WhatsApp ocupa más del 70% del alto inicial de la ventana", results);
             Check(window.MinWidth >= 390 && window.MinHeight >= 500, "Dimensiones mínimas", results);
             Check(window.FindName("Web") is Microsoft.Web.WebView2.Wpf.WebView2, "WebView2 WPF en XAML", results);
             Check(window.FindName("MasterVolume") is System.Windows.Controls.Slider, "Control de volumen en XAML", results);
@@ -60,6 +65,13 @@ internal static class SelfTests
             System.Windows.Data.BindingOperations.GetBindingExpression(miniPlay, System.Windows.Controls.Button.IsEnabledProperty)!.UpdateTarget();
             System.Windows.Data.BindingOperations.GetBindingExpression(fullPlay, System.Windows.Controls.Button.IsEnabledProperty)!.UpdateTarget();
             Check(fullPlay.IsEnabled, "Disponibilidad sincronizada de reproducir", results);
+            window.Player.IsPlaying = true;
+            window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            Check(miniPlay.Visibility == Visibility.Collapsed && fullPlay.Visibility == Visibility.Collapsed,
+                "Ocultar reproducir mientras Spotify está reproduciendo", results);
+            Check(((System.Windows.Controls.Button)window.FindName("Pause")).Visibility == Visibility.Visible &&
+                  ((System.Windows.Controls.Button)window.FindName("FullPause")).Visibility == Visibility.Visible,
+                "Mostrar pausa en el mismo espacio en ambas vistas", results);
             window.Close();
             results.Add("PASS: carga de XAML. NO verifica UI interactiva, WhatsApp, notificaciones, Spotify ni audio.");
             File.WriteAllLines(Path.Combine(AppContext.BaseDirectory, "self-test-results.txt"), results);

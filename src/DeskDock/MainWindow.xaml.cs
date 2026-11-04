@@ -48,6 +48,19 @@ public partial class MainWindow : Window
     private void MaximizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     private void CloseClick(object sender, RoutedEventArgs e) => Close();
 
+    private void MoreClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button { ContextMenu: { } menu } button)
+        {
+            menu.PlacementTarget = button;
+            menu.IsOpen = true;
+        }
+    }
+
+    private void StatusClick(object sender, RoutedEventArgs e) => MessageBox.Show(this,
+        $"WhatsApp\n{WebStatus.Text}\n{LayoutStatus.Text}\n\nSpotify\n{MediaStatus.Text}\n\nAvisos\n{NotificationStatus.Text}\n\nAudio\n{AudioStatus.Text}",
+        "Estado de DeskDock");
+
     public MainWindow() : this(false) { }
 
     internal MainWindow(bool testMode)
@@ -380,6 +393,7 @@ public partial class MainWindow : Window
             var properties = await session.TryGetMediaPropertiesAsync();
             if (_closing) return;
             var info = session.GetPlaybackInfo();
+            Player.IsPlaying = info.PlaybackStatus == Windows.Media.Control.GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
             Player.Title = string.IsNullOrWhiteSpace(properties.Title) ? "Spotify no publica título" : properties.Title;
             Player.Artist = properties.Artist;
             Player.CanPlay = !_sending && info.Controls.IsPlayEnabled;
@@ -438,6 +452,7 @@ public partial class MainWindow : Window
 
     private void ClearMedia()
     {
+        Player.IsPlaying = false;
         Player.CanPlay = Player.CanPause = Player.CanPrevious = Player.CanNext = false;
         Player.Title = "Sin sesión de Spotify";
         Player.Artist = "Abre Spotify y reproduce música";

@@ -1,5 +1,17 @@
 # Usar DeskDock sin instalar herramientas de programación
 
+## Interfaz minimalista 0.3
+
+Para actualizar, cierra la versión anterior, descarga el nuevo artefacto, extrae todos sus archivos en otra carpeta y abre DeskDock.exe. La cabecera muestra **0.3**.
+
+- **⋯**, arriba a la derecha: recargar WhatsApp, abrir navegador o Spotify, vista adaptable, siempre encima, bandeja, activar/probar avisos, ver estado y diagnóstico.
+- Los dos iconos a la derecha de las pestañas muestran la **lista de chats** y la **conversación**. Pasa el ratón para ver su descripción. Solo aparecen en WhatsApp.
+- La franja inferior muestra portada pequeña, título/artista y anterior, reproducir o pausar, siguiente y altavoz. El altavoz abre el volumen maestro y silencio.
+- La pestaña Spotify conserva portada grande y controles. Los mensajes de diagnóstico se consultan en **⋯ → Ver estado y avisos…** y ya no ocupan espacio permanente.
+- La zona del nombre permite arrastrar la ventana. Los tres iconos siguientes al menú minimizan, maximizan/restauran y cierran.
+
+Las instrucciones históricas de 0.2 que mencionan botones grandes siguen siendo válidas para las funciones; en 0.3 las acciones se encuentran en el menú indicado.
+
 ## Actualizar a la versión 0.2
 
 1. Cierra la versión anterior con la X o desde la bandeja → Salir.
