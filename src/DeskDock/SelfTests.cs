@@ -33,7 +33,8 @@ internal static class SelfTests
                 Check(NotificationPolicy.UnreadCount(title) is null, "Ignorar título no reconocido", results);
 
             // Carga el XAML real con sus controles sin iniciar servicios ni mostrar la ventana.
-            var window = new MainWindow();
+            var window = new MainWindow(testMode: true) { ShowInTaskbar = false, Opacity = 0 };
+            window.Show();
             Check(window.MinWidth >= 390 && window.MinHeight >= 500, "Dimensiones mínimas", results);
             Check(window.FindName("Web") is Microsoft.Web.WebView2.Wpf.WebView2, "WebView2 WPF en XAML", results);
             Check(window.FindName("MasterVolume") is System.Windows.Controls.Slider, "Control de volumen en XAML", results);
@@ -45,18 +46,21 @@ internal static class SelfTests
             window.Measure(new Size(490, 740));
             window.Arrange(new Rect(0, 0, 490, 740));
             window.UpdateLayout();
+            window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             var titleSource = (System.Windows.Controls.TextBlock)window.FindName("TrackTitle");
             var titleTarget = (System.Windows.Controls.TextBlock)window.FindName("FullTrackTitle");
             window.Player.Title = "Canción de prueba";
             System.Windows.Data.BindingOperations.GetBindingExpression(titleSource, System.Windows.Controls.TextBlock.TextProperty)!.UpdateTarget();
             System.Windows.Data.BindingOperations.GetBindingExpression(titleTarget, System.Windows.Controls.TextBlock.TextProperty)!.UpdateTarget();
-            Check(titleTarget.Text == "Canción de prueba" && titleSource.Text == titleTarget.Text, "Título sincronizado en Spotify y mini reproductor", results);
+            Check(titleTarget.Text == "Canción de prueba" && titleSource.Text == titleTarget.Text,
+                $"Título sincronizado en Spotify y mini reproductor (mini={titleSource.Text}; pestaña={titleTarget.Text})", results);
             var fullPlay = (System.Windows.Controls.Button)window.FindName("FullPlay");
             var miniPlay = (System.Windows.Controls.Button)window.FindName("Play");
             window.Player.CanPlay = true;
             System.Windows.Data.BindingOperations.GetBindingExpression(miniPlay, System.Windows.Controls.Button.IsEnabledProperty)!.UpdateTarget();
             System.Windows.Data.BindingOperations.GetBindingExpression(fullPlay, System.Windows.Controls.Button.IsEnabledProperty)!.UpdateTarget();
             Check(fullPlay.IsEnabled, "Disponibilidad sincronizada de reproducir", results);
+            window.Close();
             results.Add("PASS: carga de XAML. NO verifica UI interactiva, WhatsApp, notificaciones, Spotify ni audio.");
             File.WriteAllLines(Path.Combine(AppContext.BaseDirectory, "self-test-results.txt"), results);
             return 0;

@@ -18,6 +18,7 @@ namespace DeskDock;
 public partial class MainWindow : Window
 {
     internal PlayerState Player { get; } = new();
+    private readonly bool _testMode;
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(2) };
     private readonly SpotifyService _spotify = new();
     private readonly AudioService _audio = new();
@@ -47,8 +48,11 @@ public partial class MainWindow : Window
     private void MaximizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     private void CloseClick(object sender, RoutedEventArgs e) => Close();
 
-    public MainWindow()
+    public MainWindow() : this(false) { }
+
+    internal MainWindow(bool testMode)
     {
+        _testMode = testMode;
         InitializeComponent();
         DataContext = Player;
         var settings = Settings.Load();
@@ -58,6 +62,7 @@ public partial class MainWindow : Window
 
     private async void WindowLoaded(object sender, RoutedEventArgs e)
     {
+        if (_testMode) return;
         SetupTray();
         _timer.Tick += TimerTick;
         _timer.Start();
@@ -504,6 +509,7 @@ public partial class MainWindow : Window
     private void WindowClosing(object? sender, CancelEventArgs e)
     {
         _closing = true;
+        if (_testMode) { Web.Dispose(); return; }
         _timer.Stop();
         _timer.Tick -= TimerTick;
         new Settings(Topmost, TrayOption.IsChecked == true).Save();

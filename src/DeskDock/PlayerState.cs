@@ -6,7 +6,7 @@ using System.Windows.Media;
 namespace DeskDock;
 
 // Ambas vistas enlazan con el mismo estado; no dependen del árbol visual de las pestañas.
-internal sealed class PlayerState : INotifyPropertyChanged
+public sealed class PlayerState : INotifyPropertyChanged
 {
     private string _title = "Sin sesión de Spotify", _artist = "Abre Spotify y reproduce música";
     private ImageSource? _artwork;
