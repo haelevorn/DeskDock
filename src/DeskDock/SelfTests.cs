@@ -16,6 +16,7 @@ internal static class SelfTests
         var results = new List<string>();
         try
         {
+            FocusSelfTests.Run(results);
             Check(SpotifyService.IsSpotifyId("Spotify.exe"), "Spotify Win32", results);
             Check(SpotifyService.IsSpotifyId("SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"), "Spotify Store", results);
             foreach (string id in new[] { "msedge.exe", "chrome.exe", "OtherSpotify.exe", "", "SpotifyAB.Fake!Spotify" })
@@ -54,7 +55,11 @@ internal static class SelfTests
                 "Mini reproductor compacto sin filas extra", results);
             Check(((System.Windows.FrameworkElement)window.FindName("Web")).ActualHeight > window.ActualHeight * 0.70,
                 "WhatsApp ocupa más del 70% del alto inicial de la ventana", results);
-            Check(window.MinWidth >= 390 && window.MinHeight >= 500, "Dimensiones mínimas", results);
+            Check(window.MinWidth == 300 && window.MinHeight == 340, "Ventana mínima de 300 por 340", results);
+            Check(((System.Windows.Controls.TextBlock)window.FindName("ClockText")).Text.Length == 5,
+                "Reloj de Windows visible desde el inicio", results);
+            Check(((System.Windows.Controls.TabControl)window.FindName("MainTabs")).Items.Count == 3,
+                "Tres pestañas incluida Pomodoro", results);
             Check(window.FindName("Web") is Microsoft.Web.WebView2.Wpf.WebView2, "WebView2 WPF en XAML", results);
             Check(window.FindName("MasterVolume") is System.Windows.Controls.Slider, "Control de volumen en XAML", results);
             Check(window.FindName("Play") is System.Windows.Controls.Button, "Control de reproducción en XAML", results);
@@ -87,6 +92,24 @@ internal static class SelfTests
             Check(((System.Windows.Controls.Button)window.FindName("Pause")).Visibility == Visibility.Visible &&
                   ((System.Windows.Controls.Button)window.FindName("FullPause")).Visibility == Visibility.Visible,
                 "Mostrar pausa en el mismo espacio en ambas vistas", results);
+            window.Width = 300;
+            window.Height = 340;
+            window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            Check(((FrameworkElement)window.FindName("SpotifyCover")).ActualHeight <= 60,
+                "Portada reducida al tamaño mínimo de ventana", results);
+            Check(((FrameworkElement)window.FindName("MiniArtworkFrame")).Visibility == Visibility.Collapsed,
+                "Mini reproductor libera espacio al estrechar ventana", results);
+            var tabs = (System.Windows.Controls.TabControl)window.FindName("MainTabs");
+            tabs.SelectedIndex = 2;
+            window.UpdateLayout();
+            window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            var start = (System.Windows.Controls.Button)window.FindName("PomoStart");
+            Check(start.ActualWidth > 0 && ((System.Windows.Controls.TextBlock)window.FindName("PomoTime")).Text == "25:00",
+                "Contador y botón Pomodoro presentes en ventana pequeña", results);
+            tabs.SelectedIndex = 1;
+            window.Width = 360;
+            window.Height = 520;
+            window.UpdateLayout();
             foreach (string skin in new[] { "aurora", "eclipse", "minimal" })
             {
                 SkinManager.Apply(skin);

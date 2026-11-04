@@ -3,10 +3,10 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
- Title="DeskDock" Icon="Assets/DeskDock.ico" Width="490" Height="740" MinWidth="390" MinHeight="500"
+ Title="DeskDock" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
  Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource TextPrimary}" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
  WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
- Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized">
+ Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized" SizeChanged="ResponsiveSizeChanged">
  <shell:WindowChrome.WindowChrome>
   <shell:WindowChrome CaptionHeight="42" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="16" UseAeroCaptionButtons="False"/>
  </shell:WindowChrome.WindowChrome>
@@ -19,9 +19,10 @@
    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
     <Ellipse Fill="{DynamicResource AccentBrush}" Width="7" Height="7" Margin="0,0,9,0"/>
     <TextBlock Text="DeskDock" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-    <TextBlock Text="0.4" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
+    <TextBlock Text="0.5" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
    </StackPanel>
    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+    <TextBlock x:Name="ClockText" FontSize="11" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,7,0" AutomationProperties.Name="Hora actual de Windows"/>
     <Button x:Name="MoreButton" Style="{StaticResource IconButton}" Content="&#xE712;" Click="MoreClick" ToolTip="Opciones y acciones" AutomationProperties.Name="Opciones y acciones">
      <Button.ContextMenu>
       <ContextMenu>
@@ -33,6 +34,7 @@
        <MenuItem x:Name="Pin" Header="Siempre encima" IsCheckable="True" Click="SettingsClick"/>
        <MenuItem x:Name="TrayOption" Header="Minimizar a bandeja" IsCheckable="True" IsChecked="True" Click="SettingsClick"/>
        <MenuItem Header="Ocultar en bandeja" Click="HideClick"/>
+       <MenuItem Header="Tamaño compacto" Click="CompactWindowClick"/>
        <Separator/>
        <MenuItem Header="SKINS" IsEnabled="False"/>
        <MenuItem x:Name="MinimalSkin" Header="Minimal · original" Tag="minimal" IsCheckable="True" Click="SkinClick"/>
@@ -60,16 +62,16 @@
    </TabItem>
    <TabItem Header="Spotify">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-     <StackPanel Margin="24,22">
+     <StackPanel x:Name="SpotifyContent" Margin="16,12">
       <TextBlock Text="SONANDO AHORA" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Center"/>
-      <Border Background="{DynamicResource ArtworkBackground}" CornerRadius="18" Margin="0,20,0,20" Width="180" Height="180" HorizontalAlignment="Center">
+      <Border x:Name="SpotifyCover" Background="{DynamicResource ArtworkBackground}" CornerRadius="18" Margin="0,10,0,10" Width="130" Height="130" HorizontalAlignment="Center">
        <Grid>
         <TextBlock Text="♪" FontSize="65" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Image x:Name="FullArtwork" Source="{Binding Artwork}" Stretch="Uniform" AutomationProperties.Name="Portada de la canción en Spotify"/>
        </Grid>
       </Border>
       <TextBlock x:Name="FullTrackTitle" Text="{Binding Title}" FontSize="21" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center"/>
-      <TextBlock x:Name="FullTrackArtist" Text="{Binding Artist}" FontSize="13" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" TextAlignment="Center" Margin="0,6,0,22"/>
+      <TextBlock x:Name="FullTrackArtist" Text="{Binding Artist}" FontSize="12" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" TextAlignment="Center" Margin="0,4,0,10"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
        <Button x:Name="FullPrevious" Style="{StaticResource IconButton}" Content="&#xE892;" Width="38" Height="38" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Canción anterior"/>
        <Grid Width="50" Height="44" Margin="12,0">
@@ -81,16 +83,49 @@
      </StackPanel>
     </ScrollViewer>
    </TabItem>
+   <TabItem Header="Pomodoro">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+     <StackPanel Margin="14,10">
+      <TextBlock x:Name="PomoStage" Text="Concentración" FontSize="12" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center"/>
+      <TextBlock x:Name="PomoTime" Text="25:00" FontSize="46" FontWeight="Light" HorizontalAlignment="Center" Margin="0,3,0,0" AutomationProperties.Name="Tiempo restante del pomodoro"/>
+      <TextBlock x:Name="PomoSessions" Foreground="{DynamicResource TextSecondary}" FontSize="10" HorizontalAlignment="Center"/>
+      <ProgressBar x:Name="PomoProgress" Minimum="0" Maximum="100" Height="3" BorderThickness="0" Foreground="{DynamicResource AccentBrush}" Background="{DynamicResource BorderBrush}" Margin="14,12,14,9"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+       <Button x:Name="PomoStart" Content="Iniciar" Click="PomoStartClick" Padding="18,7" Background="{DynamicResource PlayBackground}"/>
+       <Button Content="&#xE777;" Style="{StaticResource IconButton}" Click="PomoResetClick" ToolTip="Reiniciar el ciclo" AutomationProperties.Name="Reiniciar ciclo pomodoro"/>
+      </StackPanel>
+      <TextBlock x:Name="PomoMessage" Text="Configura tus etapas y pulsa Iniciar." TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,10,0,8"/>
+      <Expander Header="Configurar etapas" Foreground="{DynamicResource TextPrimary}" FontSize="12">
+       <StackPanel Margin="0,9,0,4">
+        <Grid>
+         <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="56"/></Grid.ColumnDefinitions>
+         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+         <TextBlock Text="Concentración (min)" VerticalAlignment="Center"/>
+         <TextBox x:Name="FocusMinutes" Grid.Column="1" MaxLength="3" AutomationProperties.Name="Minutos de concentración"/>
+         <TextBlock Grid.Row="1" Text="Descanso corto (min)" VerticalAlignment="Center"/>
+         <TextBox x:Name="ShortMinutes" Grid.Row="1" Grid.Column="1" MaxLength="2" AutomationProperties.Name="Minutos de descanso corto"/>
+         <TextBlock Grid.Row="2" Text="Descanso largo (min)" VerticalAlignment="Center"/>
+         <TextBox x:Name="LongMinutes" Grid.Row="2" Grid.Column="1" MaxLength="3" AutomationProperties.Name="Minutos de descanso largo"/>
+         <TextBlock Grid.Row="3" Text="Sesiones antes del largo" VerticalAlignment="Center"/>
+         <TextBox x:Name="RoundCount" Grid.Row="3" Grid.Column="1" MaxLength="2" AutomationProperties.Name="Sesiones antes de descanso largo"/>
+        </Grid>
+        <CheckBox x:Name="AutoStages" Content="Pasar de etapa automáticamente" FontSize="11" Margin="0,8,0,4"/>
+        <Button Content="Aplicar y reiniciar" Click="ApplyPomodoroClick" HorizontalAlignment="Left" Padding="10,6"/>
+       </StackPanel>
+      </Expander>
+     </StackPanel>
+    </ScrollViewer>
+   </TabItem>
   </TabControl>
   <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Height="30" Margin="0,0,2,0">
-   <StackPanel.Style><Style TargetType="StackPanel"><Style.Triggers><DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabs}" Value="1"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></StackPanel.Style>
+   <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabs}" Value="0"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></StackPanel.Style>
    <Button Style="{StaticResource IconButton}" Content="&#xE8A5;" Click="ChatListClick" ToolTip="Ver lista de chats" AutomationProperties.Name="Ver lista de chats"/>
    <Button Style="{StaticResource IconButton}" Content="&#xE8F2;" Click="ConversationClick" ToolTip="Ver conversación" AutomationProperties.Name="Ver conversación"/>
   </StackPanel>
   <Border x:Name="MiniPlayer" Grid.Row="2" Height="54" CornerRadius="12" Background="{DynamicResource PlayerBackground}" Margin="0,7,0,0" Padding="8,0">
    <Grid>
-    <Grid.ColumnDefinitions><ColumnDefinition Width="38"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-    <Border Width="30" Height="30" Background="{DynamicResource ArtworkBackground}" CornerRadius="7" VerticalAlignment="Center">
+    <Grid.ColumnDefinitions><ColumnDefinition x:Name="MiniArtColumn" Width="38"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <Border x:Name="MiniArtworkFrame" Width="30" Height="30" Background="{DynamicResource ArtworkBackground}" CornerRadius="7" VerticalAlignment="Center">
      <Image x:Name="Artwork" Source="{Binding Artwork}" Stretch="UniformToFill" AutomationProperties.Name="Portada de la canción"/>
     </Border>
     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="1,0,6,0">

@@ -1,5 +1,18 @@
 # Usar DeskDock sin instalar herramientas de programación
 
+## Ventana pequeña, reloj y Pomodoro — versión 0.5
+
+1. Cierra DeskDock, descarga el nuevo artefacto y extrae todos sus archivos en otra carpeta. Abre el EXE; la cabecera debe mostrar **0.5**.
+2. Arrastra los bordes para reducir la ventana. Ahora permite bajar hasta **300 × 340**. También puedes usar **⋯ → Tamaño compacto** para 320 × 420. Se recordará el tamaño al cerrar. En pantallas con otra escala de Windows el tamaño físico puede variar.
+3. La portada Spotify se hace más pequeña y el mini reproductor deja más espacio al texto. Las opciones largas de Pomodoro se pueden desplazar verticalmente si no caben. WhatsApp usa la vista adaptable que ya conoces; el resultado real depende del diseño de su web.
+4. La esquina superior muestra la **hora actual de Windows** en formato 24 horas. Pasa el ratón para consultar la fecha. Si quieres verla al trabajar con otras ventanas, activa **⋯ → Siempre encima**. No garantiza superposición sobre juegos exclusivos o pantallas de seguridad; en bandeja toda la ventana queda oculta.
+5. Abre **Pomodoro**. Por defecto ofrece **25 min de concentración → 5 min de descanso**, con **15 min de descanso largo cada 4 sesiones**.
+6. En **Configurar etapas**, escribe minutos enteros para cada etapa y el número de sesiones. Elige si quieres pasar automáticamente de etapa y pulsa **Aplicar y reiniciar**. Eso guarda las duraciones y reinicia el ciclo; no cambia el temporizador mientras solo editas los campos.
+7. Pulsa **Iniciar**. El botón cambia a **Pausar**; al reanudar conserva el tiempo restante. El icono de reinicio vuelve al comienzo de concentración y pone a cero las sesiones.
+8. Al terminar una etapa, verás el mensaje en Pomodoro y se solicitará un aviso de Windows con el sonido configurado. Al pulsar el aviso se abre Pomodoro. Si desactivaste avance automático, pulsa Iniciar para comenzar la siguiente etapa.
+9. Puedes cambiar de pestaña o minimizar a bandeja: el contador continúa. **Cerrar DeskDock detiene la sesión**; al abrirlo conserva configuración pero comienza un ciclo nuevo. Con Windows suspendido no se presentan avisos; al volver se comprueba el vencimiento y se inicia o prepara la siguiente etapa sin sumar sesiones ficticias.
+10. Si los avisos no aparecen, comprueba **⋯ → Probar aviso** y las preferencias de Windows. El mensaje dentro de Pomodoro permanece disponible aunque Windows suprima el aviso.
+
 ## Skins, icono y sonido — versión 0.4
 
 1. Cierra DeskDock por completo, descarga el nuevo artefacto, extrae todos sus archivos en otra carpeta y abre `DeskDock.exe`. La cabecera debe mostrar **0.4**.

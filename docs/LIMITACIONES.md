@@ -1,5 +1,13 @@
 # Compatibilidad, límites y evidencia
 
+## Actualización 0.5: tamaño, reloj y Pomodoro
+
+El tamaño mínimo es 300 × 340 unidades WPF, no píxeles físicos invariables: escala de Windows y DPI influyen. La interfaz nativa ajusta portada, pestañas y mini reproductor; la configuración de Pomodoro permite desplazamiento vertical. El ajuste de WhatsApp sigue dependiendo de su estructura web. El tamaño se conserva al cerrar; no se conserva posición de ventana.
+
+El reloj utiliza `DateTime.Now` y por tanto la hora/zona local configurada en Windows. No consulta un servidor de hora. «Siempre encima» afecta ventanas normales, no garantiza verse sobre aplicaciones exclusivas o pantallas del sistema. Al minimizar se oculta con el resto de DeskDock.
+
+Pomodoro usa tiempo monotónico y un temporizador de interfaz separado de las consultas WebView2/Spotify. Las comprobaciones de vencimiento se realizan mientras DeskDock está abierto y Windows le permite ejecutar código; no es un servicio de alarma ni despierta el equipo. Tras una suspensión se notifica un vencimiento observado y se prepara/inicia la siguiente etapa desde la reanudación, sin avanzar repetidamente por sesiones que el usuario no realizó. La configuración se conserva, pero la sesión en curso se reinicia al cerrar. Windows puede suprimir avisos o sonido; el estado de etapa también se presenta dentro de la pestaña. No se afirma haber probado estos avisos reales en el equipo del usuario.
+
 ## Actualización 0.4: skins, sonido e icono
 
 Skins WPF con recursos dinámicos y preferencias locales. La apariencia está inspirada en las paletas azul/violeta/cian y negro/ámbar proporcionadas por el usuario, sin copiar los mensajes, contactos, portada o elementos de fondo de las imágenes. No implementa transparencia de escritorio/acrílico ni recolorea la interfaz interna de WhatsApp. El skin no modifica la sesión web ni el estado de reproducción.

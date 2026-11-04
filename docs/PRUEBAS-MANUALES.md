@@ -1,5 +1,19 @@
 # Pruebas del MVP en Windows
 
+## Ventana y concentración 0.5 — prueba manual pendiente
+
+- Reducir a 300 × 340 y ampliar; reloj, tres pestañas y controles básicos sin superposición. Comprobar en WhatsApp que caben cabecera y caja de escritura; probar con 125%/150% de escala.
+- Usar Tamaño compacto y cerrar/reabrir: conservar tamaño, skin, sonido y duraciones.
+- Comparar HH:mm con el reloj de Windows, cambiar de pestaña y mantener la ventana encima de una aplicación normal. Verificar fecha al pasar el ratón.
+- Configurar concentración/corto/largo a 1 minuto y 2 sesiones, aplicar, iniciar y comprobar secuencia concentración → corto → concentración → largo → concentración, un aviso por etapa.
+- Pausar, esperar y reanudar: conservar tiempo. Reiniciar: cero sesiones y concentración detenida. Probar avance automático desactivado.
+- Editar campos inválidos (cero, decimales, letras): mensaje claro y ninguna modificación de la sesión. Corregir y aplicar.
+- Iniciar Pomodoro, pasar a WhatsApp/Spotify y minimizar a bandeja: comprobar aviso y tiempo. Pulsar el aviso: abrir tercera pestaña.
+- Repetir aviso con sonido activado y desactivado. No molestar puede suprimir la presentación; comprobar el mensaje dentro de Pomodoro.
+- Suspender y reanudar en una prueba controlada: no añadir ciclos ficticios. Cerrar y abrir DeskDock: nueva sesión, preferencias conservadas.
+
+Las pruebas automáticas usan un reloj simulado para secuencias, pausas y vencimientos; no prueban sonido audible o avisos reales.
+
 ## Skins, audio e icono 0.4 — prueba manual pendiente
 
 - Cambiar Aurora/Eclipse/Minimal en la pestaña WhatsApp, Spotify y con el volumen abierto: superficies y texto actualizados sin volver a vincular WhatsApp.

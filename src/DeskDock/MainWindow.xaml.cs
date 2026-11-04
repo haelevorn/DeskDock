@@ -33,6 +33,7 @@ public partial class MainWindow : Window
     private CoreWebView2Notification? _pendingNotification;
     private bool _layoutBusy;
     private string _layoutMode = "";
+    private int _noticeTargetTab;
 
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr window, int attribute, ref int value, int size);
@@ -75,11 +76,13 @@ public partial class MainWindow : Window
         TrayOption.IsChecked = settings.MinimizeToTray;
         SoundOption.IsChecked = settings.NotificationSound;
         ApplySkin(settings.Skin);
+        InitializeFocusTools(settings);
     }
 
     private async void WindowLoaded(object sender, RoutedEventArgs e)
     {
         if (_testMode) return;
+        _focusTimer.Start();
         SetupTray();
         _timer.Tick += TimerTick;
         _timer.Start();
@@ -113,7 +116,7 @@ public partial class MainWindow : Window
             {
                 ReportNotification(n => n.ReportClicked());
                 Restore();
-                MainTabs.SelectedIndex = 0;
+                MainTabs.SelectedIndex = _noticeTargetTab;
             });
             _tray.BalloonTipClosed += (_, _) => Dispatcher.Invoke(ClosePendingNotification);
         }
@@ -156,7 +159,13 @@ public partial class MainWindow : Window
 
     private void SaveSettings()
     {
-        if (!_testMode) new Settings(Topmost, TrayOption.IsChecked, SkinManager.Current, SoundOption.IsChecked).Save();
+        if (!_testMode)
+        {
+            var bounds = WindowState == WindowState.Normal ? new Rect(0, 0, Width, Height) : RestoreBounds;
+            new Settings(Topmost, TrayOption.IsChecked, SkinManager.Current, SoundOption.IsChecked,
+                SafeDimension(bounds.Width, 360, 300, SystemParameters.WorkArea.Width),
+                SafeDimension(bounds.Height, 520, 340, SystemParameters.WorkArea.Height), Pomodoro.Options).Save();
+        }
     }
 
     private void ApplySkin(string? id)
@@ -332,11 +341,11 @@ public partial class MainWindow : Window
             ShowNotice("Ha aumentado el contador de mensajes sin leer de WhatsApp. Abre DeskDock para revisarlo.");
     }
 
-    private void ShowNotice(string text, CoreWebView2Notification? notification = null, bool test = false)
+    private void ShowNotice(string text, CoreWebView2Notification? notification = null, bool test = false, string? title = null, int targetTab = 0)
     {
         if (_closing) return;
         // Evitar duplicar un aviso web y el cambio de título del mismo mensaje.
-        if (!test && DateTimeOffset.UtcNow - _lastNotice < TimeSpan.FromSeconds(8))
+        if (targetTab == 0 && !test && DateTimeOffset.UtcNow - _lastNotice < TimeSpan.FromSeconds(8))
         {
             try { notification?.ReportClosed(); } catch (Exception ex) { Diagnostics.Record("NotificationClose", ex); }
             return;
@@ -348,10 +357,11 @@ public partial class MainWindow : Window
         }
         ClosePendingNotification();
         _pendingNotification = notification;
-        _lastNotice = DateTimeOffset.UtcNow;
+        _noticeTargetTab = targetTab;
+        if (targetTab == 0) _lastNotice = DateTimeOffset.UtcNow;
         try
         {
-            _tray.ShowBalloonTip(6000, test ? "DeskDock · prueba de aviso" : "WhatsApp · DeskDock", text, Forms.ToolTipIcon.Info);
+            _tray.ShowBalloonTip(6000, title ?? (test ? "DeskDock · prueba de aviso" : "WhatsApp · DeskDock"), text, Forms.ToolTipIcon.Info);
             NotificationStatus.Text = $"Aviso enviado a Windows. Eventos web recibidos: {_notifications}. Si no aparece, revisa notificaciones y No molestar en Windows.";
         }
         catch (Exception ex) { Diagnostics.Record("NotificationShow", ex); ClosePendingNotification(); }
@@ -559,6 +569,8 @@ public partial class MainWindow : Window
     private void WindowClosing(object? sender, CancelEventArgs e)
     {
         _closing = true;
+        _focusTimer.Stop();
+        _focusTimer.Tick -= FocusTimerTick;
         if (_testMode) { Web.Dispose(); return; }
         _timer.Stop();
         _timer.Tick -= TimerTick;

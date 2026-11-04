@@ -1,6 +1,15 @@
-# DeskDock 0.4
+# DeskDock 0.5
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.5
+
+- Ventana inicial de 360 × 520, redimensionable hasta 300 × 340 (unidades de Windows según escala). Se guarda el último tamaño. «⋯ → Tamaño compacto» selecciona 320 × 420.
+- Portada Spotify y mini reproductor se ajustan a la ventana; las pestañas usan etiquetas compactas y la configuración larga permite desplazamiento vertical.
+- Reloj HH:mm siempre visible en la cabecera, basado en la hora y zona local de Windows, también al cambiar de pestaña. Fecha completa al pasar el ratón. Para mantener DeskDock sobre ventanas normales, activar «Siempre encima».
+- Tercera pestaña Pomodoro: concentración, descanso corto y largo, duraciones configurables, número de sesiones hasta descanso largo, pausa/reanudación, reinicio y avance automático opcional. Valores iniciales: 25/5/15 minutos y descanso largo cada 4 sesiones.
+- Aviso y sonido de DeskDock al terminar cada etapa, con acceso al Pomodoro al pulsar el aviso. Usa las preferencias de sonido existentes; la presentación depende de Windows.
+- Temporizador basado en tiempo monotónico, independiente de consultas multimedia y de la hora del reloj. Continúa en otras pestañas y en bandeja mientras DeskDock está abierto. Al cerrar se conservan duraciones, no la sesión en curso. Tras suspensión del equipo no avisa hasta volver a ejecutarse ni simula ciclos completos no realizados.
 
 ## Cambios de la versión 0.4
 

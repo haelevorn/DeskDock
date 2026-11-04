@@ -4,7 +4,8 @@ using System.Text.Json;
 
 namespace DeskDock;
 
-internal sealed record Settings(bool AlwaysOnTop = false, bool MinimizeToTray = true, string Skin = "minimal", bool NotificationSound = true)
+internal sealed record Settings(bool AlwaysOnTop = false, bool MinimizeToTray = true, string Skin = "minimal", bool NotificationSound = true,
+    double WindowWidth = 360, double WindowHeight = 520, PomodoroOptions? Pomodoro = null)
 {
     private static string FilePath => Path.Combine(Diagnostics.Root, "settings.json");
     public static Settings Load()
