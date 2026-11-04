@@ -1,0 +1,23 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <SolidColorBrush x:Key="TextPrimary" Color="#F1F2FF"/>
+ <SolidColorBrush x:Key="TextSecondary" Color="#AFB5D2"/>
+ <SolidColorBrush x:Key="TextMuted" Color="#8088AD"/>
+ <SolidColorBrush x:Key="IconForeground" Color="#CCD4F2"/>
+ <SolidColorBrush x:Key="AccentBrush" Color="#67F5D6"/>
+ <SolidColorBrush x:Key="HoverBackground" Color="#33476C"/>
+ <SolidColorBrush x:Key="SelectedBackground" Color="#263B60"/>
+ <SolidColorBrush x:Key="PlayBackground" Color="#344E7C"/>
+ <SolidColorBrush x:Key="ArtworkBackground" Color="#232747"/>
+ <SolidColorBrush x:Key="MenuBackground" Color="#1B233A"/>
+ <SolidColorBrush x:Key="BorderBrush" Color="#3D517A"/>
+ <LinearGradientBrush x:Key="WindowBackground" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#211535" Offset="0"/><GradientStop Color="#0A1D31" Offset="1"/></LinearGradientBrush>
+ <LinearGradientBrush x:Key="SurfaceBackground" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#D91B2039" Offset="0"/><GradientStop Color="#E0112134" Offset="1"/></LinearGradientBrush>
+ <LinearGradientBrush x:Key="PlayerBackground" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#DD302343" Offset="0"/><GradientStop Color="#ED123748" Offset="1"/></LinearGradientBrush>
+ <LinearGradientBrush x:Key="FrameBrush" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#B154EE" Offset="0"/><GradientStop Color="#47E5F4" Offset="1"/></LinearGradientBrush>
+<DrawingBrush x:Key="AmbientBackdrop" Stretch="UniformToFill"><DrawingBrush.Drawing><DrawingGroup>
+<GeometryDrawing Geometry="M0,0 H1000 V1000 H0 Z"><GeometryDrawing.Brush><SolidColorBrush Color="Transparent"/></GeometryDrawing.Brush></GeometryDrawing>
+<GeometryDrawing Geometry="M0,0 H630 C380,230 480,350 0,650 Z"><GeometryDrawing.Brush><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#405F23BF" Offset="0"/><GradientStop Color="#002B124C" Offset="1"/></LinearGradientBrush></GeometryDrawing.Brush></GeometryDrawing>
+<GeometryDrawing Geometry="M1000,200 C540,560 900,730 200,1000 H1000 Z"><GeometryDrawing.Brush><LinearGradientBrush StartPoint="1,1" EndPoint="0,0"><GradientStop Color="#3038BCF1" Offset="0"/><GradientStop Color="#001C487D" Offset="1"/></LinearGradientBrush></GeometryDrawing.Brush></GeometryDrawing>
+</DrawingGroup></DrawingBrush.Drawing></DrawingBrush>
+</ResourceDictionary>
+

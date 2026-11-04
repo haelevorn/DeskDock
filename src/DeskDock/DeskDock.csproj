@@ -12,11 +12,16 @@
     <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>false</PublishTrimmed>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
+    <ApplicationIcon>Assets/DeskDock.ico</ApplicationIcon>
     <AssemblyName>DeskDock</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets/DeskDock.ico" />
+    <Resource Include="Assets/notification-bwoop.wav" />
   </ItemGroup>
 </Project>

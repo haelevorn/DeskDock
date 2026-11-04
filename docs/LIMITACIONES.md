@@ -1,5 +1,13 @@
 # Compatibilidad, límites y evidencia
 
+## Actualización 0.4: skins, sonido e icono
+
+Skins WPF con recursos dinámicos y preferencias locales. La apariencia está inspirada en las paletas azul/violeta/cian y negro/ámbar proporcionadas por el usuario, sin copiar los mensajes, contactos, portada o elementos de fondo de las imágenes. No implementa transparencia de escritorio/acrílico ni recolorea la interfaz interna de WhatsApp. El skin no modifica la sesión web ni el estado de reproducción.
+
+El icono de marca y el WAV son recursos originales generados para DeskDock. La bandeja se implementa directamente con `Shell_NotifyIconW`, conservando mostrar, salir, doble clic y ciclo de vida de los avisos. Se usa icono personalizado `hBalloonIcon` con `NIIF_USER`, `NIIF_LARGE_ICON`, `NIIF_NOSOUND` y `NIIF_RESPECT_QUIET_TIME`. El soporte y la representación final del aviso/icono dependen de Windows. El tono propio se reproduce con `SoundPlayer` al recibir `NIN_BALLOONSHOW`; un aviso suprimido sin evento de presentación no activa el audio. La prueba automática verifica formato de recursos y estructura/flags del paquete nativo; no demuestra que una persona vea u oiga un aviso. Se necesita «Probar aviso» en el equipo del usuario.
+
+Fuentes: [NOTIFYICONDATAW y flags de avisos](https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-notifyicondataw), [recursos dinámicos WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/systems/xaml-resources-overview).
+
 ## Actualización 0.2
 
 El usuario informó que WhatsApp carga pero queda recortado en ventanas pequeñas, que la información de Spotify sí aparece en el mini reproductor y que no recibe notificaciones. Esto es evidencia de esos comportamientos reportados, no una validación completa de las integraciones.

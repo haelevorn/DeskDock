@@ -1,6 +1,16 @@
-# DeskDock 0.3
+# DeskDock 0.4
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.4
+
+- Skins **Aurora** (azul, violeta y cian), **Eclipse** (negro y ámbar) y **Minimal** (original), elegibles en «⋯» y guardados en las preferencias. Cambian marco, superficies, pestañas, menús y reproductor sin reiniciar ni recargar WhatsApp.
+- Icono original de onda sonora: ICO multirresolución para el ejecutable, ventana, bandeja y avisos. Windows decide la presentación final del icono en los avisos y puede mantener en caché iconos de accesos anclados antiguos.
+- Sonido sintetizado original **bwuooop**, de 0.56 segundos, incluido como WAV. Puede desactivarse en el menú. La opción se conserva al cerrar.
+- Bandeja mediante `Shell_NotifyIconW`: avisos con `NIIF_NOSOUND` para evitar el tono estándar simultáneo. El sonido propio se solicita cuando Windows comunica `NIN_BALLOONSHOW`; si Windows suprime el aviso y no emite ese evento, no se fuerza un sonido.
+- Los skins son dibujos y degradados WPF. No cambian el fondo de escritorio, no usan desenfoque real del escritorio y no alteran colores internos de WhatsApp Web. Conservan el reproductor de 54 unidades y la vista adaptable.
+
+Las pruebas verifican carga de skins, actualización de recursos, migración de preferencias y presencia/formato del WAV e icono. El sonido audible y los avisos reales deben probarse en Windows con «Probar aviso».
 
 ## Cambios de la versión 0.3
 

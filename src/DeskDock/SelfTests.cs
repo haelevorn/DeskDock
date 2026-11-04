@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace DeskDock;
 
@@ -25,8 +27,20 @@ internal static class SelfTests
             Check(NavigationPolicy.IsExternalWeb("https://example.com/"), "Enlace HTTPS", results);
             foreach (string uri in new[] { "file:///C:/Windows", "javascript:alert(1)", "spotify:", "ms-settings:", "https://user:pass@example.com" })
                 Check(!NavigationPolicy.IsExternalWeb(uri), "Rechazar protocolo/credencial: " + uri, results);
-            var settings = new Settings(true, false);
+            var settings = new Settings(true, false, "eclipse", false);
             Check(JsonSerializer.Deserialize<Settings>(JsonSerializer.Serialize(settings)) == settings, "Persistencia de opciones", results);
+            var oldSettings = JsonSerializer.Deserialize<Settings>("{\"AlwaysOnTop\":true,\"MinimizeToTray\":false}")!;
+            Check(oldSettings.Skin == "minimal" && oldSettings.NotificationSound, "Migración de preferencias anteriores sin perder opciones", results);
+            Check(SkinManager.Normalize("../../otro") == "minimal", "Skins limitados a recursos incluidos", results);
+            Check(TrayIcon.NativeDataSize == 976 && (TrayIcon.SilentCustomBalloon & 0x10) != 0,
+                "Estructura Shell x64 y aviso con sonido de Windows desactivado", results);
+            using (var sound = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/notification-bwoop.wav"))!.Stream)
+            using (var reader = new BinaryReader(sound))
+            {
+                Check(new string(reader.ReadChars(4)) == "RIFF" && sound.Length > 40000, "WAV original incluido en el ejecutable", results);
+                sound.Position = 22;
+                Check(reader.ReadUInt16() == 1 && reader.ReadInt32() == 44100, "Sonido PCM mono a 44.1 kHz", results);
+            }
             Check(NotificationPolicy.UnreadCount("(3) WhatsApp") == 3, "Contador de no leídos", results);
             Check(NotificationPolicy.UnreadCount("WhatsApp") == 0, "Contador reiniciado", results);
             foreach (string title in new[] { "(3) Otro sitio", "WhatsApp - contacto", "(texto) WhatsApp", "(999999999999999) WhatsApp" })
@@ -45,6 +59,7 @@ internal static class SelfTests
             Check(window.FindName("MasterVolume") is System.Windows.Controls.Slider, "Control de volumen en XAML", results);
             Check(window.FindName("Play") is System.Windows.Controls.Button, "Control de reproducción en XAML", results);
             Check(window.WindowStyle == WindowStyle.None, "Sin barra de título estándar", results);
+            Check(window.Icon is not null, "Icono propio de DeskDock cargado en WPF", results);
             Check(System.Windows.Shell.WindowChrome.GetWindowChrome(window) is not null, "Arrastre y bordes con WindowChrome", results);
             // Las dos vistas deben compartir datos y disponibilidad, sin otra consulta a Spotify.
             ((System.Windows.Controls.TabControl)window.FindName("MainTabs")).SelectedIndex = 1;
@@ -72,6 +87,22 @@ internal static class SelfTests
             Check(((System.Windows.Controls.Button)window.FindName("Pause")).Visibility == Visibility.Visible &&
                   ((System.Windows.Controls.Button)window.FindName("FullPause")).Visibility == Visibility.Visible,
                 "Mostrar pausa en el mismo espacio en ambas vistas", results);
+            foreach (string skin in new[] { "aurora", "eclipse", "minimal" })
+            {
+                SkinManager.Apply(skin);
+                window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+                Check(ReferenceEquals(window.Background, Application.Current.Resources["WindowBackground"]),
+                    "Skin " + skin + " actualiza el fondo sin reiniciar", results);
+                Check(((System.Windows.FrameworkElement)window.FindName("MiniPlayer")).ActualHeight <= 60,
+                    "Skin " + skin + " conserva el tamaño compacto", results);
+                var root = (FrameworkElement)window.Content;
+                var preview = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                preview.Render(root);
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(preview));
+                using var output = File.Create(Path.Combine(AppContext.BaseDirectory, "preview-" + skin + ".png"));
+                encoder.Save(output);
+            }
             window.Close();
             results.Add("PASS: carga de XAML. NO verifica UI interactiva, WhatsApp, notificaciones, Spotify ni audio.");
             File.WriteAllLines(Path.Combine(AppContext.BaseDirectory, "self-test-results.txt"), results);

@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <SolidColorBrush x:Key="TextPrimary" Color="#EAF1F4"/>
+ <SolidColorBrush x:Key="TextSecondary" Color="#8FA5AD"/>
+ <SolidColorBrush x:Key="TextMuted" Color="#637B85"/>
+ <SolidColorBrush x:Key="IconForeground" Color="#B6C9CD"/>
+ <SolidColorBrush x:Key="AccentBrush" Color="#7AE2B1"/>
+ <SolidColorBrush x:Key="HoverBackground" Color="#34484E"/>
+ <SolidColorBrush x:Key="SelectedBackground" Color="#304940"/>
+ <SolidColorBrush x:Key="PlayBackground" Color="#30654F"/>
+ <SolidColorBrush x:Key="ArtworkBackground" Color="#263A3D"/>
+ <SolidColorBrush x:Key="MenuBackground" Color="#1B272D"/>
+ <SolidColorBrush x:Key="BorderBrush" Color="#34464D"/>
+ <LinearGradientBrush x:Key="WindowBackground" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#11191E" Offset="0"/><GradientStop Color="#11191E" Offset="1"/></LinearGradientBrush>
+ <LinearGradientBrush x:Key="SurfaceBackground" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#172127" Offset="0"/><GradientStop Color="#172127" Offset="1"/></LinearGradientBrush>
+ <LinearGradientBrush x:Key="PlayerBackground" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#1D2B30" Offset="0"/><GradientStop Color="#1D2B30" Offset="1"/></LinearGradientBrush>
+ <LinearGradientBrush x:Key="FrameBrush" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#263A40" Offset="0"/><GradientStop Color="#263A40" Offset="1"/></LinearGradientBrush>
+<SolidColorBrush x:Key="AmbientBackdrop" Color="Transparent"/>
+</ResourceDictionary>
+

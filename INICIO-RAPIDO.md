@@ -1,5 +1,15 @@
 # Usar DeskDock sin instalar herramientas de programación
 
+## Skins, icono y sonido — versión 0.4
+
+1. Cierra DeskDock por completo, descarga el nuevo artefacto, extrae todos sus archivos en otra carpeta y abre `DeskDock.exe`. La cabecera debe mostrar **0.4**.
+2. Abre **⋯**. En **SKINS**, elige **Aurora · azul y violeta** o **Eclipse · negro y ámbar**. **Minimal · original** recupera el diseño anterior. El cambio es inmediato y queda guardado.
+3. Los skins colorean la ventana y sus controles; WhatsApp conserva su interfaz web y el fondo de tu escritorio permanece igual.
+4. En el menú, deja marcado **Sonido de aviso · bwuooop** y pulsa **Probar aviso**. Cuando Windows presente el aviso, debería oírse el nuevo sonido, a un nivel moderado, según el volumen y mezclador de Windows.
+5. Desmarca esa opción para que los avisos sean silenciosos. No se modifica el sonido global de Windows.
+6. El icono de la onda aparece en el ejecutable, barra de tareas y bandeja. Si habías anclado una versión vieja, desancla ese acceso y ancla el nuevo ejecutable. Windows puede mantener en caché el icono anterior durante un tiempo.
+7. Si no ves ni oyes el aviso de prueba, consulta **⋯ → Ver estado y avisos…**, las notificaciones de Windows y No molestar. El aviso de prueba no confirma recepción desde WhatsApp.
+
 ## Interfaz minimalista 0.3
 
 Para actualizar, cierra la versión anterior, descarga el nuevo artefacto, extrae todos sus archivos en otra carpeta y abre DeskDock.exe. La cabecera muestra **0.3**.

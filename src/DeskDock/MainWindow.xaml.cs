@@ -22,7 +22,9 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(2) };
     private readonly SpotifyService _spotify = new();
     private readonly AudioService _audio = new();
-    private Forms.NotifyIcon? _tray;
+    private TrayIcon? _tray;
+    private System.Drawing.Icon? _trayImage;
+    private readonly NotificationAudio _notificationAudio = new();
     private bool _refreshing, _sending, _syncingVolume, _closing, _webStarting;
     private string? _artKey;
     private int _notifications;
@@ -71,6 +73,8 @@ public partial class MainWindow : Window
         var settings = Settings.Load();
         Pin.IsChecked = Topmost = settings.AlwaysOnTop;
         TrayOption.IsChecked = settings.MinimizeToTray;
+        SoundOption.IsChecked = settings.NotificationSound;
+        ApplySkin(settings.Skin);
     }
 
     private async void WindowLoaded(object sender, RoutedEventArgs e)
@@ -90,15 +94,19 @@ public partial class MainWindow : Window
             var menu = new Forms.ContextMenuStrip();
             menu.Items.Add("Mostrar DeskDock", null, (_, _) => Dispatcher.Invoke(Restore));
             menu.Items.Add("Salir", null, (_, _) => Dispatcher.Invoke(Close));
-            _tray = new Forms.NotifyIcon
+            using var iconStream = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/DeskDock.ico"))!.Stream;
+            using var icon = new System.Drawing.Icon(iconStream);
+            _trayImage = (System.Drawing.Icon)icon.Clone();
+            _tray = new TrayIcon
             {
-                Text = "DeskDock", Icon = System.Drawing.SystemIcons.Application,
-                ContextMenuStrip = menu, Visible = true
+                Text = "DeskDock", Icon = _trayImage, ContextMenuStrip = menu
             };
+            _tray.Visible = true;
             _tray.DoubleClick += (_, _) => Dispatcher.Invoke(Restore);
             _tray.BalloonTipShown += (_, _) => Dispatcher.Invoke(() =>
             {
                 ReportNotification(n => n.ReportShown());
+                if (SoundOption.IsChecked) _notificationAudio.Play();
                 NotificationStatus.Text = "Windows notificó que presentó el aviso. Comprueba si fue visible en tu pantalla.";
             });
             _tray.BalloonTipClicked += (_, _) => Dispatcher.Invoke(() =>
@@ -112,6 +120,11 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             Diagnostics.Record("Tray", ex);
+            _tray?.ContextMenuStrip?.Dispose();
+            _tray?.Dispose();
+            _tray = null;
+            _trayImage?.Dispose();
+            _trayImage = null;
             TrayOption.IsChecked = false;
             TrayOption.IsEnabled = false;
         }
@@ -138,7 +151,29 @@ public partial class MainWindow : Window
     private void SettingsClick(object sender, RoutedEventArgs e)
     {
         Topmost = Pin.IsChecked == true;
-        new Settings(Topmost, TrayOption.IsChecked == true).Save();
+        SaveSettings();
+    }
+
+    private void SaveSettings()
+    {
+        if (!_testMode) new Settings(Topmost, TrayOption.IsChecked, SkinManager.Current, SoundOption.IsChecked).Save();
+    }
+
+    private void ApplySkin(string? id)
+    {
+        SkinManager.Apply(id);
+        MinimalSkin.IsChecked = SkinManager.Current == "minimal";
+        AuroraSkin.IsChecked = SkinManager.Current == "aurora";
+        EclipseSkin.IsChecked = SkinManager.Current == "eclipse";
+    }
+
+    private void SkinClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.MenuItem { Tag: string id })
+        {
+            ApplySkin(id);
+            SaveSettings();
+        }
     }
 
     private async Task StartWebAsync()
@@ -527,7 +562,7 @@ public partial class MainWindow : Window
         if (_testMode) { Web.Dispose(); return; }
         _timer.Stop();
         _timer.Tick -= TimerTick;
-        new Settings(Topmost, TrayOption.IsChecked == true).Save();
+        SaveSettings();
         if (_tray is not null)
         {
             ClosePendingNotification();
@@ -535,6 +570,8 @@ public partial class MainWindow : Window
             _tray.ContextMenuStrip?.Dispose();
             _tray.Dispose();
         }
+        _trayImage?.Dispose();
+        _notificationAudio.Dispose();
         Web.Dispose();
         Application.Current.Shutdown();
     }

@@ -1,5 +1,17 @@
 # Pruebas del MVP en Windows
 
+## Skins, audio e icono 0.4 — prueba manual pendiente
+
+- Cambiar Aurora/Eclipse/Minimal en la pestaña WhatsApp, Spotify y con el volumen abierto: superficies y texto actualizados sin volver a vincular WhatsApp.
+- Cerrar y abrir: conservar skin, sonido, siempre encima y minimizar a bandeja. Probar actualización desde preferencias de 0.3.
+- Confirmar icono propio en EXE, barra de tareas, bandeja y aviso. Anclar el nuevo EXE si el acceso viejo conserva otro icono.
+- «Probar aviso»: oír un solo bwuooop, sin tono estándar simultáneo, con volumen de Windows moderado. Desactivar sonido y repetir: ningún sonido.
+- Pulsar el aviso: restaurar WhatsApp. Bandeja: doble clic, clic derecho, Mostrar y Salir funcionan. Confirmar retirada del icono al cerrar y recuperación si Explorer se reinicia en una prueba controlada.
+- Con No molestar activo, comprobar las decisiones de Windows; DeskDock no debe forzar el aviso ni reproducir sonido antes del evento de presentación.
+- Recibir un mensaje real: verificar el comportamiento con las mismas limitaciones de WebView2 y del contador de no leídos documentadas.
+
+Las capturas `preview-*.png` del paquete son vistas sintéticas de las pruebas automáticas, no fotos de una sesión real de Spotify o WhatsApp.
+
 ## Interfaz 0.3 — comprobación manual pendiente
 
 - Abrir el menú «⋯» con ratón y teclado; comprobar recargar, preferencias marcables y acceso a estado/avisos.

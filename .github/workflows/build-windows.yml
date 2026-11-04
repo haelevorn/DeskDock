@@ -105,6 +105,14 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Subir vistas de skins con datos sintéticos
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: DeskDock-skins-preview
+          path: publish/DeskDock/preview-*.png
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Conservar diagnóstico de autoprueba si falla
         if: failure()
         uses: actions/upload-artifact@v7.0.2
