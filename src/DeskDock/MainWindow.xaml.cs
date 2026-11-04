@@ -17,6 +17,7 @@ namespace DeskDock;
 
 public partial class MainWindow : Window
 {
+    internal PlayerState Player { get; } = new();
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(2) };
     private readonly SpotifyService _spotify = new();
     private readonly AudioService _audio = new();
@@ -49,6 +50,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        DataContext = Player;
         var settings = Settings.Load();
         Pin.IsChecked = Topmost = settings.AlwaysOnTop;
         TrayOption.IsChecked = settings.MinimizeToTray;
@@ -373,17 +375,17 @@ public partial class MainWindow : Window
             var properties = await session.TryGetMediaPropertiesAsync();
             if (_closing) return;
             var info = session.GetPlaybackInfo();
-            TrackTitle.Text = string.IsNullOrWhiteSpace(properties.Title) ? "Spotify no publica título" : properties.Title;
-            TrackArtist.Text = properties.Artist;
-            Play.IsEnabled = !_sending && info.Controls.IsPlayEnabled;
-            Pause.IsEnabled = !_sending && info.Controls.IsPauseEnabled;
-            Previous.IsEnabled = !_sending && info.Controls.IsPreviousEnabled;
-            Next.IsEnabled = !_sending && info.Controls.IsNextEnabled;
+            Player.Title = string.IsNullOrWhiteSpace(properties.Title) ? "Spotify no publica título" : properties.Title;
+            Player.Artist = properties.Artist;
+            Player.CanPlay = !_sending && info.Controls.IsPlayEnabled;
+            Player.CanPause = !_sending && info.Controls.IsPauseEnabled;
+            Player.CanPrevious = !_sending && info.Controls.IsPreviousEnabled;
+            Player.CanNext = !_sending && info.Controls.IsNextEnabled;
             MediaStatus.Text = $"Sesión detectada: {session.SourceAppUserModelId}\nEstado publicado por Windows: {info.PlaybackStatus}.";
             var key = session.SourceAppUserModelId + "\n" + properties.Title + "\n" + properties.Artist + "\n" + properties.AlbumTitle;
             if (key != _artKey)
             {
-                Artwork.Source = null;
+                Player.Artwork = null;
                 _artKey = null;
                 if (properties.Thumbnail is not null)
                 {
@@ -408,7 +410,7 @@ public partial class MainWindow : Window
                                 bitmap.StreamSource = memory;
                                 bitmap.EndInit();
                                 bitmap.Freeze();
-                                if (!_closing) Artwork.Source = bitmap;
+                                if (!_closing) Player.Artwork = bitmap;
                             }
                         }
                     }
@@ -431,10 +433,10 @@ public partial class MainWindow : Window
 
     private void ClearMedia()
     {
-        Play.IsEnabled = Pause.IsEnabled = Previous.IsEnabled = Next.IsEnabled = false;
-        TrackTitle.Text = "Sin sesión de Spotify";
-        TrackArtist.Text = "Abre Spotify y reproduce música";
-        Artwork.Source = null;
+        Player.CanPlay = Player.CanPause = Player.CanPrevious = Player.CanNext = false;
+        Player.Title = "Sin sesión de Spotify";
+        Player.Artist = "Abre Spotify y reproduce música";
+        Player.Artwork = null;
         _artKey = null;
     }
 
@@ -442,7 +444,7 @@ public partial class MainWindow : Window
     {
         if (_sending || _closing) return;
         _sending = true;
-        Play.IsEnabled = Pause.IsEnabled = Previous.IsEnabled = Next.IsEnabled = false;
+        Player.CanPlay = Player.CanPause = Player.CanPrevious = Player.CanNext = false;
         try
         {
             bool accepted = await _spotify.SendAsync(command);

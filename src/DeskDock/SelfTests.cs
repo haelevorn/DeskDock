@@ -47,12 +47,14 @@ internal static class SelfTests
             window.UpdateLayout();
             var titleSource = (System.Windows.Controls.TextBlock)window.FindName("TrackTitle");
             var titleTarget = (System.Windows.Controls.TextBlock)window.FindName("FullTrackTitle");
-            titleSource.Text = "Canción de prueba";
+            window.Player.Title = "Canción de prueba";
+            System.Windows.Data.BindingOperations.GetBindingExpression(titleSource, System.Windows.Controls.TextBlock.TextProperty)!.UpdateTarget();
             System.Windows.Data.BindingOperations.GetBindingExpression(titleTarget, System.Windows.Controls.TextBlock.TextProperty)!.UpdateTarget();
-            Check(titleTarget.Text == titleSource.Text, "Título sincronizado en Spotify y mini reproductor", results);
+            Check(titleTarget.Text == "Canción de prueba" && titleSource.Text == titleTarget.Text, "Título sincronizado en Spotify y mini reproductor", results);
             var fullPlay = (System.Windows.Controls.Button)window.FindName("FullPlay");
             var miniPlay = (System.Windows.Controls.Button)window.FindName("Play");
-            miniPlay.IsEnabled = true;
+            window.Player.CanPlay = true;
+            System.Windows.Data.BindingOperations.GetBindingExpression(miniPlay, System.Windows.Controls.Button.IsEnabledProperty)!.UpdateTarget();
             System.Windows.Data.BindingOperations.GetBindingExpression(fullPlay, System.Windows.Controls.Button.IsEnabledProperty)!.UpdateTarget();
             Check(fullPlay.IsEnabled, "Disponibilidad sincronizada de reproducir", results);
             results.Add("PASS: carga de XAML. NO verifica UI interactiva, WhatsApp, notificaciones, Spotify ni audio.");

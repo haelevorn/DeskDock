@@ -63,16 +63,16 @@
       <Border Background="#293940" CornerRadius="12" Margin="0,16,0,14" Width="160" Height="160" HorizontalAlignment="Center">
        <Grid>
         <TextBlock Text="♪" FontSize="70" Foreground="#638078" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <Image x:Name="FullArtwork" Source="{Binding Source, ElementName=Artwork}" Stretch="Uniform" AutomationProperties.Name="Portada de la canción en Spotify"/>
+        <Image x:Name="FullArtwork" Source="{Binding Artwork}" Stretch="Uniform" AutomationProperties.Name="Portada de la canción en Spotify"/>
        </Grid>
       </Border>
-      <TextBlock x:Name="FullTrackTitle" Text="{Binding Text, ElementName=TrackTitle}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center"/>
-      <TextBlock x:Name="FullTrackArtist" Text="{Binding Text, ElementName=TrackArtist}" FontSize="15" Foreground="#A8BABF" TextWrapping="Wrap" TextAlignment="Center" Margin="0,6,0,14"/>
+      <TextBlock x:Name="FullTrackTitle" Text="{Binding Title}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center"/>
+      <TextBlock x:Name="FullTrackArtist" Text="{Binding Artist}" FontSize="15" Foreground="#A8BABF" TextWrapping="Wrap" TextAlignment="Center" Margin="0,6,0,14"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-       <Button x:Name="FullPrevious" Content="⏮" IsEnabled="{Binding IsEnabled, ElementName=Previous}" Click="PreviousClick" FontSize="20" AutomationProperties.Name="Canción anterior"/>
-       <Button x:Name="FullPlay" Content="▶" IsEnabled="{Binding IsEnabled, ElementName=Play}" Click="PlayClick" Background="#235E48" FontSize="20" AutomationProperties.Name="Reproducir"/>
-       <Button x:Name="FullPause" Content="⏸" IsEnabled="{Binding IsEnabled, ElementName=Pause}" Click="PauseClick" FontSize="20" AutomationProperties.Name="Pausar"/>
-       <Button x:Name="FullNext" Content="⏭" IsEnabled="{Binding IsEnabled, ElementName=Next}" Click="NextClick" FontSize="20" AutomationProperties.Name="Canción siguiente"/>
+       <Button x:Name="FullPrevious" Content="⏮" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" FontSize="20" AutomationProperties.Name="Canción anterior"/>
+       <Button x:Name="FullPlay" Content="▶" IsEnabled="{Binding CanPlay}" Click="PlayClick" Background="#235E48" FontSize="20" AutomationProperties.Name="Reproducir"/>
+       <Button x:Name="FullPause" Content="⏸" IsEnabled="{Binding CanPause}" Click="PauseClick" FontSize="20" AutomationProperties.Name="Pausar"/>
+       <Button x:Name="FullNext" Content="⏭" IsEnabled="{Binding CanNext}" Click="NextClick" FontSize="20" AutomationProperties.Name="Canción siguiente"/>
       </StackPanel>
       <TextBlock x:Name="MediaStatus" Margin="0,14,0,0" Foreground="#A8BABF" FontSize="11" TextWrapping="Wrap" Text="Buscando la sesión de Spotify…"/>
       <Button Content="Abrir aplicación Spotify ↗" Click="SpotifyClick" HorizontalAlignment="Center" Margin="0,14,0,0"/>
@@ -89,18 +89,18 @@
     <Grid>
      <Grid.ColumnDefinitions><ColumnDefinition Width="52"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
      <Border Width="44" Height="44" Background="#35454B" CornerRadius="5" VerticalAlignment="Top">
-      <Image x:Name="Artwork" Stretch="UniformToFill" AutomationProperties.Name="Portada de la canción"/>
+      <Image x:Name="Artwork" Source="{Binding Artwork}" Stretch="UniformToFill" AutomationProperties.Name="Portada de la canción"/>
      </Border>
      <StackPanel Grid.Column="1">
-      <TextBlock x:Name="TrackTitle" Text="Sin sesión de Spotify" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-      <TextBlock x:Name="TrackArtist" Text="Abre Spotify y reproduce música" Foreground="#A8BABF" TextTrimming="CharacterEllipsis" Margin="0,5,0,0"/>
+      <TextBlock x:Name="TrackTitle" Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+      <TextBlock x:Name="TrackArtist" Text="{Binding Artist}" Foreground="#A8BABF" TextTrimming="CharacterEllipsis" Margin="0,5,0,0"/>
      </StackPanel>
     </Grid>
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,4">
-     <Button x:Name="Previous" Content="⏮" IsEnabled="False" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Canción anterior"/>
-     <Button x:Name="Play" Content="▶" IsEnabled="False" Click="PlayClick" ToolTip="Reproducir" AutomationProperties.Name="Reproducir"/>
-     <Button x:Name="Pause" Content="⏸" IsEnabled="False" Click="PauseClick" ToolTip="Pausar" AutomationProperties.Name="Pausar"/>
-     <Button x:Name="Next" Content="⏭" IsEnabled="False" Click="NextClick" ToolTip="Siguiente" AutomationProperties.Name="Canción siguiente"/>
+     <Button x:Name="Previous" Content="⏮" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Canción anterior"/>
+     <Button x:Name="Play" Content="▶" IsEnabled="{Binding CanPlay}" Click="PlayClick" ToolTip="Reproducir" AutomationProperties.Name="Reproducir"/>
+     <Button x:Name="Pause" Content="⏸" IsEnabled="{Binding CanPause}" Click="PauseClick" ToolTip="Pausar" AutomationProperties.Name="Pausar"/>
+     <Button x:Name="Next" Content="⏭" IsEnabled="{Binding CanNext}" Click="NextClick" ToolTip="Siguiente" AutomationProperties.Name="Canción siguiente"/>
     </StackPanel>
     <Grid>
      <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="42"/></Grid.ColumnDefinitions>
