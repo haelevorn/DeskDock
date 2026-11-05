@@ -4,6 +4,8 @@ Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2
 
 ## Cambios de la versión 0.8
 
+Los ZIP publicados incluyen la versión al final del nombre, por ejemplo `DeskDock-win-x64-v0.8.0.zip`. El flujo lee la versión del proyecto, también para vistas previas y diagnóstico, y las fuentes se entregan como `DeskDock-fuentes-v0.8.0.zip`.
+
 También se alinea el recorte nativo de la ventana con el borde redondeado para evitar fragmentos de fondo en las esquinas, en ventana normal y Ultramini. Se recalcula al redimensionar y cambiar DPI; al maximizar se recupera el contorno rectangular. No se reintroduce Glass ni transparencia por píxel.
 
 - **Ultramini** desde «⋯»: ventana de 300 × 98 con reloj, pomodoro activo y anterior/reproducir-pausar/siguiente. Comparte el estado de Spotify, respeta Siempre encima y permite volver a la ventana completa. No reduce la página de WhatsApp a un tamaño ilegible; la ventana completa queda oculta conservando servicios y sesión.

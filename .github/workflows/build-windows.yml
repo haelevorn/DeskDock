@@ -34,6 +34,14 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Leer versión para nombrar las descargas
+        id: version
+        run: |
+          $project = [xml](Get-Content -Raw -LiteralPath src/DeskDock/DeskDock.csproj)
+          $buildVersion = [string]$project.Project.PropertyGroup.Version
+          if ($buildVersion -notmatch '^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$') { throw 'Versión de proyecto inválida' }
+          Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value "version=$buildVersion"
+
       - name: Restaurar dependencias
         run: dotnet restore src/DeskDock/DeskDock.csproj --runtime win-x64
 
@@ -101,7 +109,7 @@ jobs:
       - name: Subir aplicación para descargar
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: DeskDock-win-x64
+          name: DeskDock-win-x64-v${{ steps.version.outputs.version }}
           path: publish/DeskDock/
           if-no-files-found: error
           retention-days: 14
@@ -109,7 +117,7 @@ jobs:
       - name: Subir vistas de skins con datos sintéticos
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: DeskDock-skins-preview
+          name: DeskDock-skins-preview-v${{ steps.version.outputs.version }}
           path: publish/DeskDock/preview-*.png
           if-no-files-found: error
           retention-days: 14
@@ -118,7 +126,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: DeskDock-diagnostico
+          name: DeskDock-diagnostico-v${{ steps.version.outputs.version }}
           path: |
             publish/DeskDock/self-test-results.txt
             publish/DeskDock/layout-test-results.txt

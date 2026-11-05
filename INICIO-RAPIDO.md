@@ -2,6 +2,8 @@
 
 ## Ultramini, referencia y ChatGPT — versión 0.8
 
+La descarga de esta versión se llama **DeskDock-win-x64-v0.8.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
+
 Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE. La cabecera muestra **0.8**.
 
 ### Ultramini
