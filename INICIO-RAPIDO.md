@@ -1,5 +1,33 @@
 # Usar DeskDock sin instalar herramientas de programación
 
+## Ultramini, referencia y ChatGPT — versión 0.8
+
+Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE. La cabecera muestra **0.8**.
+
+### Ultramini
+
+Abre **⋯ → Modo ultramini**. Se oculta la ventana completa y aparece una de aproximadamente 300 × 98 unidades con hora y música. Si corre un pomodoro, también muestra tiempo/etapa; pulsarlo vuelve a la pestaña Pomodoro. El icono de esquinas arriba a la derecha vuelve a la ventana completa. Cerrar ultramini con Alt+F4 también vuelve a la ventana completa; para salir del programa usa la X de la ventana completa o Salir desde la bandeja.
+
+La opción Siempre encima se conserva. El reloj, pomodoro y avisos siguen funcionando mientras DeskDock está abierto. El modo no se inicia automáticamente al reabrir el programa. No es un modo de ahorro de memoria: WhatsApp continúa abierto para intentar recibir avisos.
+
+### Referencia mejorada y Recientes
+
+Se mantiene **una imagen abierta**, elegida desde tu computadora. La carpeta abre el selector; el icono de reloj abre **Recientes**, con las últimas 10 imágenes usadas. Un archivo que ya no existe aparece deshabilitado. **Limpiar recientes** limpia el historial sin borrar los archivos.
+
+Los nuevos iconos giran **90°** y voltean horizontalmente. Al hacerlo, la imagen vuelve a ajustarse al panel. Zoom y arrastre siguen disponibles después del giro/volteo. Los cambios son solo de visualización: no alteran la imagen original. Al abrir otra imagen, se reinician el giro y volteo. No hay galería ni colección de varias imágenes cargadas.
+
+### ChatGPT web experimental
+
+1. Abre **ChatGPT**. Solo entonces se crea su navegador incrustado y se visita `https://chatgpt.com/`.
+2. Inicia sesión tú mismo en el sitio si lo solicita. DeskDock no captura contraseñas ni lee tus conversaciones. Su perfil es independiente del navegador normal y puede pedir un nuevo inicio de sesión.
+3. Comprueba que puedes escribir una consulta y recibir una respuesta. «Página cargada» no demuestra que hayas iniciado sesión ni que todas las funciones funcionen.
+4. Si hay un bloqueo, una verificación que no avanza o un proveedor de acceso incompatible, pulsa **Abrir navegador** e inicia sesión allí. No se intenta eludir verificaciones ni se importan cookies.
+5. **Cerrar web** elimina el control de esa pestaña para liberar recursos, conservando el perfil. **Recargar** lo vuelve a abrir. Si no usas esta pestaña, no añade un navegador al iniciar DeskDock.
+6. Micrófono, cámara y permisos privilegiados están desactivados en este primer contenedor. No se garantiza voz, ventanas auxiliares de login, pagos, cargas/descargas o todas las herramientas web. Los límites y funciones disponibles son los de tu cuenta de ChatGPT.
+7. No se usa una clave API. La foto de Referencia y los datos de DeskDock no se envían automáticamente a ChatGPT; cualquier consulta/archivo lo seleccionas tú dentro de la web.
+
+El paquete incluye `chatgpt-web-probe.txt`: registra un intento de navegación pública desde el servidor de compilación, sin cuenta. No valida tu sesión ni la compatibilidad completa. Con cinco pestañas, las etiquetas pueden pasar a dos filas en el ancho mínimo para seguir siendo accesibles.
+
 ## Correcciones — versión 0.7
 
 1. Cierra la versión anterior, extrae el ZIP nuevo completo en otra carpeta y abre el EXE. Debe mostrar **0.7**.

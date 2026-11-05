@@ -1,5 +1,17 @@
 # Pruebas del MVP en Windows
 
+## Cambios 0.8 — comprobaciones reales pendientes
+
+- Entrar en Ultramini: reloj, canción, anterior/reproducir-pausar/siguiente y pomodoro activo; compartir cambios con Spotify. Volver con el icono y con Alt+F4. Bandeja permite restaurar y Salir cierra ambas ventanas.
+- Iniciar/pausar pomodoro en la ventana completa y volver a Ultramini: indicador solo cuando corre. Aviso de etapa restaura la pestaña correcta. Probar Siempre encima activado/desactivado.
+- Referencia: abrir una imagen, girar, voltear, ampliar/reducir y arrastrar; ajustar de nuevo sin recortar. Confirmar que el archivo original no cambió.
+- Abrir otra imagen y volver a la anterior mediante Recientes, sin galería. Cerrar/reabrir conserva rutas; Limpiar recientes no borra los archivos. Ruta que ya no existe aparece deshabilitada.
+- ChatGPT: abrir pestaña, iniciar sesión manualmente, consultar y recibir respuesta; cerrar/reabrir para verificar perfil. Repetir con el método de acceso que use la cuenta. No marcar probado si solo carga una página de verificación.
+- Si el login no avanza: Abrir navegador debe ser útil. Cerrar web y volver a Recargar no deben afectar WhatsApp ni pomodoro. La pestaña no debe inicializarse antes de seleccionarla.
+- Probar las cinco pestañas en 300 × 340 y monitor con escala diferente. Las cabeceras pueden ocupar dos filas.
+
+El sondeo público de CI es informativo. No introduce credenciales, no envía consultas y no resuelve CAPTCHA.
+
 ## Correcciones 0.7 — prueba real pendiente
 
 - Confirmar «Chats» y «Chat» visibles arriba de WhatsApp a 300 × 340 y en tamaño normal; cambiar a lista/conversación sin abrir menú.

@@ -89,6 +89,7 @@ jobs:
           $report = Join-Path $PWD 'publish/DeskDock/layout-test-results.txt'
           if (Test-Path -LiteralPath $report) { Get-Content -LiteralPath $report }
           if ($process.ExitCode -ne 0 -or !(Test-Path -LiteralPath $report)) { throw 'Falló la prueba de adaptación WebView2' }
+          if (Test-Path -LiteralPath publish/DeskDock/chatgpt-web-probe.txt) { Get-Content -LiteralPath publish/DeskDock/chatgpt-web-probe.txt }
           Get-ChildItem -LiteralPath publish/DeskDock -File -Recurse |
             Where-Object { $_.Name -ne 'SHA256SUMS.txt' } |
             Sort-Object FullName |

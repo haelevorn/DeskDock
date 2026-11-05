@@ -19,7 +19,7 @@
    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
     <Ellipse Fill="{DynamicResource AccentBrush}" Width="7" Height="7" Margin="0,0,9,0"/>
     <TextBlock Text="DeskDock" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-    <TextBlock Text="0.7" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
+    <TextBlock Text="0.8" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
    </StackPanel>
    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
     <TextBlock x:Name="ClockText" FontSize="11" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,7,0" AutomationProperties.Name="Hora actual de Windows"/>
@@ -37,6 +37,7 @@
        <MenuItem x:Name="TrayOption" Header="Minimizar a bandeja" IsCheckable="True" IsChecked="True" Click="SettingsClick"/>
        <MenuItem Header="Ocultar en bandeja" Click="HideClick"/>
        <MenuItem Header="Tamaño compacto" Click="CompactWindowClick"/>
+       <MenuItem Header="Modo ultramini" Click="EnterUltraMiniClick"/>
        <Separator/>
        <MenuItem Header="SKINS" IsEnabled="False"/>
        <MenuItem x:Name="MinimalSkin" Header="Minimal · original" Tag="minimal" IsCheckable="True" Click="SkinClick"/>
@@ -56,7 +57,7 @@
     <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" Click="CloseClick" ToolTip="Cerrar DeskDock" AutomationProperties.Name="Cerrar DeskDock"/>
    </StackPanel>
   </Grid>
-  <TabControl x:Name="MainTabs" Grid.Row="1" Background="{DynamicResource SurfaceBackground}" BorderThickness="0" Padding="0,4,0,0">
+  <TabControl x:Name="MainTabs" Grid.Row="1" Background="{DynamicResource SurfaceBackground}" BorderThickness="0" Padding="0,4,0,0" SelectionChanged="MainTabChanged">
    <TabItem Header="WhatsApp">
     <Grid>
      <Grid.RowDefinitions><RowDefinition Height="28"/><RowDefinition Height="*"/></Grid.RowDefinitions>
@@ -144,10 +145,15 @@
     <Grid AllowDrop="True" Drop="ReferenceDrop" DragOver="ReferenceDragOver">
      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
      <DockPanel Margin="3,3,3,5">
-      <TextBlock Text="Referencia" Foreground="{DynamicResource TextSecondary}" FontSize="11" VerticalAlignment="Center"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
        <Button x:Name="ReferenceOpenButton" Style="{StaticResource IconButton}" Click="OpenReferenceClick" ToolTip="Abrir imagen" AutomationProperties.Name="Abrir imagen de referencia"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceFolderGeometry}"/></Button>
+       <Button x:Name="ReferenceRecentButton" Style="{StaticResource IconButton}" Click="MoreClick" ToolTip="Abrir reciente" AutomationProperties.Name="Abrir imagen reciente">
+        <Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceHistoryGeometry}"/>
+        <Button.ContextMenu><ContextMenu Opened="RecentReferencesOpened"/></Button.ContextMenu>
+       </Button>
        <Button x:Name="ReferenceFitButton" Style="{StaticResource IconButton}" Click="FitReferenceClick" ToolTip="Ajustar imagen" AutomationProperties.Name="Ajustar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceFitGeometry}"/></Button>
+       <Button x:Name="ReferenceRotateButton" Style="{StaticResource IconButton}" Click="RotateReferenceClick" ToolTip="Girar 90 grados" AutomationProperties.Name="Girar referencia 90 grados"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceRotateGeometry}"/></Button>
+       <Button x:Name="ReferenceFlipButton" Style="{StaticResource IconButton}" Click="FlipReferenceClick" ToolTip="Voltear horizontalmente" AutomationProperties.Name="Voltear referencia horizontalmente"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceFlipGeometry}"/></Button>
        <Button x:Name="ReferenceZoomOutButton" Style="{StaticResource IconButton}" Click="ZoomOutReferenceClick" ToolTip="Alejar" AutomationProperties.Name="Alejar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceZoomOutGeometry}"/></Button>
        <Button x:Name="ReferenceZoomInButton" Style="{StaticResource IconButton}" Click="ZoomInReferenceClick" ToolTip="Acercar" AutomationProperties.Name="Acercar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceZoomInGeometry}"/></Button>
        <Button x:Name="ReferenceRemoveButton" Style="{StaticResource IconButton}" Click="ClearReferenceClick" ToolTip="Quitar referencia (no borra el archivo)" AutomationProperties.Name="Quitar referencia"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceRemoveGeometry}"/></Button>
@@ -163,6 +169,18 @@
       </Grid>
      </Border>
      <TextBlock x:Name="ReferenceStatus" Grid.Row="2" Text="PNG, JPG, BMP, GIF o TIFF · imagen local" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" Margin="5,5"/>
+    </Grid>
+   </TabItem>
+   <TabItem Header="ChatGPT">
+    <Grid>
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+     <WrapPanel Margin="2,2,2,3">
+      <Button Content="Recargar" Click="ReloadChatGptClick" FontSize="10" Padding="7,4"/>
+      <Button Content="Abrir navegador ↗" Click="OpenChatGptBrowserClick" FontSize="10" Padding="7,4"/>
+      <Button Content="Cerrar web" Click="CloseChatGptClick" FontSize="10" Padding="7,4" ToolTip="Liberar los recursos de esta pestaña"/>
+     </WrapPanel>
+     <TextBlock x:Name="ChatGptStatus" Grid.Row="1" Text="ChatGPT web experimental. Se carga al abrir esta pestaña; el acceso con cuenta requiere prueba real." Foreground="{DynamicResource TextSecondary}" FontSize="10" TextWrapping="Wrap" Margin="6,0,6,6"/>
+     <Grid x:Name="ChatGptHost" Grid.Row="2"/>
     </Grid>
    </TabItem>
   </TabControl>

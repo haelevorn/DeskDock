@@ -50,6 +50,7 @@ internal static class LayoutSelfTests
             await core.ExecuteScriptAsync("document.getElementById('main').remove()");
             Check(await Evaluate(core, "window.__deskDockLayout.configure(true, '', 360).state === 'unsupported'"), "Estructura desconocida pide alternativa por zoom", results);
             results.Add("PASS: WebView2 real con HTML sintético. NO verifica la estructura actual de WhatsApp ni avisos reales de Windows.");
+            await ProbePublicChatGptAsync(core);
             return 0;
         }
         catch (Exception ex) { results.Add("FAIL: " + ex); return 1; }
@@ -63,6 +64,29 @@ internal static class LayoutSelfTests
 
     private static async Task<bool> Evaluate(CoreWebView2 core, string expression) =>
         JsonSerializer.Deserialize<bool>(await core.ExecuteScriptAsync("(() => (" + expression + "))()"));
+
+    private static async Task ProbePublicChatGptAsync(CoreWebView2 core)
+    {
+        var report = new List<string> { "Prueba de página pública en perfil temporal sin cuenta. NO verifica login, consultas ni sesión persistente." };
+        var completed = new TaskCompletionSource<CoreWebView2NavigationCompletedEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
+        EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = (_, args) => completed.TrySetResult(args);
+        core.NavigationCompleted += handler;
+        try
+        {
+            core.Navigate("https://chatgpt.com/");
+            var navigation = await completed.Task.WaitAsync(TimeSpan.FromSeconds(15));
+            report.Add($"Navigation IsSuccess={navigation.IsSuccess}; WebErrorStatus={navigation.WebErrorStatus}");
+            report.Add("Título público: " + core.DocumentTitle);
+            report.Add("Una carga correcta también puede ser una pantalla de acceso o verificación; la compatibilidad permanece sin certificar.");
+        }
+        catch (Exception ex) { report.Add("No se completó la navegación pública: " + ex.GetType().Name); }
+        finally
+        {
+            core.NavigationCompleted -= handler;
+            try { core.Stop(); } catch (Exception ex) { report.Add("Finalización del sondeo: " + ex.GetType().Name); }
+            File.WriteAllLines(Path.Combine(AppContext.BaseDirectory, "chatgpt-web-probe.txt"), report);
+        }
+    }
 
     private static void Check(bool condition, string description, List<string> results)
     {

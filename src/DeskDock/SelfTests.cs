@@ -71,8 +71,12 @@ internal static class SelfTests
             Check(window.MinWidth == 300 && window.MinHeight == 340, "Ventana mínima de 300 por 340", results);
             Check(((System.Windows.Controls.TextBlock)window.FindName("ClockText")).Text.Length == 5,
                 "Reloj de Windows visible desde el inicio", results);
-            Check(((System.Windows.Controls.TabControl)window.FindName("MainTabs")).Items.Count == 4,
-                "Cuatro pestañas incluida Referencia", results);
+            Check(((System.Windows.Controls.TabControl)window.FindName("MainTabs")).Items.Count == 5,
+                "Cinco pestañas incluida ChatGPT", results);
+            foreach (string url in new[] { "https://chatgpt.com/", "https://auth.openai.com/authorize", "https://accounts.google.com/" })
+                Check(NavigationPolicy.IsChatGptNavigation(url), "Dominios previstos para acceso web de ChatGPT", results);
+            foreach (string url in new[] { "https://chatgpt.com.attacker.test/", "http://chatgpt.com/", "https://user@chatgpt.com/", "file:///C:/Windows/", "https://openai.com.attacker.test/" })
+                Check(!NavigationPolicy.IsChatGptNavigation(url), "Rechazar origen externo en pestaña ChatGPT", results);
             Check(((FrameworkElement)window.FindName("PomoBadge")).Visibility == Visibility.Collapsed,
                 "Indicador Pomodoro oculto al estar inactivo", results);
             window.Pomodoro.Start();
@@ -164,6 +168,16 @@ internal static class SelfTests
                     "Lupa menos reduce el zoom con la acción correcta", results);
                 Check(zoomIn.Content is System.Windows.Shapes.Path && zoomOut.Content is System.Windows.Shapes.Path,
                     "Iconos de referencia vectoriales sin depender de glifos de fuente", results);
+                ((System.Windows.Controls.Button)window.FindName("ReferenceRotateButton")).RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                double rotatedScale = ReferenceTransforms.Scale(((MatrixTransform)photo.RenderTransform).Matrix);
+                zoomIn.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                Check(ReferenceTransforms.Scale(((MatrixTransform)photo.RenderTransform).Matrix) > rotatedScale,
+                    "Zoom mantiene el giro de referencia", results);
+                ((System.Windows.Controls.Button)window.FindName("ReferenceFlipButton")).RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                Check(((MatrixTransform)photo.RenderTransform).Matrix.Determinant < 0, "Volteo horizontal invierte la referencia", results);
+                var recentButton = (System.Windows.Controls.Button)window.FindName("ReferenceRecentButton");
+                recentButton.ContextMenu!.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.ContextMenu.OpenedEvent));
+                Check(recentButton.ContextMenu.Items.Count >= 1, "Imagen abierta disponible en menú Recientes", results);
                 ((System.Windows.Controls.Button)window.FindName("ReferenceFitButton")).RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                 File.Delete(imagePath);
                 Check(((BitmapSource)photo.Source).PixelWidth == 2, "Imagen queda en memoria sin bloquear el archivo original", results);
@@ -171,6 +185,19 @@ internal static class SelfTests
             finally { if (File.Exists(imagePath)) File.Delete(imagePath); }
             Check(window.AllowsTransparency == false && window.FindName("GlassOption") is null,
                 "Ventana opaca sin opción Glass", results);
+            var mini = new UltraMiniWindow(window.Player, () => { }, () => { }, _ => { }) { ShowInTaskbar = false, Opacity = 0 };
+            mini.UpdateStatus("12:34", null);
+            mini.Show();
+            mini.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            Check(ReferenceEquals(mini.DataContext, window.Player) && mini.ActualHeight <= 100,
+                "Ultramini comparte reproductor y ocupa menos de 100 de alto", results);
+            mini.UpdateStatus("12:34", "04:59 · Concentración");
+            Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Visible,
+                "Pomodoro activo visible en ultramini", results);
+            mini.UpdateStatus("12:34", null);
+            Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Collapsed,
+                "Ultramini oculta Pomodoro inactivo", results);
+            mini.CloseForExit();
             tabs.SelectedIndex = 1;
             window.Width = 360;
             window.Height = 520;

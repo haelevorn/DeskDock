@@ -74,6 +74,7 @@ public partial class MainWindow
         PomoStart.Content = Pomodoro.IsRunning ? "Pausar" : "Iniciar";
         PomoBadge.Visibility = Pomodoro.IsRunning ? Visibility.Visible : Visibility.Collapsed;
         PomoBadgeText.Text = $"◷ {PomoTime.Text} · {PomoStage.Text}";
+        _ultraMini?.UpdateStatus(ClockText.Text, Pomodoro.IsRunning ? $"{PomoTime.Text} · {PomoStage.Text}" : null);
     }
 
     private void PomoBadgeClick(object sender, RoutedEventArgs e) => MainTabs.SelectedIndex = 2;

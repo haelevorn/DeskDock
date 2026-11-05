@@ -1,5 +1,15 @@
 # Compatibilidad, límites y evidencia
 
+## Actualización 0.8
+
+Ultramini es otra ventana WPF que comparte el reproductor y recibe actualizaciones del reloj/pomodoro de la ventana principal. Ocultar la principal no cierra WebView2 ni garantiza ahorro de RAM. La ventana completa se conserva para restaurarla. El modo no se guarda como modo inicial.
+
+Referencia mantiene una sola imagen decodificada y un historial local de hasta 10 rutas, sin galería. Giro/volteo no reescriben archivos ni se guardan como edición. Las transformaciones se reinician al abrir una imagen; zoom y arrastre se mantienen compatibles con rotación. Las rutas de Recientes son datos locales y no se envían a servicios web.
+
+ChatGPT se ofrece como contenedor web experimental, no como integración de OpenAI API. La documentación oficial establece acceso a chatgpt.com con cuenta, pero no garantiza compatibilidad con WebView2. Se permiten destinos HTTPS concretos para ChatGPT y proveedores previstos de acceso; enlaces externos se abren en el navegador si se solicitan por el usuario. Ventanas de autenticación, proveedores, verificaciones, voz y otras herramientas pueden fallar. No se altera user-agent, no se eluden controles, no se leen conversaciones mediante scripts y no se envían mensajes automáticamente. El perfil web está separado en `%LOCALAPPDATA%\DeskDock\WebView2-ChatGPT`. No se comparten cookies con el navegador normal ni con WhatsApp. Al cerrar ese control se intenta liberar sus recursos, conservando la sesión del perfil. Fuentes: [ChatGPT web](https://learn.chatgpt.com/docs/web), [autenticación](https://learn.chatgpt.com/docs/auth).
+
+La prueba pública de CI únicamente registra navegación y título de una página pública en un perfil temporal sin cuenta; incluso IsSuccess=true puede corresponder a login o verificación. La recepción de respuestas y persistencia de cuenta quedan pendientes de prueba manual.
+
 ## Correcciones 0.7
 
 Glass se eliminó íntegramente de la aplicación; los apartados previos sobre acrílico describen solo la versión histórica 0.6. Se conserva únicamente el redondeo nativo de esquinas que ya existía antes de Glass.

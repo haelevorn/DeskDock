@@ -79,6 +79,7 @@ public partial class MainWindow : Window
         SoundOption.IsChecked = settings.NotificationSound;
         ApplySkin(settings.Skin);
         InitializeFocusTools(settings);
+        RestoreRecentReferences(settings.RecentReferenceImages);
         _profiles = new(settings.Profiles);
         RefreshProfiles();
         if (!_testMode && !string.IsNullOrWhiteSpace(settings.ReferenceImagePath)) LoadReference(settings.ReferenceImagePath, save: false);
@@ -140,6 +141,7 @@ public partial class MainWindow : Window
 
     private void Restore()
     {
+        _ultraMini?.Hide();
         Show();
         WindowState = WindowState.Normal;
         Activate();
@@ -170,7 +172,7 @@ public partial class MainWindow : Window
             new Settings(Topmost, TrayOption.IsChecked, SkinManager.Current, SoundOption.IsChecked,
                 SafeDimension(bounds.Width, 360, 300, SystemParameters.WorkArea.Width),
                 SafeDimension(bounds.Height, 520, 340, SystemParameters.WorkArea.Height), Pomodoro.Options,
-                _profiles.Items.ToList(), _referencePath).Save();
+                _profiles.Items.ToList(), _referencePath, _recentReferencePaths.ToList()).Save();
         }
     }
 
@@ -599,6 +601,8 @@ public partial class MainWindow : Window
     private void WindowClosing(object? sender, CancelEventArgs e)
     {
         _closing = true;
+        _ultraMini?.CloseForExit();
+        CloseChatGpt();
         _focusTimer.Stop();
         _focusTimer.Tick -= FocusTimerTick;
         if (_testMode) { Web.Dispose(); return; }

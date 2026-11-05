@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -14,11 +16,47 @@ public partial class MainWindow
     private bool _referenceFitted = true, _referenceDragging;
     private Point _referencePointer;
     private Matrix _referenceMatrix = Matrix.Identity;
+    private readonly List<string> _recentReferencePaths = new();
+    private int _referenceTurns;
+    private bool _referenceFlipped;
 
     private void OpenReferenceClick(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog { Title = "Imagen de referencia", Filter = "Imágenes|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff", CheckFileExists = true };
         if (dialog.ShowDialog(this) == true) LoadReference(dialog.FileName);
+    }
+
+    private void RecentReferencesOpened(object sender, RoutedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.ContextMenu menu) return;
+        menu.Items.Clear();
+        if (_recentReferencePaths.Count == 0)
+            menu.Items.Add(new System.Windows.Controls.MenuItem { Header = "Todavía no hay imágenes recientes", IsEnabled = false });
+        foreach (string path in _recentReferencePaths.ToArray())
+        {
+            var item = new System.Windows.Controls.MenuItem { Header = Path.GetFileName(path), ToolTip = path, IsEnabled = File.Exists(path) };
+            item.Click += (_, _) => LoadReference(path);
+            menu.Items.Add(item);
+        }
+        if (_recentReferencePaths.Count == 0) return;
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        var clear = new System.Windows.Controls.MenuItem { Header = "Limpiar recientes" };
+        clear.Click += (_, _) => { _recentReferencePaths.Clear(); SaveSettings(); };
+        menu.Items.Add(clear);
+    }
+
+    private void RestoreRecentReferences(IEnumerable<string>? paths)
+    {
+        if (paths is null) return;
+        foreach (string path in paths.Take(10))
+        {
+            try
+            {
+                string full = Path.GetFullPath(path);
+                if (!_recentReferencePaths.Contains(full, StringComparer.OrdinalIgnoreCase)) _recentReferencePaths.Add(full);
+            }
+            catch (Exception ex) { Diagnostics.Record("ReferenceRestore", ex); }
+        }
     }
 
     internal bool LoadReference(string path, bool save = true)
@@ -30,6 +68,11 @@ public partial class MainWindow
             ReferencePhoto.Width = bitmap.PixelWidth;
             ReferencePhoto.Height = bitmap.PixelHeight;
             _referencePath = Path.GetFullPath(path);
+            _recentReferencePaths.RemoveAll(p => p.Equals(_referencePath, StringComparison.OrdinalIgnoreCase));
+            _recentReferencePaths.Insert(0, _referencePath);
+            if (_recentReferencePaths.Count > 10) _recentReferencePaths.RemoveRange(10, _recentReferencePaths.Count - 10);
+            _referenceTurns = 0;
+            _referenceFlipped = false;
             ReferenceHint.Visibility = Visibility.Collapsed;
             _referenceFitted = true;
             FitReference();
@@ -52,33 +95,36 @@ public partial class MainWindow
         ReferenceStatus.Text = "Abre o arrastra una imagen local.";
         SaveSettings();
     }
+    private void RotateReferenceClick(object sender, RoutedEventArgs e) { _referenceTurns = (_referenceTurns + 1) % 4; _referenceFitted = true; FitReference(); }
+    private void FlipReferenceClick(object sender, RoutedEventArgs e) { _referenceFlipped = !_referenceFlipped; _referenceFitted = true; FitReference(); }
 
     private void FitReferenceClick(object sender, RoutedEventArgs e) { _referenceFitted = true; FitReference(); }
     private void ReferenceSizeChanged(object sender, SizeChangedEventArgs e) { if (_referenceFitted) FitReference(); }
     private void FitReference()
     {
         if (ReferencePhoto.Source is not BitmapSource bitmap || ReferenceCanvas.ActualWidth < 1 || ReferenceCanvas.ActualHeight < 1) return;
-        double scale = Math.Min(ReferenceCanvas.ActualWidth / bitmap.PixelWidth, ReferenceCanvas.ActualHeight / bitmap.PixelHeight);
-        _referenceMatrix = new Matrix(scale, 0, 0, scale, (ReferenceCanvas.ActualWidth - bitmap.PixelWidth * scale) / 2,
-            (ReferenceCanvas.ActualHeight - bitmap.PixelHeight * scale) / 2);
+        _referenceMatrix = ReferenceTransforms.Fit(new(bitmap.PixelWidth, bitmap.PixelHeight),
+            new(ReferenceCanvas.ActualWidth, ReferenceCanvas.ActualHeight), _referenceTurns, _referenceFlipped);
         PresentReferenceTransform();
     }
 
     private void PresentReferenceTransform()
     {
         ReferencePhoto.RenderTransform = new MatrixTransform(_referenceMatrix);
-        ReferenceStatus.Text = $"{Path.GetFileName(_referencePath)} · {_referenceMatrix.M11 * 100:0}%";
+        ReferenceStatus.Text = $"{Path.GetFileName(_referencePath)} · {ReferenceTransforms.Scale(_referenceMatrix) * 100:0}% · {_referenceTurns * 90}°";
     }
 
     private void ZoomReference(double factor, Point anchor)
     {
         if (ReferencePhoto.Source is null) return;
-        double current = _referenceMatrix.M11;
+        double current = ReferenceTransforms.Scale(_referenceMatrix);
         var bitmap = (BitmapSource)ReferencePhoto.Source;
-        double fit = Math.Min(ReferenceCanvas.ActualWidth / bitmap.PixelWidth, ReferenceCanvas.ActualHeight / bitmap.PixelHeight);
+        double width = _referenceTurns % 2 == 0 ? bitmap.PixelWidth : bitmap.PixelHeight;
+        double height = _referenceTurns % 2 == 0 ? bitmap.PixelHeight : bitmap.PixelWidth;
+        double fit = Math.Min(ReferenceCanvas.ActualWidth / width, ReferenceCanvas.ActualHeight / height);
         double next = Math.Clamp(current * factor, Math.Min(0.01, Math.Max(0.0001, fit * 0.25)), Math.Max(12, fit * 8));
         double ratio = next / current;
-        _referenceMatrix = new Matrix(next, 0, 0, next,
+        _referenceMatrix = new Matrix(_referenceMatrix.M11 * ratio, _referenceMatrix.M12 * ratio, _referenceMatrix.M21 * ratio, _referenceMatrix.M22 * ratio,
             anchor.X - (anchor.X - _referenceMatrix.OffsetX) * ratio,
             anchor.Y - (anchor.Y - _referenceMatrix.OffsetY) * ratio);
         _referenceFitted = false;

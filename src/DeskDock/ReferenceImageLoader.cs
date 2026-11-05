@@ -6,7 +6,7 @@ namespace DeskDock;
 
 internal static class ReferenceImageLoader
 {
-    public static BitmapSource Load(string path)
+    internal static (int Width, int Height) Inspect(string path)
     {
         if (new FileInfo(path).Length > 50_000_000) throw new InvalidDataException("La imagen debe ocupar menos de 50 MB.");
         using var stream = File.OpenRead(path);
@@ -15,7 +15,13 @@ internal static class ReferenceImageLoader
         int width = frame.PixelWidth, height = frame.PixelHeight;
         if (width <= 0 || height <= 0 || (long)width * height > 100_000_000)
             throw new InvalidDataException("La imagen supera el límite de 100 megapíxeles.");
-        stream.Position = 0;
+        return (width, height);
+    }
+
+    public static BitmapSource Load(string path)
+    {
+        var (width, height) = Inspect(path);
+        using var stream = File.OpenRead(path);
         var bitmap = new BitmapImage();
         bitmap.BeginInit();
         bitmap.CacheOption = BitmapCacheOption.OnLoad;
