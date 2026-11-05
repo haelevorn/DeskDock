@@ -10,6 +10,8 @@ ChatGPT se ofrece como contenedor web experimental, no como integración de Open
 
 La prueba pública de CI únicamente registra navegación y título de una página pública en un perfil temporal sin cuenta; incluso IsSuccess=true puede corresponder a login o verificación. La recepción de respuestas y persistencia de cuenta quedan pendientes de prueba manual.
 
+En el sondeo de esta versión se observó `IsSuccess=False`, `WebErrorStatus=Unknown` y título «Just a moment…». Es una verificación que no se completó en el entorno del servidor, no una prueba de acceso funcional. No se intenta resolverla automáticamente.
+
 ## Correcciones 0.7
 
 Glass se eliminó íntegramente de la aplicación; los apartados previos sobre acrílico describen solo la versión histórica 0.6. Se conserva únicamente el redondeo nativo de esquinas que ya existía antes de Glass.

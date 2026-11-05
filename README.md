@@ -4,11 +4,15 @@ Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2
 
 ## Cambios de la versión 0.8
 
+También se alinea el recorte nativo de la ventana con el borde redondeado para evitar fragmentos de fondo en las esquinas, en ventana normal y Ultramini. Se recalcula al redimensionar y cambiar DPI; al maximizar se recupera el contorno rectangular. No se reintroduce Glass ni transparencia por píxel.
+
 - **Ultramini** desde «⋯»: ventana de 300 × 98 con reloj, pomodoro activo y anterior/reproducir-pausar/siguiente. Comparte el estado de Spotify, respeta Siempre encima y permite volver a la ventana completa. No reduce la página de WhatsApp a un tamaño ilegible; la ventana completa queda oculta conservando servicios y sesión.
 - **Referencia**: una imagen a la vez, giro de 90°, volteo horizontal y menú **Recientes** con hasta 10 rutas usadas. Se elimina la idea de galería/lista de imágenes. Solo se decodifica la imagen que se abre; no se modifican los archivos originales. Giro y volteo son del visor y se reinician al volver a abrir una imagen.
 - **ChatGPT web experimental**, quinta pestaña: carga bajo demanda al seleccionarla y tiene Recargar, Abrir navegador y Cerrar web para liberar recursos. Perfil persistente separado de WhatsApp y del navegador normal. No usa OpenAI API, no requiere clave API y no envía consultas automáticamente. Acceso, verificación y funciones de cuenta requieren prueba manual.
 
 La documentación oficial describe el acceso en chatgpt.com con una cuenta, pero no garantiza que el sitio o su autenticación funcionen en este contenedor WebView2. El sondeo público de CI no inicia sesión y no certifica compatibilidad. [ChatGPT en la web](https://learn.chatgpt.com/docs/web), [autenticación](https://learn.chatgpt.com/docs/auth).
+
+Resultado observado del sondeo en GitHub: navegación sin éxito y título «Just a moment…». No se ha verificado acceso a una cuenta ni respuesta a consultas dentro del contenedor. La pestaña sigue siendo experimental y ofrece Abrir navegador.
 
 ## Correcciones de la versión 0.7
 

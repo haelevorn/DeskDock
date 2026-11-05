@@ -6,7 +6,7 @@
  Title="DeskDock" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
  Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource TextPrimary}" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
  WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
- Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized" SizeChanged="ResponsiveSizeChanged">
+ Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized" SizeChanged="ResponsiveSizeChanged" DpiChanged="MainDpiChanged">
  <shell:WindowChrome.WindowChrome>
   <shell:WindowChrome CaptionHeight="42" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="16" UseAeroCaptionButtons="False"/>
  </shell:WindowChrome.WindowChrome>

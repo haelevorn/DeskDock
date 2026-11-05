@@ -28,5 +28,8 @@ public partial class UltraMiniWindow : Window
     private void PreviousClick(object sender, RoutedEventArgs e) => _command(MediaCommand.Previous);
     private void NextClick(object sender, RoutedEventArgs e) => _command(MediaCommand.Next);
     private void MiniClosing(object? sender, CancelEventArgs e) { if (!_exiting) { e.Cancel = true; _restore(); } }
+    private void MiniShapeChanged(object? sender, EventArgs e) => WindowCorners.Apply(this, 13);
+    private void MiniSizeChanged(object sender, SizeChangedEventArgs e) => WindowCorners.Apply(this, 13);
+    private void MiniDpiChanged(object sender, DpiChangedEventArgs e) => Dispatcher.BeginInvoke(new Action(() => WindowCorners.Apply(this, 13)));
     internal void CloseForExit() { _exiting = true; Close(); }
 }

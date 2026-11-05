@@ -129,6 +129,7 @@ public partial class MainWindow
 
     private void ResponsiveSizeChanged(object sender, SizeChangedEventArgs e)
     {
+        WindowCorners.Apply(this, 16);
         if (SpotifyCover is null || MiniPlayer is null) return;
         bool narrow = ActualWidth < 350;
         MiniArtworkFrame.Visibility = narrow ? Visibility.Collapsed : Visibility.Visible;
@@ -137,4 +138,6 @@ public partial class MainWindow
         FullTrackTitle.FontSize = ActualHeight < 480 ? 16 : 21;
         SpotifyContent.Margin = new Thickness(12, ActualHeight < 480 ? 6 : 12, 12, 6);
     }
+    private void MainDpiChanged(object sender, DpiChangedEventArgs e) =>
+        Dispatcher.BeginInvoke(new Action(() => WindowCorners.Apply(this, 16)));
 }

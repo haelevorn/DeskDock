@@ -47,6 +47,7 @@ public partial class MainWindow : Window
             int roundedCorners = 2;
             _ = DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 33, ref roundedCorners, sizeof(int));
         }
+        WindowCorners.Apply(this, 16);
     }
 
     private void MinimizeClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
@@ -155,6 +156,7 @@ public partial class MainWindow : Window
 
     private void WindowStateChanged(object? sender, EventArgs e)
     {
+        WindowCorners.Apply(this, 16);
         if (WindowState == WindowState.Minimized && TrayOption?.IsChecked == true && _tray is not null) Hide();
     }
 

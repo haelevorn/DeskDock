@@ -60,6 +60,7 @@ internal static class SelfTests
             var window = new MainWindow(testMode: true) { ShowInTaskbar = false, Opacity = 0 };
             window.Show();
             window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            Check(WindowCorners.HasClippedCorner(window), "Recorte nativo excluye las esquinas de la ventana completa", results);
             Check(((System.Windows.FrameworkElement)window.FindName("MiniPlayer")).ActualHeight <= 60,
                 "Mini reproductor compacto sin filas extra", results);
             Check(((System.Windows.FrameworkElement)window.FindName("Web")).ActualHeight > window.ActualHeight * 0.62,
@@ -191,6 +192,7 @@ internal static class SelfTests
             mini.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             Check(ReferenceEquals(mini.DataContext, window.Player) && mini.ActualHeight <= 100,
                 "Ultramini comparte reproductor y ocupa menos de 100 de alto", results);
+            Check(WindowCorners.HasClippedCorner(mini), "Ultramini aplica el mismo recorte que su borde redondeado", results);
             mini.UpdateStatus("12:34", "04:59 · Concentración");
             Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Visible,
                 "Pomodoro activo visible en ultramini", results);

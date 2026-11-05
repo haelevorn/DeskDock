@@ -6,6 +6,8 @@ Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE.
 
 ### Ultramini
 
+Se corrigió el contorno real de Windows para que coincida con las esquinas de DeskDock. Comprueba el borde sobre un fondo claro y oscuro, al cambiar tamaño y al mover entre monitores con distinta escala. La prueba automática verifica que la región nativa excluya los píxeles de las esquinas; el resultado visual final en tu pantalla requiere esa comprobación.
+
 Abre **⋯ → Modo ultramini**. Se oculta la ventana completa y aparece una de aproximadamente 300 × 98 unidades con hora y música. Si corre un pomodoro, también muestra tiempo/etapa; pulsarlo vuelve a la pestaña Pomodoro. El icono de esquinas arriba a la derecha vuelve a la ventana completa. Cerrar ultramini con Alt+F4 también vuelve a la ventana completa; para salir del programa usa la X de la ventana completa o Salir desde la bandeja.
 
 La opción Siempre encima se conserva. El reloj, pomodoro y avisos siguen funcionando mientras DeskDock está abierto. El modo no se inicia automáticamente al reabrir el programa. No es un modo de ahorro de memoria: WhatsApp continúa abierto para intentar recibir avisos.

@@ -2,6 +2,8 @@
 
 ## Cambios 0.8 — comprobaciones reales pendientes
 
+- Esquinas: ventana normal y Ultramini sobre fondo claro/oscuro, reducir/ampliar, maximizar/restaurar y mover entre monitores con distinta escala. Sin fragmentos rectangulares de fondo fuera del borde redondeado. La forma nativa se prueba en CI, la apariencia final necesita revisión en el equipo del usuario.
+
 - Entrar en Ultramini: reloj, canción, anterior/reproducir-pausar/siguiente y pomodoro activo; compartir cambios con Spotify. Volver con el icono y con Alt+F4. Bandeja permite restaurar y Salir cierra ambas ventanas.
 - Iniciar/pausar pomodoro en la ventana completa y volver a Ultramini: indicador solo cuando corre. Aviso de etapa restaura la pestaña correcta. Probar Siempre encima activado/desactivado.
 - Referencia: abrir una imagen, girar, voltear, ampliar/reducir y arrastrar; ajustar de nuevo sin recortar. Confirmar que el archivo original no cambió.

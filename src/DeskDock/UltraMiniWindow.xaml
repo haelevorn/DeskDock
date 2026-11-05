@@ -4,7 +4,7 @@
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
  Title="DeskDock · ultramini" Icon="Assets/DeskDock.ico" Width="300" Height="98" MinWidth="260" MinHeight="94" MaxHeight="160"
  WindowStyle="None" ResizeMode="CanResize" Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource TextPrimary}"
- FontFamily="Segoe UI" FontSize="11" WindowStartupLocation="CenterScreen" Closing="MiniClosing">
+ FontFamily="Segoe UI" FontSize="11" WindowStartupLocation="CenterScreen" Closing="MiniClosing" SourceInitialized="MiniShapeChanged" SizeChanged="MiniSizeChanged" StateChanged="MiniShapeChanged" DpiChanged="MiniDpiChanged">
  <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="31" ResizeBorderThickness="5" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
  <Border CornerRadius="13" BorderBrush="{DynamicResource FrameBrush}" BorderThickness="1" Padding="8,3,8,7">
   <Grid>
