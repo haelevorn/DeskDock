@@ -214,10 +214,11 @@ internal static class SelfTests
             Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Visible,
                 "Pomodoro activo visible en ultramini", results);
             mini.Width = 260;
+            mini.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             mini.UpdateLayout();
             var pomoButton = (System.Windows.Controls.Button)mini.FindName("MiniPomodoro");
             Check(pomoButton.TranslatePoint(new Point(), mini).Y > 31 && pomoButton.ActualHeight <= 20 && mini.ActualHeight <= 120,
-                "Pomodoro compacto fuera de la barra de arrastre a tamaño mínimo", results);
+                $"Pomodoro compacto fuera de la barra de arrastre a tamaño mínimo (Y={pomoButton.TranslatePoint(new Point(), mini).Y:0.0}; botón={pomoButton.ActualHeight:0.0}; ventana={mini.ActualHeight:0.0})", results);
             var captionPoint = mini.PointToScreen(new Point(135, 16));
             long coordinates = ((long)(ushort)(short)captionPoint.Y << 16) | (ushort)(short)captionPoint.X;
             Check(SendMessage(new System.Windows.Interop.WindowInteropHelper(mini).Handle, 0x84, IntPtr.Zero, new IntPtr(coordinates)).ToInt64() == 2,
@@ -277,3 +278,4 @@ internal static class SelfTests
         results.Add("PASS: " + description);
     }
 }
+

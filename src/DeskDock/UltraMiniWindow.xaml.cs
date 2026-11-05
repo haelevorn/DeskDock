@@ -28,8 +28,9 @@ public partial class UltraMiniWindow : Window
         MiniPomodoro.Visibility = pomodoro is null ? Visibility.Collapsed : Visibility.Visible;
         if (wasVisible != (pomodoro is not null))
         {
+            double targetHeight = Height + (pomodoro is null ? -19 : 19);
             MinHeight = pomodoro is null ? 94 : 113;
-            Height = Math.Max(MinHeight, Height + (pomodoro is null ? -19 : 19));
+            Height = Math.Max(MinHeight, targetHeight);
         }
     }
     internal void UpdateAudio(double volume, bool muted, bool available)
@@ -69,3 +70,4 @@ public partial class UltraMiniWindow : Window
     private void MiniDpiChanged(object sender, DpiChangedEventArgs e) => Dispatcher.BeginInvoke(new Action(() => WindowCorners.Apply(this, 13)));
     internal void CloseForExit() { _exiting = true; Close(); }
 }
+
