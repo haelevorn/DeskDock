@@ -15,12 +15,15 @@ internal static class LayoutSelfTests
     private const string Fixture = """
     <!doctype html><html><head><meta charset="utf-8"><style>
     *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}
-    #app{display:flex;min-width:1100px;width:1100px;height:100%}
+    #app{position:relative;display:flex;min-width:1100px;width:1100px;height:100%}
+    #app::after{content:'';position:absolute;left:320px;top:0;width:1px;height:100%;background:white;pointer-events:none}
+    #divider{position:absolute;left:320px;top:0;width:1px;height:100%;background:white;pointer-events:none}
+    .message{border-left:1px solid white;padding:8px} .message::after{content:'';position:absolute;width:1px;height:100%;background:green}
     #left{width:320px;display:flex;flex:none}#side{width:320px;min-width:320px;display:flex;flex-direction:column}
     #right{display:flex;flex:1;min-width:700px}#main{display:flex;flex-direction:column;min-width:700px;width:100%;height:100%}
     header{height:50px;flex:none}.messages{flex:1;min-height:0;overflow:auto}footer{height:50px;flex:none}input{width:100%;min-width:0}
     </style></head><body><div id="app"><div id="left"><div id="side"><div role="row" id="row">Conversación de prueba</div></div></div>
-    <div id="right"><div id="main"><header>Cabecera</header><div class="messages">Contenido de prueba</div><footer id="composer"><input aria-label="Escribir"></footer></div></div></div></body></html>
+    <div id="divider" role="separator" aria-orientation="vertical"></div><div id="right"><div id="main"><header>Cabecera</header><div class="messages"><div class="message">Contenido de prueba</div></div><footer id="composer"><input aria-label="Escribir"></footer></div></div></div></body></html>
     """;
 
     public static async Task<int> RunAsync()
@@ -42,6 +45,10 @@ internal static class LayoutSelfTests
             Check(await Evaluate(core, "window.__deskDockLayout.configure(true, 'auto', 360).state === 'chat'"), "Modo chat estrecho", results);
             Check(await Evaluate(core, "document.getElementById('main').getBoundingClientRect().right <= innerWidth + 1 && document.getElementById('main').getBoundingClientRect().left >= -1"), "Chat completo dentro del ancho disponible", results);
             Check(await Evaluate(core, "document.getElementById('composer').getBoundingClientRect().bottom <= innerHeight + 1"), "Caja de escritura dentro del alto disponible", results);
+            Check(await Evaluate(core, "getComputedStyle(document.getElementById('divider')).display === 'none' && getComputedStyle(document.getElementById('app'), '::after').display === 'none'"),
+                "Vista de chat elimina separadores verticales de columnas y pseudo-elementos superpuestos", results);
+            Check(await Evaluate(core, "getComputedStyle(document.querySelector('.message')).borderLeftWidth === '1px' && getComputedStyle(document.querySelector('.message'), '::after').content !== 'none'"),
+                "La corrección respeta bordes y decoraciones dentro de los mensajes", results);
             Check(await Evaluate(core, "window.__deskDockLayout.configure(true, 'list', 360).state === 'list' && getComputedStyle(document.getElementById('right')).display === 'none'"), "Volver a lista sin chat superpuesto", results);
             await core.ExecuteScriptAsync("document.getElementById('row').click()");
             Check(await Evaluate(core, "window.__deskDockLayout.update().state === 'chat'"), "Selección de conversación vuelve al chat", results);
@@ -54,6 +61,8 @@ internal static class LayoutSelfTests
             await core.ExecuteScriptAsync("document.getElementById('side').innerHTML = '<div role=\"listitem\" id=\"newRow\">Otra conversación</div>'; window.__deskDockLayout.configure(true, 'list', 580); document.getElementById('newRow').click();");
             Check(await Evaluate(core, "window.__deskDockLayout.update().state === 'chat'"), "Lista regenerada mantiene la navegación a conversación", results);
             Check(await Evaluate(core, "window.__deskDockLayout.configure(true, '', 900).state === 'wide' && !document.documentElement.hasAttribute('data-dd-view')"), "Ampliar restaura dos columnas", results);
+            Check(await Evaluate(core, "getComputedStyle(document.getElementById('divider')).display !== 'none' && getComputedStyle(document.getElementById('app'), '::after').display !== 'none' && !document.querySelector('[data-dd-divider], [data-dd-divider-after], [data-dd-divider-before]')"),
+                "Vista amplia recupera los separadores originales sin dejar modificaciones", results);
             Check(await Evaluate(core, "window.__deskDockLayout.configure(false, '', 360).state === 'off' && !document.querySelector('[data-dd-chat]')"), "Desactivar elimina los ajustes de contenedores", results);
             await core.ExecuteScriptAsync("document.getElementById('main').remove(); document.getElementById('side').remove()");
             Check(await Evaluate(core, "window.__deskDockLayout.configure(true, '', 360).state === 'unsupported'"), "Estructura desconocida pide alternativa por zoom", results);

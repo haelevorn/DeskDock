@@ -1,5 +1,9 @@
 # Pruebas del MVP en Windows
 
+## Corrección 0.12.1 — separador superpuesto
+
+Abrir la conversación de la captura y comprobar si desaparece la línea vertical al estar adaptada. Revisar lista de chats, escritura, desplazamiento y adjuntos. Ampliar a dos columnas y desactivar la vista adaptable deben restaurar separadores originales; bordes de mensajes y controles no deben cambiar. La corrección se prueba con separadores sintéticos, no con el DOM privado de una cuenta real. Si persiste, comparar el mismo chat con Vista adaptable activada y desactivada.
+
 ## Cambios 0.12 — WhatsApp cómodo
 
 - Abrir con ventana previamente compacta: WhatsApp se amplía; al seleccionar cada otra pestaña, vuelve a su tamaño anterior. Repetir varias veces sin crecimiento acumulado. Cerrar con WhatsApp abierto y reabrir: otras pestañas conservan tamaño compacto.

@@ -1,10 +1,12 @@
 # Usar DeskDock sin instalar herramientas de programación
 
-## Versión 0.12
+## Versión 0.12.1
 
-La descarga de esta versión se llama **DeskDock-win-x64-v0.12.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
+La descarga de esta versión se llama **DeskDock-win-x64-v0.12.1.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
 
 Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE. Conserva los archivos juntos en la carpeta extraída.
+
+Esta revisión intenta corregir la línea vertical que atravesaba la conversación: elimina separadores de columnas sobrantes cuando está activa la vista adaptable. Tras actualizar, abre el mismo chat y comprueba la cabecera y los mensajes. Si persiste, compara con **⋯ → Vista adaptable de WhatsApp** desactivada; la prueba sintética no identifica por sí sola el elemento de tu cuenta real.
 
 ### WhatsApp más cómodo
 

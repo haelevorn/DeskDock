@@ -1,6 +1,12 @@
-# DeskDock 0.12
+# DeskDock 0.12.1
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Corrección de la versión 0.12.1
+
+La captura del usuario muestra una línea vertical superpuesta al chat. La adaptación estrecha ahora oculta separadores decorativos muy finos y altos en los contenedores de columnas, incluidos sus pseudo-elementos; se restauran en vista amplia o al desactivar la adaptación. La búsqueda está limitada a esos contenedores y hermanos inmediatos, sin recorrer ni modificar mensajes o controles interactivos. CI reproduce dos variantes de separador en HTML sintético y comprueba que se conserven las decoraciones de mensajes. El origen exacto en la cuenta real y la desaparición de la línea deben confirmarse con el usuario.
+
+Descarga: `DeskDock-win-x64-v0.12.1.zip`; fuentes: `DeskDock-fuentes-v0.12.1.zip`.
 
 ## Cambios de la versión 0.12
 

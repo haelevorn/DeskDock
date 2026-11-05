@@ -21,6 +21,9 @@ internal static class WhatsAppLayout
         }
         html[data-dd-view="chat"] #main { width:100%!important; min-width:0!important; max-width:100%!important; }
         html[data-dd-view="list"] #side, html[data-dd-view="list"] #pane-side { min-width:0!important; width:100%!important; max-width:100%!important; }
+        html[data-dd-view] [data-dd-divider] { display:none!important; }
+        html[data-dd-view] [data-dd-divider-before]::before,
+        html[data-dd-view] [data-dd-divider-after]::after { content:none!important; display:none!important; }
       `;
       (document.head || root).appendChild(style);
       function attr(element, name, value = '') {
@@ -30,9 +33,40 @@ internal static class WhatsAppLayout
       function clear() {
         root.removeAttribute('data-dd-view');
         for (const element of marked) {
-          for (const name of ['data-dd-chat','data-dd-list','data-dd-host','data-dd-stretch']) element.removeAttribute(name);
+          for (const name of ['data-dd-chat','data-dd-list','data-dd-host','data-dd-stretch','data-dd-divider','data-dd-divider-before','data-dd-divider-after']) element.removeAttribute(name);
         }
         marked.clear();
+      }
+      function length(value, reference) {
+        return value.endsWith('%') ? parseFloat(value) * reference / 100 : parseFloat(value);
+      }
+      function dividers() {
+        // Solo contenedores de columnas y sus hermanos decorativos inmediatos.
+        // No se recorren mensajes, portadas, campos de escritura ni sus bordes.
+        const containers = [...marked].filter(e => !e.hasAttribute('data-dd-divider'));
+        for (const container of containers) {
+          const bounds = container.getBoundingClientRect();
+          if (bounds.height < 80) continue;
+          for (const pseudo of ['before', 'after']) {
+            const css = getComputedStyle(container, '::' + pseudo);
+            if (css.content === 'none' || css.content === 'normal' || css.display === 'none') continue;
+            const width = length(css.width, bounds.width), height = length(css.height, bounds.height);
+            const border = parseFloat(css.borderLeftWidth) + parseFloat(css.borderRightWidth);
+            if (width >= 0 && width + border > 0 && width + border <= 3 && height >= Math.max(80, bounds.height * .5))
+              attr(container, 'data-dd-divider-' + pseudo);
+          }
+          for (const child of container.children) {
+            if (child.id === 'main' || child.id === 'side' || child.id === 'pane-side' ||
+                child.hasAttribute('data-dd-chat') || child.hasAttribute('data-dd-list') ||
+                child.querySelector('#main, #side, #pane-side')) continue;
+            const rect = child.getBoundingClientRect();
+            if (rect.width <= 0 || rect.width > 3 || rect.height < Math.max(80, bounds.height * .5)) continue;
+            if (child.matches('button, input, textarea, select, a, [tabindex], [role="button"]') ||
+                child.querySelector('button, input, textarea, select, a, [tabindex], [role="button"]')) continue;
+            if (getComputedStyle(child).pointerEvents === 'none' || child.getAttribute('role') === 'separator' || child.childElementCount === 0)
+              attr(child, 'data-dd-divider');
+          }
+        }
       }
       function update() {
         if (!enabled || viewportWidth >= 720) {
@@ -50,6 +84,7 @@ internal static class WhatsAppLayout
           for (let parent = side.parentElement; parent && parent !== document.body; parent = parent.parentElement)
             attr(parent, 'data-dd-stretch');
           if (root.getAttribute('data-dd-view') !== 'list') root.setAttribute('data-dd-view', 'list');
+          dividers();
           return { state:'list' };
         }
         let common = main.parentElement;
@@ -67,6 +102,7 @@ internal static class WhatsAppLayout
         for (let parent = common; parent && parent !== document.body; parent = parent.parentElement) attr(parent, 'data-dd-stretch');
         const view = mode === 'list' ? 'list' : 'chat';
         if (root.getAttribute('data-dd-view') !== view) root.setAttribute('data-dd-view', view);
+        dividers();
         return { state:view };
       }
       const observer = new MutationObserver(() => {
