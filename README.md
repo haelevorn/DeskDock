@@ -1,6 +1,15 @@
-# DeskDock 0.12.1
+# DeskDock 0.13
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.13
+
+- Pestañas: fondo de selección con fundido y línea inferior con desplazamiento de 3 unidades, durante 160 ms. Brillo discreto al pasar el cursor o enfocar con teclado.
+- Botones: brillo suave y presión visual de 0.96 al pulsar, con retorno en 160 ms. La transformación se aplica dentro del control: no cambia su tamaño ni el área donde recibe clics. El espacio del teclado sigue activando la acción una sola vez.
+- Etapas del Pomodoro: relleno progresivo de la etapa terminada y pulso único de la nueva etapa durante 180 ms. Las saltadas conservan la raya. La carga inicial, reiniciar, configurar o volver a mostrar no reproducen el efecto. No se añade ningún bucle ni temporizador permanente para animar.
+- Se respeta `SystemParameters.ClientAreaAnimation` y sus cambios durante la ejecución: reducir animaciones detiene las transiciones y deja la interfaz en su estado final, con respuesta estática al cursor. Ocultar o descargar controles detiene los efectos y retira sus suscripciones cuando corresponde.
+- CI prueba relojes WPF reales, selección, pulsación por teclado, finalización y cancelación de animaciones. Las vistas previas se generan sin transiciones para capturar el resultado estable. El aspecto y fluidez final requieren revisión en la pantalla del usuario.
+- Descarga: `DeskDock-win-x64-v0.13.0.zip`; fuentes: `DeskDock-fuentes-v0.13.0.zip`.
 
 ## Corrección de la versión 0.12.1
 

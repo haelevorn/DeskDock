@@ -1,5 +1,12 @@
 # Pruebas del MVP en Windows
 
+## Cambios 0.13 — animaciones
+
+- Cambiar rápido entre pestañas: el fondo y la línea se estabilizan en la seleccionada. Cambiar skin conserva colores correctos.
+- Botones normales e iconos: brillo al pasar el cursor, presión al pulsar y retorno al soltar. Verificar clic, arrastrar fuera antes de soltar y usar Espacio con foco de teclado; no deben duplicarse acciones ni cambiar áreas de interacción.
+- Pomodoro: terminar una etapa de un minuto (relleno), saltar otra (raya), pausar, reiniciar y ocultar/mostrar la vista. Solo el avance debe emitir un pulso breve. Comprobar pestaña, indicador permanente y Ultramini.
+- Desactivar Efectos de animación en Accesibilidad de Windows durante una transición. No debe quedar a medias; la interfaz debe responder al instante. Reactivar y repetir. No debe animarse el tamaño de WhatsApp.
+
 ## Corrección 0.12.1 — separador superpuesto
 
 Abrir la conversación de la captura y comprobar si desaparece la línea vertical al estar adaptada. Revisar lista de chats, escritura, desplazamiento y adjuntos. Ampliar a dos columnas y desactivar la vista adaptable deben restaurar separadores originales; bordes de mensajes y controles no deben cambiar. La corrección se prueba con separadores sintéticos, no con el DOM privado de una cuenta real. Si persiste, comparar el mismo chat con Vista adaptable activada y desactivada.

@@ -4,7 +4,7 @@
  xmlns:local="clr-namespace:DeskDock"
  xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
- Title="DeskDock v0.12.1" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
+ Title="DeskDock v0.13.0" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
  Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource TextPrimary}" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
  WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
  Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized" SizeChanged="ResponsiveSizeChanged" DpiChanged="MainDpiChanged">

@@ -19,6 +19,7 @@ internal static class SelfTests
             FocusSelfTests.Run(results);
             PomodoroStagesSelfTests.Run(results);
             WhatsAppComfortSelfTests.Run(results);
+            MotionSelfTests.Run(results);
             Check(SpotifyService.IsSpotifyId("Spotify.exe"), "Spotify Win32", results);
             Check(SpotifyService.IsSpotifyId("SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"), "Spotify Store", results);
             foreach (string id in new[] { "msedge.exe", "chrome.exe", "OtherSpotify.exe", "", "SpotifyAB.Fake!Spotify" })
@@ -295,6 +296,7 @@ internal static class SelfTests
             window.Width = 360;
             window.Height = 520;
             window.UpdateLayout();
+            MotionPreference.Current.OverrideForTests(false);
             foreach (string skin in new[] { "aurora", "eclipse", "minimal" })
             {
                 SkinManager.Apply(skin);
@@ -321,6 +323,7 @@ internal static class SelfTests
                 SavePreview(mini, "preview-" + skin + "-ultramini.png");
                 tabs.SelectedIndex = 1;
             }
+            MotionPreference.Current.OverrideForTests(null);
             mini.CloseForExit();
             window.Close();
             results.Add("PASS: carga de XAML. NO verifica UI interactiva, WhatsApp, notificaciones, Spotify ni audio.");
