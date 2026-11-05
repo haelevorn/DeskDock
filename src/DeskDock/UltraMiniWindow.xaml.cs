@@ -22,11 +22,12 @@ public partial class UltraMiniWindow : Window
         _openSpotify = openSpotify;
         UpdateAudio(0, false, false);
     }
-    internal void UpdateStatus(string clock, string? pomodoro)
+    internal void UpdateStatus(string clock, string? pomodoro, PomodoroTimer? timer = null)
     {
         MiniClock.Text = clock;
         bool wasVisible = MiniPomodoro.Visibility == Visibility.Visible;
-        MiniPomodoro.Content = pomodoro;
+        MiniPomodoroText.Text = pomodoro;
+        if (timer is not null) MiniPomodoroStages.SetTimer(timer);
         MiniPomodoro.Visibility = pomodoro is null ? Visibility.Collapsed : Visibility.Visible;
         if (wasVisible != (pomodoro is not null))
         {

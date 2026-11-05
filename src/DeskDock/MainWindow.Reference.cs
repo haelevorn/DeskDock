@@ -19,6 +19,8 @@ public partial class MainWindow
     private readonly List<string> _recentReferencePaths = new();
     private int _referenceTurns;
     private bool _referenceFlipped;
+    private BitmapSource? _referenceColor, _referenceGray;
+    private bool _referenceGrayscale;
 
     private void OpenReferenceClick(object sender, RoutedEventArgs e)
     {
@@ -65,6 +67,10 @@ public partial class MainWindow
         {
             var bitmap = ReferenceImageLoader.Load(path);
             ReferencePhoto.Source = bitmap;
+            _referenceColor = bitmap;
+            _referenceGray = null;
+            _referenceGrayscale = false;
+            UpdateGrayscaleButton();
             ReferencePhoto.Width = bitmap.PixelWidth;
             ReferencePhoto.Height = bitmap.PixelHeight;
             _referencePath = Path.GetFullPath(path);
@@ -90,6 +96,9 @@ public partial class MainWindow
     private void ClearReferenceClick(object sender, RoutedEventArgs e)
     {
         ReferencePhoto.Source = null;
+        _referenceColor = _referenceGray = null;
+        _referenceGrayscale = false;
+        UpdateGrayscaleButton();
         _referencePath = null;
         ReferenceHint.Visibility = Visibility.Visible;
         ReferenceStatus.Text = "Abre o arrastra una imagen local.";
@@ -97,6 +106,28 @@ public partial class MainWindow
     }
     private void RotateReferenceClick(object sender, RoutedEventArgs e) { _referenceTurns = (_referenceTurns + 1) % 4; _referenceFitted = true; FitReference(); }
     private void FlipReferenceClick(object sender, RoutedEventArgs e) { _referenceFlipped = !_referenceFlipped; _referenceFitted = true; FitReference(); }
+
+    private void GrayscaleReferenceClick(object sender, RoutedEventArgs e)
+    {
+        if (_referenceColor is null) return;
+        try
+        {
+            if (!_referenceGrayscale) _referenceGray ??= ReferenceImageLoader.Grayscale(_referenceColor);
+            _referenceGrayscale = !_referenceGrayscale;
+            ReferencePhoto.Source = _referenceGrayscale ? _referenceGray : _referenceColor;
+            UpdateGrayscaleButton();
+            PresentReferenceTransform();
+        }
+        catch (Exception ex) { Diagnostics.Record("ReferenceGrayscale", ex); ReferenceStatus.Text = "No se pudo activar la escala de grises."; }
+    }
+
+    private void UpdateGrayscaleButton()
+    {
+        ReferenceGrayscaleButton.IsEnabled = _referenceColor is not null;
+        ReferenceGrayscaleButton.Tag = _referenceGrayscale ? "on" : "off";
+        ReferenceGrayscaleButton.ToolTip = _referenceGrayscale ? "Volver a color" : "Ver en escala de grises";
+        System.Windows.Automation.AutomationProperties.SetItemStatus(ReferenceGrayscaleButton, _referenceGrayscale ? "Activo" : "Inactivo");
+    }
 
     private void FitReferenceClick(object sender, RoutedEventArgs e) { _referenceFitted = true; FitReference(); }
     private void ReferenceSizeChanged(object sender, SizeChangedEventArgs e) { if (_referenceFitted) FitReference(); }
@@ -111,7 +142,7 @@ public partial class MainWindow
     private void PresentReferenceTransform()
     {
         ReferencePhoto.RenderTransform = new MatrixTransform(_referenceMatrix);
-        ReferenceStatus.Text = $"{Path.GetFileName(_referencePath)} · {ReferenceTransforms.Scale(_referenceMatrix) * 100:0}% · {_referenceTurns * 90}°";
+        ReferenceStatus.Text = $"{Path.GetFileName(_referencePath)} · {ReferenceTransforms.Scale(_referenceMatrix) * 100:0}% · {_referenceTurns * 90}°" + (_referenceGrayscale ? " · Gris" : "");
     }
 
     private void ZoomReference(double factor, Point anchor)

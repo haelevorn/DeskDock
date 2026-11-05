@@ -1,5 +1,12 @@
 # Pruebas del MVP en Windows
 
+## Cambios 0.11 — comprobaciones visuales
+
+- Pestañas: cinco iconos reconocibles, logos de WhatsApp y Spotify verdes, ayudas con nombres y selección perceptible en cada skin. Navegar con teclado también debe mostrar el foco. Verificar ancho mínimo de 300 sin recortes.
+- Pomodoro: círculo, triángulo y rombo. Recibir fin de etapa real (relleno), pulsar Siguiente etapa (raya), pausar/reanudar y terminar descanso largo (nuevo ciclo). Comprobar sincronización entre pestaña, indicador permanente y Ultramini.
+- Configurar 12 sesiones: pestaña en dos filas, vistas pequeñas con cinco etapas y puntos, contador correcto. Pasa el cursor para consultar el ciclo entero. Arrastrar Ultramini desde el centro de la barra superior, sin activar el pomodoro.
+- Referencia: círculo mitad relleno activa grises y se resalta. Comprobar color/gris sobre PNG semitransparente, foto JPG, imagen girada y ampliada. Alternar no cambia el encuadre ni el archivo. Abrir otra imagen reinicia color; quitarla desactiva el botón. Herramientas accesibles al reducir la ventana.
+
 ## Cambios 0.8 — comprobaciones reales pendientes
 
 - Esquinas: ventana normal y Ultramini sobre fondo claro/oscuro, reducir/ampliar, maximizar/restaurar y mover entre monitores con distinta escala. Sin fragmentos rectangulares de fondo fuera del borde redondeado. La forma nativa se prueba en CI, la apariencia final necesita revisión en el equipo del usuario.

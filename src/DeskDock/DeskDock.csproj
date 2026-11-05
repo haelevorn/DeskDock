@@ -12,7 +12,7 @@
     <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>false</PublishTrimmed>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>0.10.0</Version>
+    <Version>0.11.0</Version>
     <ApplicationIcon>Assets/DeskDock.ico</ApplicationIcon>
     <AssemblyName>DeskDock</AssemblyName>
   </PropertyGroup>

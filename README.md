@@ -1,6 +1,15 @@
-# DeskDock 0.10
+# DeskDock 0.11
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.11
+
+- Etapas del Pomodoro: círculos para concentración, triángulos para descanso corto y rombo para descanso largo. Terminadas con relleno, pendientes con contorno tenue, etapa actual con punto y color del skin, saltadas con raya interior. El historial visual corresponde al ciclo actual; se limpia después del descanso largo o al reiniciar/configurar.
+- La pestaña muestra hasta 24 etapas en un máximo de dos filas. El indicador permanente y Ultramini mantienen una sola fila de 14 unidades: hasta ocho etapas completas; con más, cinco cercanas a la actual y puntos suspensivos. El contador C/D/DL y número de sesión indica posición; la ayuda al pasar el cursor explica todas las etapas y sus estados. No aumenta la altura de estas barras ni ocupa la zona de arrastre.
+- Indicadores vectoriales con recursos dinámicos de Minimal/Aurora/Eclipse. Solo se reconstruye el estado visual al cambiar de etapa o configuración, sin animaciones ni un temporizador por símbolo.
+- Referencia: botón de círculo mitad lleno, mitad vacío para alternar escala de grises. Conserva alfa, zoom, giro y desplazamiento; volver a color restaura el bitmap original. Conversión en memoria bajo demanda, limitada a la imagen abierta y descartada al cambiarla o quitarla. No modifica archivos ni guarda el filtro entre imágenes.
+- Pestañas con iconos en lugar de títulos: logos verdes de WhatsApp y Spotify, reloj de arena, lienzo y símbolo de ChatGPT. Tamaños uniformes, selección y foco según el skin, nombres accesibles y ayudas. Procedencia de logos: [ICONOS.md](docs/ICONOS.md).
+- Descarga: `DeskDock-win-x64-v0.11.0.zip`; fuentes: `DeskDock-fuentes-v0.11.0.zip`.
 
 ## Cambios de la versión 0.10
 

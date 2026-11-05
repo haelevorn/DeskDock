@@ -1,9 +1,11 @@
 using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace DeskDock;
 
 internal enum PomodoroStage { Focus, ShortBreak, LongBreak }
+internal enum PomodoroStageResult { Completed, Skipped }
 public sealed record PomodoroOptions(int FocusMinutes = 25, int ShortBreakMinutes = 5,
     int LongBreakMinutes = 15, int SessionsBeforeLongBreak = 4, bool AutoAdvance = true)
 {
@@ -15,6 +17,11 @@ internal sealed class PomodoroTimer
 {
     private readonly Func<TimeSpan> _now;
     private TimeSpan _deadline;
+    private readonly List<PomodoroStageResult> _cycleResults = new();
+    public IReadOnlyList<PomodoroStageResult> CycleResults => _cycleResults;
+    public int CycleStageIndex => _cycleResults.Count;
+    public int CycleSession => Math.Min(Options.SessionsBeforeLongBreak, CycleStageIndex / 2 + 1);
+    public int Revision { get; private set; }
     public PomodoroOptions Options { get; private set; } = new();
     public PomodoroStage Stage { get; private set; }
     public int CompletedFocusSessions { get; private set; }
@@ -31,7 +38,7 @@ internal sealed class PomodoroTimer
         _now = now ?? (() => TimeSpan.FromSeconds((double)Stopwatch.GetTimestamp() / Stopwatch.Frequency));
 
     public void Configure(PomodoroOptions options) { Options = options.Normalize(); Reset(); }
-    public void Reset() { IsRunning = false; Stage = PomodoroStage.Focus; CompletedFocusSessions = 0; Remaining = Duration; }
+    public void Reset() { IsRunning = false; Stage = PomodoroStage.Focus; CompletedFocusSessions = 0; Remaining = Duration; _cycleResults.Clear(); Revision++; }
     public void Start() { if (IsRunning) return; _deadline = _now() + Remaining; IsRunning = true; }
     public void Pause() { if (!IsRunning) return; Remaining = MaxZero(_deadline - _now()); IsRunning = false; }
 
@@ -42,15 +49,22 @@ internal sealed class PomodoroTimer
         var now = _now();
         Remaining = MaxZero(_deadline - now);
         if (Remaining > TimeSpan.Zero) return null;
-        return MoveNext(now, Options.AutoAdvance);
+        return MoveNext(now, Options.AutoAdvance, PomodoroStageResult.Completed);
     }
 
     // El salto explícito empieza la siguiente etapa aunque AutoAdvance esté desactivado.
-    public PomodoroStage NextStage() => MoveNext(_now(), true);
+    public PomodoroStage NextStage()
+    {
+        var now = _now();
+        return MoveNext(now, true, IsRunning && now >= _deadline ? PomodoroStageResult.Completed : PomodoroStageResult.Skipped);
+    }
 
-    private PomodoroStage MoveNext(TimeSpan now, bool start)
+    private PomodoroStage MoveNext(TimeSpan now, bool start, PomodoroStageResult result)
     {
         var finished = Stage;
+        if (finished == PomodoroStage.LongBreak) _cycleResults.Clear();
+        else _cycleResults.Add(result);
+        Revision++;
         if (Stage == PomodoroStage.Focus)
         {
             CompletedFocusSessions++;

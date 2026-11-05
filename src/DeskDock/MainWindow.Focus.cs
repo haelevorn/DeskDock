@@ -69,13 +69,17 @@ public partial class MainWindow
         PomoStage.Text = PomodoroTimer.StageName(Pomodoro.Stage);
         int total = (int)Math.Ceiling(Pomodoro.Remaining.TotalSeconds);
         PomoTime.Text = $"{total / 60:00}:{total % 60:00}";
-        PomoSessions.Text = $"Sesiones: {Pomodoro.CompletedFocusSessions} · descanso largo cada {Pomodoro.Options.SessionsBeforeLongBreak}";
+        PomoSessions.Text = $"{(Pomodoro.Stage == PomodoroStage.Focus ? "Concentración" : "Descanso")} {Pomodoro.CycleSession} de {Pomodoro.Options.SessionsBeforeLongBreak} · sesiones: {Pomodoro.CompletedFocusSessions}";
+        PomoStages.SetTimer(Pomodoro);
+        PomoBadgeStages.SetTimer(Pomodoro);
         PomoProgress.Value = Math.Clamp(100 * (1 - Pomodoro.Remaining.TotalSeconds / Pomodoro.Duration.TotalSeconds), 0, 100);
         PomoStart.Content = Pomodoro.IsRunning ? "Pausar" : "Iniciar";
         PomoBadge.Visibility = Pomodoro.IsRunning ? Visibility.Visible : Visibility.Collapsed;
-        PomoBadgeText.Text = $"◷ {PomoTime.Text} · {PomoStage.Text}";
-        _ultraMini?.UpdateStatus(ClockText.Text, Pomodoro.IsRunning ? $"{PomoTime.Text} · {PomoStage.Text}" : null);
+        PomoBadgeText.Text = CompactPomodoroLabel();
+        _ultraMini?.UpdateStatus(ClockText.Text, Pomodoro.IsRunning ? CompactPomodoroLabel() : null, Pomodoro);
     }
+
+    private string CompactPomodoroLabel() => $"{PomoTime.Text} · {(Pomodoro.Stage == PomodoroStage.Focus ? "C" : Pomodoro.Stage == PomodoroStage.LongBreak ? "DL" : "D")}{Pomodoro.CycleSession}/{Pomodoro.Options.SessionsBeforeLongBreak}";
 
     private void PomoBadgeClick(object sender, RoutedEventArgs e) => MainTabs.SelectedIndex = 2;
 

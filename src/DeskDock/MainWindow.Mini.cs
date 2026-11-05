@@ -11,7 +11,7 @@ public partial class MainWindow
             () => { Restore(); MainTabs.SelectedIndex = 2; }, async command => await SendAsync(command),
             SetMiniVolume, () => MuteClick(this, new RoutedEventArgs()), () => SpotifyClick(this, new RoutedEventArgs()));
         _ultraMini.Topmost = Topmost;
-        _ultraMini.UpdateStatus(ClockText.Text, Pomodoro.IsRunning ? $"{PomoTime.Text} · {PomoStage.Text}" : null);
+        _ultraMini.UpdateStatus(ClockText.Text, Pomodoro.IsRunning ? CompactPomodoroLabel() : null, Pomodoro);
         _ultraMini.Show();
         RefreshAudio();
         Hide();

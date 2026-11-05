@@ -1,9 +1,10 @@
 <Window x:Class="DeskDock.MainWindow"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:local="clr-namespace:DeskDock"
  xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
- Title="DeskDock v0.10.0" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
+ Title="DeskDock v0.11.0" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
  Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource TextPrimary}" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
  WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
  Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized" SizeChanged="ResponsiveSizeChanged" DpiChanged="MainDpiChanged">
@@ -61,7 +62,8 @@
    </StackPanel>
   </Grid>
   <TabControl x:Name="MainTabs" Grid.Row="1" Background="{DynamicResource SurfaceBackground}" BorderThickness="0" Padding="0,4,0,0" SelectionChanged="MainTabChanged">
-   <TabItem Header="WhatsApp">
+   <TabItem ToolTip="WhatsApp" AutomationProperties.Name="WhatsApp">
+    <TabItem.Header><Path Width="20" Height="20" Stretch="Uniform" Fill="#25D366" Data="{StaticResource WhatsAppLogoGeometry}"/></TabItem.Header>
     <Grid>
      <Grid.RowDefinitions><RowDefinition Height="28"/><RowDefinition Height="*"/></Grid.RowDefinitions>
      <StackPanel x:Name="WhatsAppToolbar" Orientation="Horizontal" Margin="1,0,0,2">
@@ -76,7 +78,8 @@
      </Border>
     </Grid>
    </TabItem>
-   <TabItem Header="Spotify">
+   <TabItem ToolTip="Spotify" AutomationProperties.Name="Spotify">
+    <TabItem.Header><Path Width="20" Height="20" Stretch="Uniform" Fill="#1DB954" Data="{StaticResource SpotifyLogoGeometry}"/></TabItem.Header>
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
      <StackPanel x:Name="SpotifyContent" Margin="16,12">
       <TextBlock Text="SONANDO AHORA" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Center"/>
@@ -103,12 +106,15 @@
      </StackPanel>
     </ScrollViewer>
    </TabItem>
-   <TabItem Header="Pomodoro">
+   <TabItem ToolTip="Pomodoro" AutomationProperties.Name="Pomodoro">
+    <TabItem.Header><Path Style="{StaticResource ToolbarVector}" Width="19" Height="19" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" Data="{StaticResource HourglassGeometry}"/></TabItem.Header>
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
      <StackPanel Margin="14,10" TextElement.Foreground="{DynamicResource TextPrimary}">
       <TextBlock x:Name="PomoStage" Text="Concentración" FontSize="12" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center"/>
       <TextBlock x:Name="PomoTime" Text="25:00" FontSize="46" FontWeight="Light" HorizontalAlignment="Center" Margin="0,3,0,0" AutomationProperties.Name="Tiempo restante del pomodoro"/>
       <TextBlock x:Name="PomoSessions" Foreground="{DynamicResource TextSecondary}" FontSize="10" HorizontalAlignment="Center"/>
+      <local:PomodoroStagesView x:Name="PomoStages" HorizontalAlignment="Center" Margin="0,9,0,0"/>
+      <TextBlock Text="○ Concentración · △ Descanso · ◇ Descanso largo" FontSize="9" Foreground="{DynamicResource TextMuted}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,4,0,0"/>
       <ProgressBar x:Name="PomoProgress" Minimum="0" Maximum="100" Height="3" BorderThickness="0" Foreground="{DynamicResource AccentBrush}" Background="{DynamicResource BorderBrush}" Margin="14,12,14,9"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
        <Button x:Name="PomoStart" Content="Iniciar" Click="PomoStartClick" Padding="18,7" Background="{DynamicResource PlayBackground}"/>
@@ -151,11 +157,12 @@
      </StackPanel>
     </ScrollViewer>
    </TabItem>
-   <TabItem Header="Referencia">
+   <TabItem ToolTip="Referencia" AutomationProperties.Name="Referencia">
+    <TabItem.Header><Path Style="{StaticResource ToolbarVector}" Width="19" Height="19" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" Data="{StaticResource CanvasGeometry}"/></TabItem.Header>
     <Grid AllowDrop="True" Drop="ReferenceDrop" DragOver="ReferenceDragOver">
      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
      <DockPanel Margin="3,3,3,5">
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+      <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
        <Button x:Name="ReferenceOpenButton" Style="{StaticResource IconButton}" Click="OpenReferenceClick" ToolTip="Abrir imagen" AutomationProperties.Name="Abrir imagen de referencia"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceFolderGeometry}"/></Button>
        <Button x:Name="ReferenceRecentButton" Style="{StaticResource IconButton}" Click="MoreClick" ToolTip="Abrir reciente" AutomationProperties.Name="Abrir imagen reciente">
         <Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceHistoryGeometry}"/>
@@ -164,10 +171,17 @@
        <Button x:Name="ReferenceFitButton" Style="{StaticResource IconButton}" Click="FitReferenceClick" ToolTip="Ajustar imagen" AutomationProperties.Name="Ajustar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceFitGeometry}"/></Button>
        <Button x:Name="ReferenceRotateButton" Style="{StaticResource IconButton}" Click="RotateReferenceClick" ToolTip="Girar 90 grados" AutomationProperties.Name="Girar referencia 90 grados"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceRotateGeometry}"/></Button>
        <Button x:Name="ReferenceFlipButton" Style="{StaticResource IconButton}" Click="FlipReferenceClick" ToolTip="Voltear horizontalmente" AutomationProperties.Name="Voltear referencia horizontalmente"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceFlipGeometry}"/></Button>
+       <Button x:Name="ReferenceGrayscaleButton" Click="GrayscaleReferenceClick" ToolTip="Ver en escala de grises" AutomationProperties.Name="Ver referencia en escala de grises" IsEnabled="False" Tag="off">
+        <Button.Style><Style TargetType="Button" BasedOn="{StaticResource IconButton}"><Style.Triggers><Trigger Property="Tag" Value="on"><Setter Property="Background" Value="{DynamicResource SelectedBackground}"/><Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/></Trigger></Style.Triggers></Style></Button.Style>
+        <Viewbox Width="16" Height="16"><Canvas Width="20" Height="20">
+         <Path Data="M10,3 A7,7 0 0 0 10,17 Z" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+         <Ellipse Canvas.Left="3" Canvas.Top="3" Width="14" Height="14" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6"/>
+        </Canvas></Viewbox>
+       </Button>
        <Button x:Name="ReferenceZoomOutButton" Style="{StaticResource IconButton}" Click="ZoomOutReferenceClick" ToolTip="Alejar" AutomationProperties.Name="Alejar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceZoomOutGeometry}"/></Button>
        <Button x:Name="ReferenceZoomInButton" Style="{StaticResource IconButton}" Click="ZoomInReferenceClick" ToolTip="Acercar" AutomationProperties.Name="Acercar imagen"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceZoomInGeometry}"/></Button>
        <Button x:Name="ReferenceRemoveButton" Style="{StaticResource IconButton}" Click="ClearReferenceClick" ToolTip="Quitar referencia (no borra el archivo)" AutomationProperties.Name="Quitar referencia"><Path Style="{StaticResource ToolbarVector}" Data="{StaticResource ReferenceRemoveGeometry}"/></Button>
-      </StackPanel>
+      </WrapPanel>
      </DockPanel>
      <Border Grid.Row="1" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" ClipToBounds="True">
       <Grid>
@@ -181,7 +195,8 @@
      <TextBlock x:Name="ReferenceStatus" Grid.Row="2" Text="PNG, JPG, BMP, GIF o TIFF · imagen local" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" Margin="5,5"/>
     </Grid>
    </TabItem>
-   <TabItem Header="ChatGPT">
+   <TabItem ToolTip="ChatGPT" AutomationProperties.Name="ChatGPT">
+    <TabItem.Header><Path Width="20" Height="20" Stretch="Uniform" Fill="{DynamicResource TextPrimary}" Data="{StaticResource ChatGptLogoGeometry}"/></TabItem.Header>
     <Grid>
      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
      <WrapPanel Margin="2,2,2,3">
@@ -195,7 +210,10 @@
    </TabItem>
   </TabControl>
   <Button x:Name="PomoBadge" Grid.Row="2" Visibility="Collapsed" Height="24" Padding="8,2" Margin="0,4,0,0" Click="PomoBadgeClick" Background="{DynamicResource SelectedBackground}" ToolTip="Volver al Pomodoro activo" AutomationProperties.Name="Ver Pomodoro activo">
-   <TextBlock x:Name="PomoBadgeText" Foreground="{DynamicResource AccentBrush}" FontSize="10"/>
+   <StackPanel Orientation="Horizontal">
+    <TextBlock x:Name="PomoBadgeText" Foreground="{DynamicResource AccentBrush}" FontSize="10" VerticalAlignment="Center" Margin="0,0,8,0"/>
+    <local:PomodoroStagesView x:Name="PomoBadgeStages" Compact="True" VerticalAlignment="Center"/>
+   </StackPanel>
   </Button>
   <Border x:Name="MiniPlayer" Grid.Row="3" Height="54" CornerRadius="12" Background="{DynamicResource PlayerBackground}" Margin="0,7,0,0" Padding="8,0">
    <Grid>

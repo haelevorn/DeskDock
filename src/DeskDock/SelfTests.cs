@@ -17,6 +17,7 @@ internal static class SelfTests
         try
         {
             FocusSelfTests.Run(results);
+            PomodoroStagesSelfTests.Run(results);
             Check(SpotifyService.IsSpotifyId("Spotify.exe"), "Spotify Win32", results);
             Check(SpotifyService.IsSpotifyId("SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"), "Spotify Store", results);
             foreach (string id in new[] { "msedge.exe", "chrome.exe", "OtherSpotify.exe", "", "SpotifyAB.Fake!Spotify" })
@@ -138,6 +139,9 @@ internal static class SelfTests
             Check(((FrameworkElement)window.FindName("MiniArtworkFrame")).Visibility == Visibility.Collapsed,
                 "Mini reproductor libera espacio al estrechar ventana", results);
             var tabs = (System.Windows.Controls.TabControl)window.FindName("MainTabs");
+            foreach (System.Windows.Controls.TabItem tab in tabs.Items)
+                Check(tab.Header is System.Windows.Shapes.Path && !string.IsNullOrEmpty(System.Windows.Automation.AutomationProperties.GetName(tab)) && tab.ToolTip is string,
+                    "Pestaña vectorial con nombre accesible: " + tab.ToolTip, results);
             tabs.SelectedIndex = 2;
             window.UpdateLayout();
             window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
@@ -151,6 +155,10 @@ internal static class SelfTests
             Check(window.Pomodoro.Stage == PomodoroStage.ShortBreak && window.Pomodoro.IsRunning &&
                   ((System.Windows.Controls.TextBlock)window.FindName("PomoTime")).Text == "05:00",
                 "Botón Siguiente etapa actualiza temporizador y vista", results);
+            var fullStages = (PomodoroStagesView)window.FindName("PomoStages");
+            var badgeStages = (PomodoroStagesView)window.FindName("PomoBadgeStages");
+            Check(fullStages.CurrentStageIndex == 1 && badgeStages.CurrentStageIndex == 1 && badgeStages.DesiredSize.Height <= 14,
+                "Etapas de pestaña e indicador permanente sincronizadas sin crecer la barra", results);
             window.Pomodoro.Reset();
             window.RenderPomodoro();
             int spotifyLaunchRequests = 0;
@@ -177,6 +185,24 @@ internal static class SelfTests
                 window.UpdateLayout();
                 window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
                 var photo = (System.Windows.Controls.Image)window.FindName("ReferencePhoto");
+                var originalSource = photo.Source;
+                var originalFile = File.ReadAllBytes(imagePath);
+                var grayButton = (System.Windows.Controls.Button)window.FindName("ReferenceGrayscaleButton");
+                var originalMatrix = ((MatrixTransform)photo.RenderTransform).Matrix;
+                grayButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                var grayPixels = new byte[16];
+                ((BitmapSource)photo.Source).CopyPixels(grayPixels, 8, 0);
+                Check(grayPixels[0] == grayPixels[1] && grayPixels[1] == grayPixels[2] && grayPixels[3] == 255 &&
+                      ((MatrixTransform)photo.RenderTransform).Matrix == originalMatrix && (string)grayButton.Tag == "on",
+                    "Gris iguala canales, conserva alfa y transformación y resalta el botón", results);
+                grayButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+                Check(ReferenceEquals(photo.Source, originalSource) && System.Linq.Enumerable.SequenceEqual(File.ReadAllBytes(imagePath), originalFile),
+                    "Volver a color restaura la imagen exacta sin modificar el archivo", results);
+                var transparent = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgra32, null, new byte[] { 20, 40, 60, 64 }, 4);
+                var transparentPixels = new byte[4];
+                ReferenceImageLoader.Grayscale(transparent).CopyPixels(transparentPixels, 4, 0);
+                Check(transparentPixels[0] == transparentPixels[1] && transparentPixels[1] == transparentPixels[2] && transparentPixels[3] == 64,
+                    "Gris mantiene transparencias parciales de PNG", results);
                 var canvas = (FrameworkElement)window.FindName("ReferenceCanvas");
                 var bounds = photo.TransformToAncestor(canvas).TransformBounds(new Rect(0, 0, photo.ActualWidth, photo.ActualHeight));
                 Check(bounds.Width > 0 && bounds.Right <= canvas.ActualWidth + 1 && bounds.Bottom <= canvas.ActualHeight + 1,
@@ -226,7 +252,9 @@ internal static class SelfTests
             Check(WindowCorners.HasClippedCorner(mini), "Ultramini aplica el mismo recorte que su borde redondeado", results);
             ((System.Windows.Controls.Button)mini.FindName("MiniTrackOpen")).RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
             Check(spotifyLaunchRequests == 5, "Título Ultramini solicita abrir Spotify sin restaurar DeskDock", results);
-            mini.UpdateStatus("12:34", "04:59 · Concentración");
+            mini.UpdateStatus("12:34", "04:59 · C1/4", window.Pomodoro);
+            Check(((PomodoroStagesView)mini.FindName("MiniPomodoroStages")).VisibleStageIndices.Count == 8,
+                "Ultramini recibe las etapas del mismo Pomodoro", results);
             Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Visible,
                 "Pomodoro activo visible en ultramini", results);
             mini.Width = 260;
@@ -248,10 +276,20 @@ internal static class SelfTests
             mini.UpdateAudio(0, false, false);
             Check(!miniSlider.IsEnabled && !((System.Windows.Controls.MenuItem)mini.FindName("MiniMute")).IsEnabled,
                 "Sin dispositivo se desactivan volumen y silencio", results);
+            window.Pomodoro.Configure(new(25, 5, 15, 12));
+            for (int i = 0; i < 12; i++) window.Pomodoro.NextStage();
+            window.RenderPomodoro();
+            mini.UpdateStatus("12:34", "25:00 · C7/12", window.Pomodoro);
+            window.UpdateLayout(); mini.UpdateLayout();
+            var badge = (FrameworkElement)window.FindName("PomoBadge");
+            var miniStages = (PomodoroStagesView)mini.FindName("MiniPomodoroStages");
+            Check(badgeStages.VisibleStageIndices.Count <= 7 && miniStages.VisibleStageIndices.Count <= 7 &&
+                  badgeStages.TranslatePoint(new Point(badgeStages.ActualWidth, 0), badge).X <= badge.ActualWidth &&
+                  miniStages.TranslatePoint(new Point(miniStages.ActualWidth, 0), pomoButton).X <= pomoButton.ActualWidth,
+                "12 sesiones caben sin recortes en indicador permanente y Ultramini mínimos", results);
             mini.UpdateStatus("12:34", null);
             Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Collapsed,
                 "Ultramini oculta Pomodoro inactivo", results);
-            mini.CloseForExit();
             tabs.SelectedIndex = 1;
             window.Width = 360;
             window.Height = 520;
@@ -264,6 +302,9 @@ internal static class SelfTests
                     "Skin " + skin + " actualiza el fondo sin reiniciar", results);
                 Check(((System.Windows.FrameworkElement)window.FindName("MiniPlayer")).ActualHeight <= 60,
                     "Skin " + skin + " conserva el tamaño compacto", results);
+                Check(ReferenceEquals(fullStages.Accent, Application.Current.Resources["AccentBrush"]) &&
+                      ReferenceEquals(badgeStages.Accent, Application.Current.Resources["AccentBrush"]),
+                    "Skin " + skin + " actualiza el color de las etapas sin reiniciar", results);
                 var root = (FrameworkElement)window.Content;
                 var preview = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32);
                 preview.Render(root);
@@ -271,7 +312,15 @@ internal static class SelfTests
                 encoder.Frames.Add(BitmapFrame.Create(preview));
                 using var output = File.Create(Path.Combine(AppContext.BaseDirectory, "preview-" + skin + ".png"));
                 encoder.Save(output);
+                tabs.SelectedIndex = 2;
+                window.UpdateLayout();
+                SavePreview(window, "preview-" + skin + "-pomodoro.png");
+                mini.UpdateStatus("12:34", "25:00 · C7/12", window.Pomodoro);
+                mini.UpdateLayout();
+                SavePreview(mini, "preview-" + skin + "-ultramini.png");
+                tabs.SelectedIndex = 1;
             }
+            mini.CloseForExit();
             window.Close();
             results.Add("PASS: carga de XAML. NO verifica UI interactiva, WhatsApp, notificaciones, Spotify ni audio.");
             File.WriteAllLines(Path.Combine(AppContext.BaseDirectory, "self-test-results.txt"), results);
@@ -287,6 +336,17 @@ internal static class SelfTests
 
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern IntPtr SendMessage(IntPtr handle, uint message, IntPtr wParam, IntPtr lParam);
+
+    private static void SavePreview(Window window, string fileName)
+    {
+        var root = (FrameworkElement)window.Content;
+        var image = new RenderTargetBitmap((int)Math.Ceiling(root.ActualWidth), (int)Math.Ceiling(root.ActualHeight), 96, 96, PixelFormats.Pbgra32);
+        image.Render(root);
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(image));
+        using var file = File.Create(Path.Combine(AppContext.BaseDirectory, fileName));
+        encoder.Save(file);
+    }
 
     private static void Check(bool condition, string description, List<string> results)
     {

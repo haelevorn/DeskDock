@@ -1,10 +1,24 @@
 # Usar DeskDock sin instalar herramientas de programación
 
-## Versión 0.10
+## Versión 0.11
 
-La descarga de esta versión se llama **DeskDock-win-x64-v0.10.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
+La descarga de esta versión se llama **DeskDock-win-x64-v0.11.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
 
 Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE. Conserva los archivos juntos en la carpeta extraída.
+
+### Pestañas con iconos
+
+De izquierda a derecha: WhatsApp (logo verde), Spotify (logo verde), Pomodoro (reloj de arena), Referencia (lienzo) y ChatGPT (nudo blanco). Pasa el cursor para leer el nombre. La pestaña elegida tiene fondo y una pequeña línea del color del skin. Los nombres se conservan para lectores de pantalla.
+
+### Etapas de Pomodoro
+
+Los círculos representan concentraciones, los triángulos descansos cortos y el rombo el descanso largo. Relleno significa terminada; contorno tenue, pendiente; punto debajo y contorno de acento, etapa actual; raya dentro, saltada con Siguiente etapa. Al terminar el descanso largo, empieza una nueva secuencia limpia. Reiniciar o aplicar otra configuración también limpia las marcas.
+
+El ciclo completo aparece debajo del contador, hasta en dos filas. Mientras corre, el mismo estado aparece en pequeño al pasar a otras pestañas y en Ultramini. Si hay más de ocho etapas, las vistas pequeñas muestran cinco próximas a la actual y puntos para indicar etapas fuera de vista. C significa concentración, D descanso corto y DL descanso largo; por ejemplo, C3/12 es la tercera concentración de doce. Pasa el cursor sobre los símbolos para consultar el ciclo entero. Pausar oculta el indicador pequeño; la pestaña conserva su estado.
+
+### Referencia en escala de grises
+
+Abre una imagen y pulsa el **círculo mitad lleno, mitad vacío** en la barra de herramientas de Referencia. Se resalta mientras ves grises; vuelve a pulsarlo para recuperar el color. Mantiene transparencia, zoom, giro y posición. No modifica tu archivo. Abrir otra imagen vuelve al color; sin imagen, el botón está desactivado.
 
 ### Pasar de etapa y abrir Spotify
 
