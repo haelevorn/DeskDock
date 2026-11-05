@@ -94,6 +94,13 @@ public partial class MainWindow
         RenderPomodoro();
     }
 
+    private void PomoNextClick(object sender, RoutedEventArgs e)
+    {
+        Pomodoro.NextStage();
+        PomoMessage.Text = $"Ahora: {PomodoroTimer.StageName(Pomodoro.Stage).ToLowerInvariant()}. Etapa iniciada con su tiempo completo.";
+        RenderPomodoro();
+    }
+
     private void ApplyPomodoroClick(object sender, RoutedEventArgs e)
     {
         if (!TryReadPomodoro(out var options)) return;

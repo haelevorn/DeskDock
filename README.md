@@ -1,6 +1,13 @@
-# DeskDock 0.9
+# DeskDock 0.10
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.10
+
+- Pomodoro: reloj con flecha junto a Iniciar/Pausar para pasar inmediatamente a la siguiente etapa con su duración completa. Funciona durante concentración, descansos y pausa, incluso sin avance automático. Cada concentración que se termina o salta suma una sesión para decidir el descanso largo. Los saltos voluntarios no generan un aviso de fin de etapa.
+- La portada y el título abren la aplicación instalada de Spotify desde la pestaña y el reproductor inferior. En Ultramini, pulsa el título o artista; se conserva su barra de arrastre. Botones accesibles con teclado y ayudas «Abrir Spotify», sin añadir controles visibles ni conectar cuentas.
+- CI comprueba transiciones, vencimiento coincidente y órdenes de apertura con un sustituto del lanzador: no certifica el arranque real de Spotify en el equipo del usuario.
+- Descarga: `DeskDock-win-x64-v0.10.0.zip`; fuentes: `DeskDock-fuentes-v0.10.0.zip`.
 
 ## Cambios de la versión 0.9
 

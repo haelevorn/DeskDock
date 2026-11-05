@@ -144,6 +144,20 @@ internal static class SelfTests
             var start = (System.Windows.Controls.Button)window.FindName("PomoStart");
             Check(start.ActualWidth > 0 && ((System.Windows.Controls.TextBlock)window.FindName("PomoTime")).Text == "25:00",
                 "Contador y botón Pomodoro presentes en ventana pequeña", results);
+            var nextStage = (System.Windows.Controls.Button)window.FindName("PomoNext");
+            Check(nextStage.ActualWidth == 32 && nextStage.Content is System.Windows.Shapes.Path,
+                "Siguiente etapa muestra icono vectorial compacto en ventana mínima", results);
+            nextStage.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+            Check(window.Pomodoro.Stage == PomodoroStage.ShortBreak && window.Pomodoro.IsRunning &&
+                  ((System.Windows.Controls.TextBlock)window.FindName("PomoTime")).Text == "05:00",
+                "Botón Siguiente etapa actualiza temporizador y vista", results);
+            window.Pomodoro.Reset();
+            window.RenderPomodoro();
+            int spotifyLaunchRequests = 0;
+            window.LaunchSpotify = () => spotifyLaunchRequests++;
+            foreach (string name in new[] { "FullArtworkOpen", "FullTitleOpen", "MiniArtworkOpen", "MiniTitleOpen" })
+                ((System.Windows.Controls.Button)window.FindName(name)).RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+            Check(spotifyLaunchRequests == 4, "Portada y título solicitan abrir Spotify desde pestaña y reproductor inferior", results);
             ((System.Windows.Controls.Expander)window.FindName("PomoConfigExpander")).IsExpanded = true;
             ((System.Windows.Controls.Expander)window.FindName("ProfilesExpander")).IsExpanded = true;
             window.UpdateLayout();
@@ -203,13 +217,15 @@ internal static class SelfTests
             Check(((FrameworkElement)window.FindName("UltraMiniButton")).ActualWidth > 0, "Acceso directo Ultramini visible", results);
             double miniVolume = -1;
             int muteRequests = 0;
-            var mini = new UltraMiniWindow(window.Player, () => { }, () => { }, _ => { }, value => miniVolume = value, () => muteRequests++) { ShowInTaskbar = false, Opacity = 0 };
+            var mini = new UltraMiniWindow(window.Player, () => { }, () => { }, _ => { }, value => miniVolume = value, () => muteRequests++, () => spotifyLaunchRequests++) { ShowInTaskbar = false, Opacity = 0 };
             mini.UpdateStatus("12:34", null);
             mini.Show();
             mini.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             Check(ReferenceEquals(mini.DataContext, window.Player) && mini.ActualHeight <= 100,
                 "Ultramini comparte reproductor y ocupa menos de 100 de alto", results);
             Check(WindowCorners.HasClippedCorner(mini), "Ultramini aplica el mismo recorte que su borde redondeado", results);
+            ((System.Windows.Controls.Button)mini.FindName("MiniTrackOpen")).RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+            Check(spotifyLaunchRequests == 5, "Título Ultramini solicita abrir Spotify sin restaurar DeskDock", results);
             mini.UpdateStatus("12:34", "04:59 · Concentración");
             Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Visible,
                 "Pomodoro activo visible en ultramini", results);
@@ -278,4 +294,3 @@ internal static class SelfTests
         results.Add("PASS: " + description);
     }
 }
-

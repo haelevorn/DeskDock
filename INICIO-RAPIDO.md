@@ -1,12 +1,18 @@
 # Usar DeskDock sin instalar herramientas de programación
 
-## Ultramini, referencia y ChatGPT — versión 0.9
+## Versión 0.10
 
-La descarga de esta versión se llama **DeskDock-win-x64-v0.9.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
+La descarga de esta versión se llama **DeskDock-win-x64-v0.10.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
 
 Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE. Conserva los archivos juntos en la carpeta extraída.
 
-### Ultramini
+### Pasar de etapa y abrir Spotify
+
+En **Pomodoro**, pulsa el **reloj con flecha a la derecha**, junto a Iniciar/Pausar. Empieza inmediatamente el siguiente descanso o concentración, con toda su duración, también si estaba pausado o desactivaste el avance automático. Cada concentración que saltas cuenta como una sesión para mantener el orden del descanso largo. El salto voluntario no reproduce el aviso de finalización.
+
+Para abrir Spotify, pulsa **la portada o el título** en la pestaña Spotify o en la barra inferior. En **Ultramini**, pulsa **el título o artista**. Los controles de reproducción siguen funcionando por separado y la barra superior sigue sirviendo para arrastrar. No requiere conectar cuentas: pide a Windows abrir la aplicación Spotify instalada. Si no se abre, comprueba que puedas iniciar Spotify desde el menú Inicio.
+
+### Uso de Ultramini
 
 Se corrigió el contorno real de Windows para que coincida con las esquinas de DeskDock. Comprueba el borde sobre un fondo claro y oscuro, al cambiar tamaño y al mover entre monitores con distinta escala. La prueba automática verifica que la región nativa excluya los píxeles de las esquinas; el resultado visual final en tu pantalla requiere esa comprobación.
 

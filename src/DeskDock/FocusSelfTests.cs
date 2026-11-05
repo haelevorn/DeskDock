@@ -41,6 +41,30 @@ internal static class FocusSelfTests
         Check(timer.Tick() == PomodoroStage.Focus && !timer.IsRunning && timer.Stage == PomodoroStage.ShortBreak,
             "Avance manual espera iniciar la siguiente etapa", results);
         Check(new PomodoroOptions(0, -5, 999, 1).Normalize() == new PomodoroOptions(1, 1, 120, 2), "Límites de duraciones guardadas", results);
+        TimeSpan skipNow = TimeSpan.Zero;
+        var skip = new PomodoroTimer(() => skipNow);
+        skip.Configure(new(1, 1, 2, 2, false));
+        skip.Start();
+        skipNow += TimeSpan.FromSeconds(10);
+        Check(skip.NextStage() == PomodoroStage.Focus && skip.Stage == PomodoroStage.ShortBreak && skip.IsRunning &&
+              skip.Remaining == TimeSpan.FromMinutes(1) && skip.CompletedFocusSessions == 1,
+            "Siguiente etapa inicia descanso completo aunque el avance automático esté desactivado", results);
+        skipNow += TimeSpan.FromSeconds(5);
+        Check(skip.Tick() is null && skip.Remaining == TimeSpan.FromSeconds(55), "Salto manual renueva el plazo de la siguiente etapa", results);
+        Check(skip.NextStage() == PomodoroStage.ShortBreak && skip.Stage == PomodoroStage.Focus && skip.CompletedFocusSessions == 1,
+            "Saltar descanso inicia concentración sin sumar otra sesión", results);
+        skip.Pause();
+        Check(skip.NextStage() == PomodoroStage.Focus && skip.Stage == PomodoroStage.LongBreak && skip.IsRunning &&
+              skip.Remaining == TimeSpan.FromMinutes(2) && skip.CompletedFocusSessions == 2,
+            "Saltar concentración pausada respeta el descanso largo programado", results);
+        Check(skip.NextStage() == PomodoroStage.LongBreak && skip.Stage == PomodoroStage.Focus && skip.Remaining == TimeSpan.FromMinutes(1),
+            "Saltar descanso largo vuelve a concentración con tiempo completo", results);
+        skip.Reset();
+        skip.Start();
+        skipNow += TimeSpan.FromMinutes(1);
+        skip.NextStage();
+        Check(skip.CompletedFocusSessions == 1 && skip.Stage == PomodoroStage.ShortBreak && skip.Tick() is null,
+            "Salto en el instante de vencimiento avanza una sola etapa", results);
         Check(!MainWindow.ReadMinutes("0", 1, 240, out _) && !MainWindow.ReadMinutes("1.5", 1, 240, out _) &&
               MainWindow.ReadMinutes("90", 1, 240, out _), "Validación de minutos enteros sin valores inválidos", results);
         Check(MainWindow.SafeDimension(double.NaN, 360, 300, 1920) == 360 && MainWindow.SafeDimension(10, 360, 300, 1920) == 300 &&

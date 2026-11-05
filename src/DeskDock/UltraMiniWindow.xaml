@@ -17,10 +17,12 @@
    </Grid>
    <Grid Grid.Row="1">
     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-    <StackPanel VerticalAlignment="Center" Margin="4,0,6,0">
+    <Button x:Name="MiniTrackOpen" Style="{StaticResource MediaLinkButton}" Click="OpenSpotifyClick" Margin="4,0,6,0" ToolTip="Abrir Spotify" AutomationProperties.Name="Abrir Spotify desde la canción">
+    <StackPanel VerticalAlignment="Center">
      <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" ToolTip="{Binding Title}"/>
      <TextBlock Text="{Binding Artist}" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" FontSize="10" ToolTip="{Binding Artist}"/>
     </StackPanel>
+    </Button>
     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
      <Button Style="{StaticResource IconButton}" Content="&#xE892;" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Anterior"/>
      <Grid Width="30">

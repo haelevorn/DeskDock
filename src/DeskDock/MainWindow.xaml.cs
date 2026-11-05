@@ -289,9 +289,11 @@ public partial class MainWindow : Window
 
     private async void ReloadClick(object sender, RoutedEventArgs e) => await StartWebAsync();
     private void BrowserClick(object sender, RoutedEventArgs e) => OpenExternal("https://web.whatsapp.com/");
+    internal Action LaunchSpotify { get; set; } = () => Process.Start(new ProcessStartInfo("spotify:") { UseShellExecute = true });
+
     private void SpotifyClick(object sender, RoutedEventArgs e)
     {
-        try { Process.Start(new ProcessStartInfo("spotify:") { UseShellExecute = true }); }
+        try { LaunchSpotify(); }
         catch (Exception ex)
         {
             Diagnostics.Record("SpotifyLaunch", ex);

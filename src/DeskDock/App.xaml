@@ -6,6 +6,7 @@
   <ResourceDictionary.MergedDictionaries><ResourceDictionary Source="Themes/Minimal.xaml"/></ResourceDictionary.MergedDictionaries>
   <PathGeometry x:Key="AntGeometry" Figures="M12,5 A2,2 0 1 1 8,5 A2,2 0 1 1 12,5 M11.5,10 A1.5,2 0 1 1 8.5,10 A1.5,2 0 1 1 11.5,10 M13,16 A3,4 0 1 1 7,16 A3,4 0 1 1 13,16 M9,3 L7,0 M11,3 L13,0 M8.5,8 L5,6 L3,7 M8.5,10 L4,10 L2,12 M8.5,12 L5,15 L3,16 M11.5,8 L15,6 L17,7 M11.5,10 L16,10 L18,12 M11.5,12 L15,15 L17,16"/>
   <PathGeometry x:Key="ReferenceFolderGeometry" Figures="M2,8 L2,4 L8,4 L10,6 L18,6 L18,8 M2,8 L20,8 L17,17 L2,17 Z"/>
+  <PathGeometry x:Key="NextStageGeometry" Figures="M13,3 A7,7 0 1 0 13,17 M8,5 L8,10 L11,12 M12,10 L21,10 M17,6 L21,10 L17,14"/>
   <PathGeometry x:Key="ReferenceFitGeometry" Figures="M7,2 L2,2 L2,7 M13,2 L18,2 L18,7 M2,13 L2,18 L7,18 M18,13 L18,18 L13,18 M6,6 L14,6 L14,14 L6,14 Z"/>
   <PathGeometry x:Key="ReferenceZoomOutGeometry" Figures="M14,8 A6,6 0 1 1 2,8 A6,6 0 1 1 14,8 M12.5,12.5 L18,18 M5,8 L11,8"/>
   <PathGeometry x:Key="ReferenceZoomInGeometry" Figures="M14,8 A6,6 0 1 1 2,8 A6,6 0 1 1 14,8 M12.5,12.5 L18,18 M5,8 L11,8 M8,5 L8,11"/>
@@ -29,6 +30,17 @@
     <ControlTemplate.Triggers>
      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Surface" Property="Background" Value="{DynamicResource HoverBackground}"/></Trigger>
      <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.35"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style x:Key="MediaLinkButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+   <Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0"/>
+   <Setter Property="Background" Value="Transparent"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border Background="{TemplateBinding Background}"><ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/></Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter Property="Opacity" Value="0.8"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter Property="Background" Value="{DynamicResource HoverBackground}"/></Trigger>
     </ControlTemplate.Triggers>
    </ControlTemplate></Setter.Value></Setter>
   </Style>

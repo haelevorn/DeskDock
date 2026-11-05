@@ -42,6 +42,14 @@ internal sealed class PomodoroTimer
         var now = _now();
         Remaining = MaxZero(_deadline - now);
         if (Remaining > TimeSpan.Zero) return null;
+        return MoveNext(now, Options.AutoAdvance);
+    }
+
+    // El salto explícito empieza la siguiente etapa aunque AutoAdvance esté desactivado.
+    public PomodoroStage NextStage() => MoveNext(_now(), true);
+
+    private PomodoroStage MoveNext(TimeSpan now, bool start)
+    {
         var finished = Stage;
         if (Stage == PomodoroStage.Focus)
         {
@@ -50,7 +58,7 @@ internal sealed class PomodoroTimer
         }
         else Stage = PomodoroStage.Focus;
         Remaining = Duration;
-        IsRunning = Options.AutoAdvance;
+        IsRunning = start;
         _deadline = now + Remaining;
         return finished;
     }

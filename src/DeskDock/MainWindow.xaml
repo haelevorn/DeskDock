@@ -3,7 +3,7 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
- Title="DeskDock v0.9.0" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
+ Title="DeskDock v0.10.0" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
  Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource TextPrimary}" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
  WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
  Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized" SizeChanged="ResponsiveSizeChanged" DpiChanged="MainDpiChanged">
@@ -80,13 +80,17 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
      <StackPanel x:Name="SpotifyContent" Margin="16,12">
       <TextBlock Text="SONANDO AHORA" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Center"/>
+      <Button x:Name="FullArtworkOpen" Style="{StaticResource MediaLinkButton}" Click="SpotifyClick" HorizontalAlignment="Center" ToolTip="Abrir Spotify" AutomationProperties.Name="Abrir Spotify desde la portada">
       <Border x:Name="SpotifyCover" Background="{DynamicResource ArtworkBackground}" CornerRadius="18" Margin="0,10,0,10" Width="130" Height="130" HorizontalAlignment="Center">
        <Grid>
         <TextBlock Text="♪" FontSize="65" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Image x:Name="FullArtwork" Source="{Binding Artwork}" Stretch="Uniform" AutomationProperties.Name="Portada de la canción en Spotify"/>
        </Grid>
       </Border>
-      <TextBlock x:Name="FullTrackTitle" Text="{Binding Title}" FontSize="21" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center"/>
+      </Button>
+      <Button x:Name="FullTitleOpen" Style="{StaticResource MediaLinkButton}" Click="SpotifyClick" ToolTip="Abrir Spotify" AutomationProperties.Name="Abrir Spotify desde la canción">
+       <TextBlock x:Name="FullTrackTitle" Text="{Binding Title}" FontSize="21" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center"/>
+      </Button>
       <TextBlock x:Name="FullTrackArtist" Text="{Binding Artist}" FontSize="12" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" TextAlignment="Center" Margin="0,4,0,10"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
        <Button x:Name="FullPrevious" Style="{StaticResource IconButton}" Content="&#xE892;" Width="38" Height="38" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Canción anterior"/>
@@ -108,6 +112,9 @@
       <ProgressBar x:Name="PomoProgress" Minimum="0" Maximum="100" Height="3" BorderThickness="0" Foreground="{DynamicResource AccentBrush}" Background="{DynamicResource BorderBrush}" Margin="14,12,14,9"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
        <Button x:Name="PomoStart" Content="Iniciar" Click="PomoStartClick" Padding="18,7" Background="{DynamicResource PlayBackground}"/>
+       <Button x:Name="PomoNext" Style="{StaticResource IconButton}" Width="32" Height="32" Click="PomoNextClick" ToolTip="Pasar a la siguiente etapa" AutomationProperties.Name="Pasar a la siguiente etapa del Pomodoro">
+        <Path Style="{StaticResource ToolbarVector}" Width="20" Height="20" Data="{StaticResource NextStageGeometry}" Stroke="{DynamicResource AccentBrush}"/>
+       </Button>
        <Button Content="&#xE777;" Style="{StaticResource IconButton}" Click="PomoResetClick" ToolTip="Reiniciar el ciclo" AutomationProperties.Name="Reiniciar ciclo pomodoro"/>
       </StackPanel>
       <TextBlock x:Name="PomoMessage" Text="Configura tus etapas y pulsa Iniciar." TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,10,0,8"/>
@@ -193,13 +200,17 @@
   <Border x:Name="MiniPlayer" Grid.Row="3" Height="54" CornerRadius="12" Background="{DynamicResource PlayerBackground}" Margin="0,7,0,0" Padding="8,0">
    <Grid>
     <Grid.ColumnDefinitions><ColumnDefinition x:Name="MiniArtColumn" Width="38"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <Button x:Name="MiniArtworkOpen" Style="{StaticResource MediaLinkButton}" Click="SpotifyClick" HorizontalAlignment="Left" ToolTip="Abrir Spotify" AutomationProperties.Name="Abrir Spotify desde la portada">
     <Border x:Name="MiniArtworkFrame" Width="30" Height="30" Background="{DynamicResource ArtworkBackground}" CornerRadius="7" VerticalAlignment="Center">
      <Image x:Name="Artwork" Source="{Binding Artwork}" Stretch="UniformToFill" AutomationProperties.Name="Portada de la canción"/>
     </Border>
-    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="1,0,6,0">
+    </Button>
+    <Button x:Name="MiniTitleOpen" Grid.Column="1" Style="{StaticResource MediaLinkButton}" Click="SpotifyClick" Margin="1,0,6,0" ToolTip="Abrir Spotify" AutomationProperties.Name="Abrir Spotify desde la canción">
+    <StackPanel VerticalAlignment="Center">
      <TextBlock x:Name="TrackTitle" Text="{Binding Title}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
      <TextBlock x:Name="TrackArtist" Text="{Binding Artist}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" ToolTip="{Binding Artist}"/>
     </StackPanel>
+    </Button>
     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
      <Button x:Name="Previous" Style="{StaticResource IconButton}" Content="&#xE892;" IsEnabled="{Binding CanPrevious}" Click="PreviousClick" ToolTip="Anterior" AutomationProperties.Name="Canción anterior"/>
      <Grid Width="30" Height="30">
