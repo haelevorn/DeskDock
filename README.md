@@ -1,6 +1,15 @@
-# DeskDock 0.11
+# DeskDock 0.12
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
+
+## Cambios de la versión 0.12
+
+- WhatsApp se amplía temporalmente a un mínimo de 600 × 600 al entrar, limitado al área de trabajo del monitor actual. Una ventana ya mayor no se encoge. Al salir de la pestaña vuelve al tamaño anterior; si la ampliación tuvo que moverla cerca de un borde, se deshace ese movimiento salvo que el usuario la haya movido manualmente. No se redimensiona mientras está maximizada o minimizada.
+- La preferencia «⋯ → Ampliar al abrir WhatsApp» viene activada y puede desactivarse. Se guarda el tamaño compacto, no el temporal, incluso al cerrar con WhatsApp abierto. No afecta a las dimensiones de Ultramini. «Tamaño compacto» permite reducir manualmente la ventana conservando la pestaña actual.
+- Navegación explícita «← Chats» y «Conversación». La adaptación reconoce la lista inicial aun cuando WhatsApp no haya creado todavía el contenedor del primer chat. Las peticiones de ajuste se agrupan sin perder el último cambio de tamaño o botón durante una ejecución de JavaScript.
+- Si la estructura de la página no se reconoce, se muestra una indicación de que es una vista completa reducida, con acceso al navegador; no se presenta como adaptación correcta. No modifica cuentas, mensajes, contactos ni permisos de notificación.
+- CI prueba dimensiones reales de WPF, restauración, maximizar, preferencias y navegación con un documento sintético WebView2. La comodidad y compatibilidad con la cuenta y estructura actual de WhatsApp deben verificarse en el equipo del usuario.
+- Descarga: `DeskDock-win-x64-v0.12.0.zip`; fuentes: `DeskDock-fuentes-v0.12.0.zip`.
 
 ## Cambios de la versión 0.11
 

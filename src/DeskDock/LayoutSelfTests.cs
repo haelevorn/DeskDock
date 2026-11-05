@@ -45,9 +45,17 @@ internal static class LayoutSelfTests
             Check(await Evaluate(core, "window.__deskDockLayout.configure(true, 'list', 360).state === 'list' && getComputedStyle(document.getElementById('right')).display === 'none'"), "Volver a lista sin chat superpuesto", results);
             await core.ExecuteScriptAsync("document.getElementById('row').click()");
             Check(await Evaluate(core, "window.__deskDockLayout.update().state === 'chat'"), "Selección de conversación vuelve al chat", results);
+            await core.ExecuteScriptAsync("window.savedChat = document.getElementById('main'); window.savedChat.remove();");
+            Check(await Evaluate(core, "window.__deskDockLayout.configure(true, '', 580).state === 'list' && document.getElementById('side').getBoundingClientRect().right <= innerWidth + 1"),
+                "Sin conversación abierta la lista sigue legible sin reducir toda la página", results);
+            await core.ExecuteScriptAsync("document.getElementById('right').appendChild(window.savedChat)");
+            Check(await Evaluate(core, "window.__deskDockLayout.configure(true, 'auto', 580).state === 'chat' && document.getElementById('main').getBoundingClientRect().right <= innerWidth + 1"),
+                "Abrir la primera conversación recupera el chat completo tras la lista inicial", results);
+            await core.ExecuteScriptAsync("document.getElementById('side').innerHTML = '<div role=\"listitem\" id=\"newRow\">Otra conversación</div>'; window.__deskDockLayout.configure(true, 'list', 580); document.getElementById('newRow').click();");
+            Check(await Evaluate(core, "window.__deskDockLayout.update().state === 'chat'"), "Lista regenerada mantiene la navegación a conversación", results);
             Check(await Evaluate(core, "window.__deskDockLayout.configure(true, '', 900).state === 'wide' && !document.documentElement.hasAttribute('data-dd-view')"), "Ampliar restaura dos columnas", results);
             Check(await Evaluate(core, "window.__deskDockLayout.configure(false, '', 360).state === 'off' && !document.querySelector('[data-dd-chat]')"), "Desactivar elimina los ajustes de contenedores", results);
-            await core.ExecuteScriptAsync("document.getElementById('main').remove()");
+            await core.ExecuteScriptAsync("document.getElementById('main').remove(); document.getElementById('side').remove()");
             Check(await Evaluate(core, "window.__deskDockLayout.configure(true, '', 360).state === 'unsupported'"), "Estructura desconocida pide alternativa por zoom", results);
             results.Add("PASS: WebView2 real con HTML sintético. NO verifica la estructura actual de WhatsApp ni avisos reales de Windows.");
             await ProbePublicChatGptAsync(core);

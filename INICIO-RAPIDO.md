@@ -1,10 +1,20 @@
 # Usar DeskDock sin instalar herramientas de programación
 
-## Versión 0.11
+## Versión 0.12
 
-La descarga de esta versión se llama **DeskDock-win-x64-v0.11.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
+La descarga de esta versión se llama **DeskDock-win-x64-v0.12.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
 
 Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE. Conserva los archivos juntos en la carpeta extraída.
+
+### WhatsApp más cómodo
+
+Al seleccionar el logo de WhatsApp, la ventana se amplía a unos **600 × 600**, o lo que permita tu pantalla. Cambia a Spotify, Pomodoro, Referencia o ChatGPT para recuperar el tamaño pequeño anterior. Si ya usabas una ventana mayor, se conserva. Al cerrar, se recuerda el tamaño compacto, de modo que esta ampliación no vuelve enormes las otras pestañas.
+
+Usa **← Chats** para elegir una conversación. Al seleccionar un chat, se intenta mostrarlo a todo el ancho; **Conversación** permite volver al chat abierto. La lista inicial ya no exige tener abierta una conversación para intentar adaptarse. No es una interfaz propia de WhatsApp: sus cambios internos todavía pueden impedir el ajuste.
+
+Si aparece **Vista completa reducida**, la adaptación no reconoció esa página (también puede ocurrir en QR o durante la carga). El botón de flecha de ese aviso la abre en tu navegador habitual, donde puede pedirte vincular la cuenta por separado. Esa indicación no certifica que se haya adaptado el chat.
+
+Si prefieres el comportamiento anterior, desmarca **⋯ → Ampliar al abrir WhatsApp**. La opción se guarda. Puedes cambiar el tamaño manualmente; no se fuerza de nuevo durante esa visita a WhatsApp. Maximizar sigue siendo una decisión tuya y cambiar de pestaña no desmaximiza la ventana. Ultramini mantiene sus dimensiones.
 
 ### Pestañas con iconos
 

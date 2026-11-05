@@ -41,7 +41,17 @@ internal static class WhatsAppLayout
         }
         const main = document.getElementById('main');
         const side = document.getElementById('side') || document.getElementById('pane-side');
-        if (!main || !side) { if (marked.size) clear(); return { state:'unsupported' }; }
+        if (!side) { if (marked.size) clear(); return { state:'unsupported' }; }
+        // Antes de abrir el primer chat WhatsApp puede no crear #main todavía.
+        // Mostrar la lista legible en lugar de reducir toda la página por zoom.
+        if (!main) {
+          if (![...marked].every(e => e.isConnected) || root.getAttribute('data-dd-view') !== 'list') clear();
+          attr(side, 'data-dd-list');
+          for (let parent = side.parentElement; parent && parent !== document.body; parent = parent.parentElement)
+            attr(parent, 'data-dd-stretch');
+          if (root.getAttribute('data-dd-view') !== 'list') root.setAttribute('data-dd-view', 'list');
+          return { state:'list' };
+        }
         let common = main.parentElement;
         while (common && !common.contains(side)) common = common.parentElement;
         if (!common || common === document.body || common === root) {
@@ -52,7 +62,7 @@ internal static class WhatsAppLayout
         while (listBranch.parentElement !== common) listBranch = listBranch.parentElement;
         if (chatBranch === listBranch) { if (marked.size) clear(); return { state:'unsupported' }; }
         // Reponer marcas si React sustituye alguno de los paneles.
-        if (![...marked].every(e => e.isConnected) || !chatBranch.hasAttribute('data-dd-chat')) clear();
+        if (![...marked].every(e => e.isConnected) || !chatBranch.hasAttribute('data-dd-chat') || !listBranch.hasAttribute('data-dd-list')) clear();
         attr(chatBranch, 'data-dd-chat'); attr(listBranch, 'data-dd-list'); attr(common, 'data-dd-host');
         for (let parent = common; parent && parent !== document.body; parent = parent.parentElement) attr(parent, 'data-dd-stretch');
         const view = mode === 'list' ? 'list' : 'chat';

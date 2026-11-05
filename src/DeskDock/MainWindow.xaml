@@ -4,7 +4,7 @@
  xmlns:local="clr-namespace:DeskDock"
  xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
- Title="DeskDock v0.11.0" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
+ Title="DeskDock v0.12.0" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
  Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource TextPrimary}" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
  WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
  Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized" SizeChanged="ResponsiveSizeChanged" DpiChanged="MainDpiChanged">
@@ -36,6 +36,7 @@
        <MenuItem Header="Abrir aplicación Spotify" Click="SpotifyClick"/>
        <Separator/>
        <MenuItem x:Name="CompactWhatsApp" Header="Vista adaptable de WhatsApp" IsCheckable="True" IsChecked="True" Click="CompactClick"/>
+       <MenuItem x:Name="WhatsAppComfortOption" Header="Ampliar al abrir WhatsApp" IsCheckable="True" IsChecked="True" Click="WhatsAppComfortClick"/>
        <MenuItem x:Name="Pin" Header="Siempre encima" IsCheckable="True" Click="SettingsClick"/>
        <MenuItem x:Name="TrayOption" Header="Minimizar a bandeja" IsCheckable="True" IsChecked="True" Click="SettingsClick"/>
        <MenuItem Header="Ocultar en bandeja" Click="HideClick"/>
@@ -65,15 +66,21 @@
    <TabItem ToolTip="WhatsApp" AutomationProperties.Name="WhatsApp">
     <TabItem.Header><Path Width="20" Height="20" Stretch="Uniform" Fill="#25D366" Data="{StaticResource WhatsAppLogoGeometry}"/></TabItem.Header>
     <Grid>
-     <Grid.RowDefinitions><RowDefinition Height="28"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+     <Grid.RowDefinitions><RowDefinition Height="28"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
      <StackPanel x:Name="WhatsAppToolbar" Orientation="Horizontal" Margin="1,0,0,2">
-      <Button x:Name="ChatListButton" Content="Chats" Click="ChatListClick" Padding="9,3" FontSize="11" Margin="2,0" ToolTip="Ver lista de chats" AutomationProperties.Name="Ver lista de chats"/>
-      <Button x:Name="ConversationButton" Content="Chat" Click="ConversationClick" Padding="9,3" FontSize="11" Margin="2,0" ToolTip="Ver conversación completa" AutomationProperties.Name="Ver conversación"/>
+      <Button x:Name="ChatListButton" Content="← Chats" Click="ChatListClick" Padding="9,3" FontSize="11" Margin="2,0" ToolTip="Volver a la lista de chats" AutomationProperties.Name="Ver lista de chats"/>
+      <Button x:Name="ConversationButton" Content="Conversación" Click="ConversationClick" Padding="9,3" FontSize="11" Margin="2,0" ToolTip="Ver conversación abierta" AutomationProperties.Name="Ver conversación"/>
       <Button Click="EnableNotificationsClick" Padding="9,3" Margin="2,0" ToolTip="Permitir notificaciones del sitio WhatsApp">
        <TextBlock x:Name="WebNoticeState" Text="Avisos" FontSize="10" Foreground="{DynamicResource TextSecondary}"/>
       </Button>
      </StackPanel>
-     <Border Grid.Row="1" CornerRadius="12" Background="{DynamicResource SurfaceBackground}">
+     <Border x:Name="WhatsAppFallback" Grid.Row="1" Visibility="Collapsed" Background="{DynamicResource SelectedBackground}" CornerRadius="7" Margin="2,3,2,5" Padding="7,3">
+      <DockPanel>
+       <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE8A7;" Click="BrowserClick" ToolTip="Abrir WhatsApp en el navegador" AutomationProperties.Name="Abrir WhatsApp en el navegador"/>
+       <TextBlock Text="Vista completa reducida. Si resulta incómoda, ábrela en el navegador ↗" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+      </DockPanel>
+     </Border>
+     <Border Grid.Row="2" CornerRadius="12" Background="{DynamicResource SurfaceBackground}">
       <wv:WebView2 x:Name="Web" DefaultBackgroundColor="#192228" SizeChanged="WebSizeChanged"/>
      </Border>
     </Grid>

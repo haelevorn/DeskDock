@@ -1,5 +1,13 @@
 # Pruebas del MVP en Windows
 
+## Cambios 0.12 — WhatsApp cómodo
+
+- Abrir con ventana previamente compacta: WhatsApp se amplía; al seleccionar cada otra pestaña, vuelve a su tamaño anterior. Repetir varias veces sin crecimiento acumulado. Cerrar con WhatsApp abierto y reabrir: otras pestañas conservan tamaño compacto.
+- Probar cerca de los cuatro bordes y sobre monitor secundario con distinta escala. La vista cómoda debe quedar dentro del área de trabajo, sin tapar la barra de tareas; moverla manualmente y cambiar de pestaña debe conservar la posición nueva en lo posible.
+- Maximizar, cambiar pestaña y restaurar. No debe desmaximizarse por seleccionar una pestaña. Probar desactivar/reactivar «Ampliar al abrir WhatsApp» y reiniciar para comprobar la preferencia.
+- Con una cuenta real: lista inicial sin conversación, seleccionar chat, escribir, adjuntar, desplazar mensajes, ← Chats y Conversación. La prueba sintética de CI no certifica la estructura actual de WhatsApp. Si aparece Vista completa reducida, usar la flecha para abrir navegador y reportar el estado.
+- Repetir avisos reales de WhatsApp y un pomodoro mientras cambias de pestaña; estos servicios deben seguir activos. Entrar/salir de Ultramini debe conservar sus dimensiones y arrastre.
+
 ## Cambios 0.11 — comprobaciones visuales
 
 - Pestañas: cinco iconos reconocibles, logos de WhatsApp y Spotify verdes, ayudas con nombres y selección perceptible en cada skin. Navegar con teclado también debe mostrar el foco. Verificar ancho mínimo de 300 sin recortes.

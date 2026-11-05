@@ -35,6 +35,7 @@ public partial class MainWindow : Window
     private string _webNotificationPermission = "sin consultar";
     private CoreWebView2Notification? _pendingNotification;
     private bool _layoutBusy;
+    private bool _layoutRequested;
     private string _layoutMode = "";
     private int _noticeTargetTab;
 
@@ -81,6 +82,7 @@ public partial class MainWindow : Window
         SoundOption.IsChecked = settings.NotificationSound;
         ApplySkin(settings.Skin);
         InitializeFocusTools(settings);
+        InitializeWhatsAppComfort(settings);
         RestoreRecentReferences(settings.RecentReferenceImages);
         _profiles = new(settings.Profiles);
         RefreshProfiles();
@@ -90,6 +92,7 @@ public partial class MainWindow : Window
     private async void WindowLoaded(object sender, RoutedEventArgs e)
     {
         if (_testMode) return;
+        UpdateWhatsAppComfort();
         _focusTimer.Start();
         SetupTray();
         _timer.Tick += TimerTick;
@@ -158,6 +161,7 @@ public partial class MainWindow : Window
     private void WindowStateChanged(object? sender, EventArgs e)
     {
         WindowCorners.Apply(this, 16);
+        if (!_testMode) UpdateWhatsAppComfort();
         if (WindowState == WindowState.Minimized && TrayOption?.IsChecked == true && _tray is not null) Hide();
     }
 
@@ -171,11 +175,11 @@ public partial class MainWindow : Window
     {
         if (!_testMode)
         {
-            var bounds = WindowState == WindowState.Normal ? new Rect(0, 0, Width, Height) : RestoreBounds;
+            var bounds = SavedCompactBounds;
             new Settings(Topmost, TrayOption.IsChecked, SkinManager.Current, SoundOption.IsChecked,
                 SafeDimension(bounds.Width, 360, 300, SystemParameters.WorkArea.Width),
                 SafeDimension(bounds.Height, 520, 340, SystemParameters.WorkArea.Height), Pomodoro.Options,
-                _profiles.Items.ToList(), _referencePath, _recentReferencePaths.ToList()).Save();
+                _profiles.Items.ToList(), _referencePath, _recentReferencePaths.ToList(), WhatsAppComfortOption.IsChecked).Save();
         }
     }
 
@@ -426,34 +430,44 @@ public partial class MainWindow : Window
 
     private async Task UpdateWebLayoutAsync()
     {
-        if (_closing || _layoutBusy || Web?.CoreWebView2 is not { } core || !NavigationPolicy.IsWhatsApp(core.Source) || Web.ActualWidth < 1) return;
+        if (_closing || Web?.CoreWebView2 is not { } || Web.ActualWidth < 1) return;
+        _layoutRequested = true;
+        if (_layoutBusy) return;
         _layoutBusy = true;
         try
         {
-            await core.ExecuteScriptAsync(WhatsAppLayout.InstallScript);
-            bool enabled = CompactWhatsApp.IsChecked == true;
-            string width = Web.ActualWidth.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            string result = await core.ExecuteScriptAsync($"window.__deskDockLayout.configure({(enabled ? "true" : "false")}, '{_layoutMode}', {width})");
-            _layoutMode = "";
-            if (_closing) return;
-            using var document = JsonDocument.Parse(result);
-            string? state = document.RootElement.GetProperty("state").GetString();
-            if (enabled && state == "unsupported")
+            while (_layoutRequested && !_closing)
             {
-                // QR, carga o estructura desconocida: mostrar toda la web reducida como alternativa.
-                Web.ZoomFactor = System.Math.Clamp(Web.ActualWidth / 1100.0, 0.25, 1);
-                LayoutStatus.Text = "Ajuste al ancho. Al abrir una conversación se intentará la vista de chat completo.";
-            }
-            else
-            {
-                if (Web.ZoomFactor != 1) Web.ZoomFactor = 1;
-                LayoutStatus.Text = state switch
+                _layoutRequested = false;
+                if (Web.CoreWebView2 is not { } core || !NavigationPolicy.IsWhatsApp(core.Source) || Web.ActualWidth < 1) return;
+                string mode = _layoutMode;
+                _layoutMode = "";
+                await core.ExecuteScriptAsync(WhatsAppLayout.InstallScript);
+                if (_closing) return;
+                bool enabled = CompactWhatsApp.IsChecked;
+                string width = Web.ActualWidth.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                string result = await core.ExecuteScriptAsync($"window.__deskDockLayout.configure({(enabled ? "true" : "false")}, '{mode}', {width})");
+                if (_closing) return;
+                using var document = JsonDocument.Parse(result);
+                string? state = document.RootElement.GetProperty("state").GetString();
+                WhatsAppFallback.Visibility = enabled && state == "unsupported" ? Visibility.Visible : Visibility.Collapsed;
+                if (enabled && state == "unsupported")
                 {
-                    "chat" => "Conversación a todo el ancho · Chats vuelve a la lista.",
-                    "list" => "Lista a todo el ancho · Selecciona una conversación y pulsa Chat si no cambia sola.",
-                    "wide" => "Vista amplia de WhatsApp.",
-                    _ => "Vista original. Activa Vista adaptable para ventanas pequeñas."
-                };
+                    // QR o estructura desconocida: no presentar este ajuste como un chat adaptado.
+                    Web.ZoomFactor = System.Math.Clamp(Web.ActualWidth / 1100.0, 0.25, 1);
+                    LayoutStatus.Text = "Vista completa reducida: no se reconocieron los paneles. Puedes abrir WhatsApp en el navegador.";
+                }
+                else
+                {
+                    if (Web.ZoomFactor != 1) Web.ZoomFactor = 1;
+                    LayoutStatus.Text = state switch
+                    {
+                        "chat" => "Conversación a todo el ancho · ← Chats vuelve a la lista.",
+                        "list" => "Lista a todo el ancho · selecciona una conversación; Conversación muestra el chat abierto.",
+                        "wide" => "Vista amplia de WhatsApp.",
+                        _ => "Vista original. Activa Vista adaptable para ventanas pequeñas."
+                    };
+                }
             }
         }
         catch (Exception ex) { Diagnostics.Record("WebLayout", ex); if (!_closing) LayoutStatus.Text = "No se pudo adaptar esta vista. Puedes desactivar Vista adaptable."; }

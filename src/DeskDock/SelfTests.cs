@@ -18,6 +18,7 @@ internal static class SelfTests
         {
             FocusSelfTests.Run(results);
             PomodoroStagesSelfTests.Run(results);
+            WhatsAppComfortSelfTests.Run(results);
             Check(SpotifyService.IsSpotifyId("Spotify.exe"), "Spotify Win32", results);
             Check(SpotifyService.IsSpotifyId("SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"), "Spotify Store", results);
             foreach (string id in new[] { "msedge.exe", "chrome.exe", "OtherSpotify.exe", "", "SpotifyAB.Fake!Spotify" })

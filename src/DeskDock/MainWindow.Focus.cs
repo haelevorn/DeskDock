@@ -135,6 +135,8 @@ public partial class MainWindow
         WindowState = WindowState.Normal;
         Width = 320;
         Height = 420;
+        if (_compactWhatsAppBounds is Rect compact)
+            _compactWhatsAppBounds = new Rect(compact.Location, new Size(320, 420));
         SaveSettings();
     }
 
