@@ -43,6 +43,14 @@ internal static class SelfTests
                 Check(reader.ReadUInt16() == 1 && reader.ReadInt32() == 44100, "Sonido PCM mono a 44.1 kHz", results);
             }
             Check(NotificationPolicy.UnreadCount("(3) WhatsApp") == 3, "Contador de no leídos", results);
+            using (var sound = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/notification-pomodoro.wav"))!.Stream)
+            using (var reader = new BinaryReader(sound))
+            {
+                Check(new string(reader.ReadChars(4)) == "RIFF" && sound.Length == 119114, "Campanadas Pomodoro incluidas: 1.35 segundos", results);
+                sound.Position = 20;
+                Check(reader.ReadUInt16() == 1 && reader.ReadUInt16() == 1 && reader.ReadInt32() == 44100,
+                    "Pomodoro: WAV PCM mono 44.1 kHz", results);
+            }
             Check(NotificationPolicy.UnreadCount("WhatsApp") == 0, "Contador reiniciado", results);
             Check(NotificationPolicy.UnreadCount("WhatsApp (4)") == 4 && NotificationPolicy.UnreadCount("\u200e(2) WhatsApp Web\u200f") == 2,
                 "Contador admite sufijo, formato web y marcas de dirección", results);
@@ -186,7 +194,16 @@ internal static class SelfTests
             finally { if (File.Exists(imagePath)) File.Delete(imagePath); }
             Check(window.AllowsTransparency == false && window.FindName("GlassOption") is null,
                 "Ventana opaca sin opción Glass", results);
-            var mini = new UltraMiniWindow(window.Player, () => { }, () => { }, _ => { }) { ShowInTaskbar = false, Opacity = 0 };
+            window.Width = 300;
+            window.UpdateLayout();
+            var brand = (FrameworkElement)window.FindName("HeaderBrand");
+            var actions = (FrameworkElement)window.FindName("HeaderActions");
+            Check(brand.TranslatePoint(new Point(brand.ActualWidth, 0), window).X <= actions.TranslatePoint(new Point(), window).X,
+                "Cabecera sin solapamientos con hormiga visible a 300 de ancho", results);
+            Check(((FrameworkElement)window.FindName("UltraMiniButton")).ActualWidth > 0, "Acceso directo Ultramini visible", results);
+            double miniVolume = -1;
+            int muteRequests = 0;
+            var mini = new UltraMiniWindow(window.Player, () => { }, () => { }, _ => { }, value => miniVolume = value, () => muteRequests++) { ShowInTaskbar = false, Opacity = 0 };
             mini.UpdateStatus("12:34", null);
             mini.Show();
             mini.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
@@ -196,6 +213,24 @@ internal static class SelfTests
             mini.UpdateStatus("12:34", "04:59 · Concentración");
             Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Visible,
                 "Pomodoro activo visible en ultramini", results);
+            mini.Width = 260;
+            mini.UpdateLayout();
+            var pomoButton = (System.Windows.Controls.Button)mini.FindName("MiniPomodoro");
+            Check(pomoButton.TranslatePoint(new Point(), mini).Y > 31 && pomoButton.ActualHeight <= 20 && mini.ActualHeight <= 120,
+                "Pomodoro compacto fuera de la barra de arrastre a tamaño mínimo", results);
+            var captionPoint = mini.PointToScreen(new Point(135, 16));
+            long coordinates = ((long)(ushort)(short)captionPoint.Y << 16) | (ushort)(short)captionPoint.X;
+            Check(SendMessage(new System.Windows.Interop.WindowInteropHelper(mini).Handle, 0x84, IntPtr.Zero, new IntPtr(coordinates)).ToInt64() == 2,
+                "Windows reconoce el centro de la barra Ultramini como zona de arrastre", results);
+            mini.UpdateAudio(42, true, true);
+            var miniSlider = (System.Windows.Controls.Slider)mini.FindName("MiniMasterVolume");
+            Check(miniSlider.Value == 42 && miniVolume == -1, "Sincronizar volumen no escribe en Windows", results);
+            miniSlider.Value = 67;
+            ((System.Windows.Controls.MenuItem)mini.FindName("MiniMute")).RaiseEvent(new RoutedEventArgs(System.Windows.Controls.MenuItem.ClickEvent));
+            Check(miniVolume == 67 && muteRequests == 1, "Volumen y silencio de Ultramini envían órdenes al servicio compartido", results);
+            mini.UpdateAudio(0, false, false);
+            Check(!miniSlider.IsEnabled && !((System.Windows.Controls.MenuItem)mini.FindName("MiniMute")).IsEnabled,
+                "Sin dispositivo se desactivan volumen y silencio", results);
             mini.UpdateStatus("12:34", null);
             Check(((FrameworkElement)mini.FindName("MiniPomodoro")).Visibility == Visibility.Collapsed,
                 "Ultramini oculta Pomodoro inactivo", results);
@@ -232,6 +267,9 @@ internal static class SelfTests
             return 1;
         }
     }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr SendMessage(IntPtr handle, uint message, IntPtr wParam, IntPtr lParam);
 
     private static void Check(bool condition, string description, List<string> results)
     {

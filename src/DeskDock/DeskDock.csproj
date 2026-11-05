@@ -12,7 +12,7 @@
     <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>false</PublishTrimmed>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
     <ApplicationIcon>Assets/DeskDock.ico</ApplicationIcon>
     <AssemblyName>DeskDock</AssemblyName>
   </PropertyGroup>
@@ -23,5 +23,6 @@
   <ItemGroup>
     <Resource Include="Assets/DeskDock.ico" />
     <Resource Include="Assets/notification-bwoop.wav" />
+    <Resource Include="Assets/notification-pomodoro.wav" />
   </ItemGroup>
 </Project>

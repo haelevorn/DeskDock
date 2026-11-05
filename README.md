@@ -1,8 +1,15 @@
-# DeskDock 0.8
+# DeskDock 0.9
 
 Aplicación Windows x64 en C# / WPF / .NET 10 con WhatsApp Web mediante WebView2 y control de Spotify mediante las sesiones multimedia nativas de Windows.
 
-## Cambios de la versión 0.8
+## Cambios de la versión 0.9
+
+- Botón de hormiga vectorial en la cabecera para abrir Ultramini directamente, también con ancho mínimo.
+- Ultramini conserva una barra superior para arrastrar: el pomodoro activo es un botón de 19 unidades debajo de la música. La altura pasa de 98 a 117 solo cuando aparece; no invade la barra ni reinicia el tamaño en cada actualización del reloj.
+- Icono de altavoz en Ultramini: abre volumen maestro y silencio. Usa el mismo dispositivo predeterminado que la ventana principal, sincronizado con Windows; si no hay dispositivo, los controles se desactivan.
+- Pomodoro usa campanadas originales «tin tin tum» (1.35 s); WhatsApp conserva «bwuooop». Menú «Probar sonido de Pomodoro». La opción Sonidos de avisos controla ambos. Se comprueba el recurso WAV y el encaminamiento de controles en CI; escuchar el sonido y cambiar el volumen real requieren prueba en el equipo del usuario.
+
+## Cambios anteriores: versión 0.8
 
 Los ZIP publicados incluyen la versión al final del nombre, por ejemplo `DeskDock-win-x64-v0.8.0.zip`. El flujo lee la versión del proyecto, también para vistas previas y diagnóstico, y las fuentes se entregan como `DeskDock-fuentes-v0.8.0.zip`.
 

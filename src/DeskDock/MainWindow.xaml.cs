@@ -26,6 +26,7 @@ public partial class MainWindow : Window
     private TrayIcon? _tray;
     private System.Drawing.Icon? _trayImage;
     private readonly NotificationAudio _notificationAudio = new();
+    private readonly NotificationAudio _pomodoroNotificationAudio = new("notification-pomodoro.wav");
     private bool _refreshing, _sending, _syncingVolume, _closing, _webStarting;
     private string? _artKey;
     private int _notifications;
@@ -116,7 +117,7 @@ public partial class MainWindow : Window
             _tray.BalloonTipShown += (_, _) => Dispatcher.Invoke(() =>
             {
                 ReportNotification(n => n.ReportShown());
-                if (SoundOption.IsChecked) _notificationAudio.Play();
+                if (SoundOption.IsChecked) (_noticeTargetTab == 2 ? _pomodoroNotificationAudio : _notificationAudio).Play();
                 NotificationStatus.Text = "Windows notificó que presentó el aviso. Comprueba si fue visible en tu pantalla.";
             });
             _tray.BalloonTipClicked += (_, _) => Dispatcher.Invoke(() =>
@@ -347,6 +348,9 @@ public partial class MainWindow : Window
     private void TestNotificationClick(object sender, RoutedEventArgs e) =>
         ShowNotice("Este es un aviso de prueba de DeskDock. No procede de un mensaje de WhatsApp.", test: true);
 
+    private void TestPomodoroNotificationClick(object sender, RoutedEventArgs e) =>
+        ShowNotice("Prueba del sonido tin tin tum del Pomodoro.", test: true, title: "DeskDock · Pomodoro", targetTab: 2);
+
     private async Task ReadNotificationPermissionAsync()
     {
         if (_closing || Web.CoreWebView2 is not { } core || !NavigationPolicy.IsWhatsApp(core.Source)) return;
@@ -569,6 +573,7 @@ public partial class MainWindow : Window
         try
         {
             var state = _audio.Read();
+            _ultraMini?.UpdateAudio(state.Volume * 100, state.Muted, true);
             _syncingVolume = true;
             if (!MasterVolume.IsMouseCaptureWithin && !MasterVolume.IsKeyboardFocusWithin) MasterVolume.Value = state.Volume * 100;
             VolumeValue.Text = $"{state.Volume * 100:0}%";
@@ -579,6 +584,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             Diagnostics.Record("AudioRead", ex);
+            _ultraMini?.UpdateAudio(0, false, false);
             MasterVolume.IsEnabled = Mute.IsEnabled = false;
             VolumeValue.Text = "—";
             AudioStatus.Text = "Sin acceso al dispositivo de audio. Se reintentará.";
@@ -620,6 +626,7 @@ public partial class MainWindow : Window
         }
         _trayImage?.Dispose();
         _notificationAudio.Dispose();
+        _pomodoroNotificationAudio.Dispose();
         Web.Dispose();
         Application.Current.Shutdown();
     }

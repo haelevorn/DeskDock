@@ -1,16 +1,20 @@
 # Usar DeskDock sin instalar herramientas de programación
 
-## Ultramini, referencia y ChatGPT — versión 0.8
+## Ultramini, referencia y ChatGPT — versión 0.9
 
-La descarga de esta versión se llama **DeskDock-win-x64-v0.8.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
+La descarga de esta versión se llama **DeskDock-win-x64-v0.9.0.zip**. En versiones futuras cambiará automáticamente el número del nombre. Los artefactos de compilaciones antiguas mantienen el nombre con el que se publicaron.
 
-Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE. La cabecera muestra **0.8**.
+Actualiza cerrando DeskDock, extrayendo el nuevo ZIP completo y abriendo su EXE. Conserva los archivos juntos en la carpeta extraída.
 
 ### Ultramini
 
 Se corrigió el contorno real de Windows para que coincida con las esquinas de DeskDock. Comprueba el borde sobre un fondo claro y oscuro, al cambiar tamaño y al mover entre monitores con distinta escala. La prueba automática verifica que la región nativa excluya los píxeles de las esquinas; el resultado visual final en tu pantalla requiere esa comprobación.
 
-Abre **⋯ → Modo ultramini**. Se oculta la ventana completa y aparece una de aproximadamente 300 × 98 unidades con hora y música. Si corre un pomodoro, también muestra tiempo/etapa; pulsarlo vuelve a la pestaña Pomodoro. El icono de esquinas arriba a la derecha vuelve a la ventana completa. Cerrar ultramini con Alt+F4 también vuelve a la ventana completa; para salir del programa usa la X de la ventana completa o Salir desde la bandeja.
+Pulsa la **hormiguita de la cabecera**, junto al reloj, o **⋯ → Modo ultramini**. Aparece una ventana de aproximadamente 300 × 98 unidades con hora y música. Arrástrala desde la barra superior, donde están la hora y DeskDock. Si corre un pomodoro, aparece debajo de la música un botón pequeño con tiempo y etapa; la ventana crece a unos 117 de alto. Pulsar ese botón vuelve al Pomodoro sin interferir con el arrastre. El icono de esquinas arriba a la derecha vuelve a la ventana completa. Cerrar ultramini con Alt+F4 también vuelve a la ventana completa; para salir del programa usa la X de la ventana completa o Salir desde la bandeja.
+
+Pulsa el **altavoz de Ultramini** para abrir la barra de volumen maestro de Windows y Silenciar/Activar sonido. Afecta a todo el equipo, igual que el control de volumen de la ventana completa. Si no se detecta un dispositivo, el menú lo indica y desactiva los controles.
+
+Pomodoro tiene un sonido de campanadas **tin tin tum**. Para escucharlo sin esperar una etapa: vuelve a la ventana completa y abre **⋯ → Probar sonido de Pomodoro**. WhatsApp mantiene su sonido bwuooop. **⋯ → Sonidos de avisos** activa o desactiva ambos. Si Windows suprime el aviso, también puede omitir su sonido.
 
 La opción Siempre encima se conserva. El reloj, pomodoro y avisos siguen funcionando mientras DeskDock está abierto. El modo no se inicia automáticamente al reabrir el programa. No es un modo de ahorro de memoria: WhatsApp continúa abierto para intentar recibir avisos.
 

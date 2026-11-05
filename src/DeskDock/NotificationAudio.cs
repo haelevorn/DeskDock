@@ -7,6 +7,8 @@ namespace DeskDock;
 
 internal sealed class NotificationAudio : IDisposable
 {
+    private readonly string _resourceName;
+    internal NotificationAudio(string resourceName = "notification-bwoop.wav") => _resourceName = resourceName;
     private Stream? _stream;
     private SoundPlayer? _player;
 
@@ -16,7 +18,7 @@ internal sealed class NotificationAudio : IDisposable
         {
             if (_player is null)
             {
-                _stream = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/notification-bwoop.wav"))!.Stream;
+                _stream = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/" + _resourceName))!.Stream;
                 _player = new SoundPlayer(_stream);
                 _player.Load();
             }

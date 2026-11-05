@@ -3,7 +3,7 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
- Title="DeskDock" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
+ Title="DeskDock v0.9.0" Icon="Assets/DeskDock.ico" Width="360" Height="520" MinWidth="300" MinHeight="340"
  Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource TextPrimary}" FontFamily="Segoe UI" FontSize="13" WindowStyle="None"
  WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
  Loaded="WindowLoaded" Closing="WindowClosing" StateChanged="WindowStateChanged" SourceInitialized="WindowSourceInitialized" SizeChanged="ResponsiveSizeChanged" DpiChanged="MainDpiChanged">
@@ -16,13 +16,15 @@
   <Grid.RowDefinitions><RowDefinition Height="36"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
   <Grid>
    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-   <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+   <StackPanel x:Name="HeaderBrand" Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
     <Ellipse Fill="{DynamicResource AccentBrush}" Width="7" Height="7" Margin="0,0,9,0"/>
     <TextBlock Text="DeskDock" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-    <TextBlock Text="0.8" Foreground="{DynamicResource TextMuted}" FontSize="10" Margin="7,2,0,0" VerticalAlignment="Center"/>
    </StackPanel>
-   <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+   <StackPanel x:Name="HeaderActions" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
     <TextBlock x:Name="ClockText" FontSize="11" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,7,0" AutomationProperties.Name="Hora actual de Windows"/>
+    <Button x:Name="UltraMiniButton" Style="{StaticResource IconButton}" Width="24" Margin="1,0" Click="EnterUltraMiniClick" ToolTip="Modo ultramini" AutomationProperties.Name="Modo ultramini">
+     <Path Style="{StaticResource ToolbarVector}" Data="{StaticResource AntGeometry}" Stroke="{DynamicResource AccentBrush}"/>
+    </Button>
     <Button x:Name="MoreButton" Style="{StaticResource IconButton}" Content="&#xE712;" Click="MoreClick" ToolTip="Opciones y acciones" AutomationProperties.Name="Opciones y acciones">
      <Button.ContextMenu>
       <ContextMenu>
@@ -44,17 +46,18 @@
        <MenuItem x:Name="AuroraSkin" Header="Aurora · azul y violeta" Tag="aurora" IsCheckable="True" Click="SkinClick"/>
        <MenuItem x:Name="EclipseSkin" Header="Eclipse · negro y ámbar" Tag="eclipse" IsCheckable="True" Click="SkinClick"/>
        <Separator/>
-       <MenuItem x:Name="SoundOption" Header="Sonido de aviso · bwuooop" IsCheckable="True" IsChecked="True" Click="SettingsClick"/>
+       <MenuItem x:Name="SoundOption" Header="Sonidos de avisos" IsCheckable="True" IsChecked="True" Click="SettingsClick"/>
        <MenuItem Header="Activar avisos de WhatsApp" Click="EnableNotificationsClick"/>
        <MenuItem Header="Probar aviso" Click="TestNotificationClick"/>
+       <MenuItem Header="Probar sonido de Pomodoro" Click="TestPomodoroNotificationClick"/>
        <MenuItem Header="Ver estado y avisos…" Click="StatusClick"/>
        <MenuItem Header="Abrir carpeta de diagnóstico" Click="DiagnosticsClick"/>
       </ContextMenu>
      </Button.ContextMenu>
     </Button>
-    <Button Style="{StaticResource IconButton}" Content="&#xE921;" Click="MinimizeClick" ToolTip="Minimizar" AutomationProperties.Name="Minimizar"/>
-    <Button Style="{StaticResource IconButton}" Content="&#xE922;" Click="MaximizeClick" ToolTip="Maximizar o restaurar" AutomationProperties.Name="Maximizar o restaurar"/>
-    <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" Click="CloseClick" ToolTip="Cerrar DeskDock" AutomationProperties.Name="Cerrar DeskDock"/>
+    <Button Style="{StaticResource IconButton}" Width="26" Margin="1,0" Content="&#xE921;" Click="MinimizeClick" ToolTip="Minimizar" AutomationProperties.Name="Minimizar"/>
+    <Button Style="{StaticResource IconButton}" Width="26" Margin="1,0" Content="&#xE922;" Click="MaximizeClick" ToolTip="Maximizar o restaurar" AutomationProperties.Name="Maximizar o restaurar"/>
+    <Button Style="{StaticResource IconButton}" Width="26" Margin="1,0" Content="&#xE8BB;" Click="CloseClick" ToolTip="Cerrar DeskDock" AutomationProperties.Name="Cerrar DeskDock"/>
    </StackPanel>
   </Grid>
   <TabControl x:Name="MainTabs" Grid.Row="1" Background="{DynamicResource SurfaceBackground}" BorderThickness="0" Padding="0,4,0,0" SelectionChanged="MainTabChanged">
